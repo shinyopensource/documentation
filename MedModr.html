@@ -34,6 +34,7 @@
             --copy-btn-hover: #cbd5e0;
             --step-bg: #F0F7FF;
             --step-border: #2081C3;
+            --main-bg: #FFFFFF;
         }
 
         body.dark {
@@ -54,6 +55,7 @@
             --copy-btn-hover: #4A5568;
             --step-bg: #1E2A3A;
             --step-border: #5A9FD4;
+            --main-bg: #1A1F2A;
         }
 
         body {
@@ -65,6 +67,47 @@
             transition: background 0.2s, color 0.2s;
         }
 
+        /* ALL sections use CSS variables for proper dark mode */
+        .sidebar,
+        .main-content,
+        .topic,
+        .feature-card,
+        .step,
+        .note-box,
+        .success-box,
+        .info-box,
+        .code-block-wrapper pre,
+        .package-item,
+        .youtube-card {
+            background-color: var(--main-bg);
+            transition: background-color 0.2s;
+        }
+
+        .code-block-wrapper pre {
+            background-color: var(--r-code-bg);
+        }
+        
+        .sidebar {
+            background-color: var(--r-sidebar-bg);
+        }
+        
+        .feature-card,
+        .step {
+            background-color: var(--r-code-bg);
+        }
+        
+        .note-box {
+            background-color: var(--r-warning-bg);
+        }
+        
+        .success-box {
+            background-color: var(--r-success-bg);
+        }
+        
+        .info-box {
+            background-color: var(--step-bg);
+        }
+        
         .docs-container {
             display: flex;
             max-width: 1400px;
@@ -74,7 +117,6 @@
 
         .sidebar {
             width: 320px;
-            background: var(--r-sidebar-bg);
             border-right: 1px solid var(--r-border);
             position: sticky;
             top: 0;
@@ -118,13 +160,16 @@
             display: block;
             padding: 0.4rem 0.6rem;
             border-radius: 8px;
-            transition: 0.2s;
+            transition: text-decoration 0.2s;
             font-size: 0.9rem;
         }
 
+        /* Hover effect: underline instead of background/transform */
         .sidebar-nav a:hover {
-            background: var(--r-code-bg);
-            color: var(--r-blue);
+            text-decoration: underline;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 4px;
+            background: transparent;
         }
 
         .sidebar-nav .active {
@@ -132,6 +177,11 @@
             background: rgba(32, 129, 195, 0.08);
             border-left: 3px solid var(--r-blue);
             font-weight: 600;
+        }
+
+        .sidebar-nav .active:hover {
+            text-decoration: none;
+            background: rgba(32, 129, 195, 0.08);
         }
 
         .nav-section {
@@ -163,6 +213,7 @@
             margin-bottom: 0.5rem;
             border-bottom: 2px solid var(--r-border);
             padding-bottom: 0.5rem;
+            color: var(--r-text);
         }
 
         .topic h2 {
@@ -176,10 +227,17 @@
             font-size: 1.3rem;
             font-weight: 600;
             margin: 1.5rem 0 0.8rem 0;
+            color: var(--r-text);
         }
 
         .topic p {
             margin-bottom: 1rem;
+            color: var(--r-text);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .topic ul, .topic li, .topic ol {
             color: var(--r-text);
         }
 
@@ -189,7 +247,6 @@
         }
 
         .code-block-wrapper pre {
-            background: var(--r-code-bg);
             padding: 1rem;
             padding-right: 3rem;
             border-radius: 12px;
@@ -213,13 +270,13 @@
             font-family: 'Inter', sans-serif;
             font-weight: 500;
             color: var(--r-text);
-            transition: all 0.2s;
+            transition: none;
             z-index: 10;
         }
 
         .copy-btn:hover {
             background: var(--copy-btn-hover);
-            transform: scale(1.02);
+            transform: none;
         }
 
         .copy-btn.copied {
@@ -234,30 +291,34 @@
             padding: 0.2rem 0.4rem;
             border-radius: 6px;
             font-size: 0.85rem;
+            color: var(--r-text);
         }
 
         .note-box {
-            background: var(--r-warning-bg);
             border-left: 4px solid var(--r-warning-border);
             padding: 1rem 1.2rem;
             border-radius: 10px;
             margin: 1.2rem 0;
+            border: 1px solid var(--r-border);
+            border-left-width: 4px;
         }
-
+        
         .success-box {
-            background: var(--r-success-bg);
             border-left: 4px solid #28a745;
             padding: 1rem 1.2rem;
             border-radius: 10px;
             margin: 1.2rem 0;
+            border: 1px solid var(--r-border);
+            border-left-width: 4px;
         }
-
+        
         .info-box {
-            background: var(--step-bg);
             border-left: 4px solid var(--step-border);
             padding: 1rem 1.2rem;
             border-radius: 10px;
             margin: 1.2rem 0;
+            border: 1px solid var(--r-border);
+            border-left-width: 4px;
         }
 
         .step-container {
@@ -265,18 +326,17 @@
         }
 
         .step {
-            background: var(--r-code-bg);
             border: 1px solid var(--r-border);
             border-radius: 12px;
             padding: 1.2rem;
             margin-bottom: 1rem;
             position: relative;
-            transition: all 0.2s;
+            transition: none;
         }
 
         .step:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: none;
+            box-shadow: none;
         }
 
         .step-number {
@@ -313,10 +373,15 @@
         }
         
         .feature-card {
-            background: var(--r-code-bg);
             border: 1px solid var(--r-border);
             border-radius: 12px;
             padding: 1rem;
+            transition: none;
+        }
+        
+        .feature-card:hover {
+            transform: none;
+            box-shadow: none;
         }
         
         .feature-card i {
@@ -347,11 +412,12 @@
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             z-index: 1000;
-            transition: transform 0.2s;
+            transition: none;
         }
 
         .theme-toggle:hover {
-            transform: scale(1.05);
+            transform: none;
+            opacity: 0.9;
         }
 
         @media (max-width: 900px) {
@@ -379,7 +445,6 @@
         }
         
         .package-item {
-            background: var(--r-code-bg);
             border-radius: 8px;
             padding: 0.5rem 0.8rem;
             font-family: 'Fira Code', monospace;
@@ -408,6 +473,86 @@
             margin: 1.5rem 0;
             border: none;
             border-top: 1px solid var(--r-border);
+        }
+
+        /* YouTube embed styles - vertical layout */
+        .youtube-section {
+            margin-top: 1rem;
+        }
+        
+        .youtube-card {
+            border: 1px solid var(--r-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: none;
+            transition: none;
+        }
+        
+        .youtube-card:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .youtube-card:last-child {
+            margin-bottom: 0;
+        }
+        
+        .youtube-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: var(--r-blue);
+        }
+        
+        .youtube-card p {
+            color: var(--r-text-light);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            margin-top: 0.5rem;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            border: none;
+        }
+        
+        .final-footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--r-border);
+            font-size: 0.85rem;
+            color: var(--r-text-light);
+            text-align: center;
+        }
+        
+        a {
+            color: var(--r-link);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        button, .copy-btn, .theme-toggle {
+            transition: none;
+        }
+        
+        .copy-btn:hover {
+            transform: none;
         }
     </style>
 </head>
@@ -445,6 +590,7 @@
                 <li><a href="#citation" class="nav-link" data-section="citation"><i class="fas fa-quote-right"></i> Citation</a></li>
                 <li><a href="#contact" class="nav-link" data-section="contact"><i class="fas fa-envelope"></i> Contact & Author</a></li>
                 <li><a href="#acknowledgments" class="nav-link" data-section="acknowledgments"><i class="fas fa-heart"></i> Acknowledgments</a></li>
+                <li><a href="#tutorials" class="nav-link" data-section="tutorials"><i class="fab fa-youtube"></i> Video Tutorials</a></li>
             </ul>
         </div>
 
@@ -458,9 +604,8 @@
                 <div class="note-box">
                     <i class="fas fa-exclamation-triangle"></i> <strong>Before You Begin:</strong>
                     <ul style="margin-top: 8px; margin-left: 1.5rem;">
-                        <li>Ensure your data is clean with no missing values (or be aware that rows with missing values will be removed)</li>
+                        <li>Ensure your data is clean with no missing values</li>
                         <li>Variable names should not contain spaces or special characters</li>
-                        <li>For categorical variables, consider creating dummy variables beforehand</li>
                         <li>Have at least 10-20 observations per variable for reliable estimates</li>
                     </ul>
                 </div>
@@ -495,189 +640,39 @@
             <!-- Prerequisites -->
             <section id="prerequisites" class="topic">
                 <h2>Prerequisites</h2>
-                <ul>
-                    <li>R version 4.4 or higher</li>
-                    <li>RStudio (recommended)</li>
-                </ul>
+                <ul><li>R version 4.4 or higher</li><li>RStudio (recommended)</li></ul>
             </section>
 
             <!-- Installation -->
             <section id="installation" class="topic">
                 <h2>Steps to Run Locally</h2>
-                           <p><strong>1. Download app.R from GitHub</strong><br>
-                                                   Access the source code at: <a href="https://github.com/mudassiribrahim12/MedModr/blob/main/app.R" target="_blank">https://github.com/mudassiribrahim12/MedModr/blob/main/app.R</a></p>
-                                                            <p><strong>2. Install required R packages</strong></p>
-                <div class="code-block-wrapper">
-                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                    <pre><code># Install required packages
-install.packages(c(
-  "shiny", "lavaan", "semPlot", "ggplot2", "readr", "readxl",
-  "haven", "DT", "colourpicker", "officer", "magick", "flextable",
-  "shinythemes", "shinyjs", "shinydashboard"
-))
-</code></pre>
-                </div>
-                
-                                <p><strong>3. Load required packages</strong></p>
-                <div class="code-block-wrapper">
-                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                    <pre><code># Load required packages
-library(shiny)
-library(lavaan)
-library(semPlot)
-library(ggplot2)
-library(readr)
-library(readxl)
-library(haven)
-library(DT)
-library(colourpicker)
-library(officer)
-library(magick)
-library(flextable)
-library(shinythemes)
-library(shinyjs)
-library(shinydashboard)</code></pre>
-                </div>
-                
-                
-                <p><strong>4. Run the application in RStudio</strong></p>
-                <div class="code-block-wrapper">
-                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                    <pre><code># Set your working directory to where you saved app.R
-# Example: if app.R is on your Desktop
-setwd("C:/Users/YourName/Desktop/")    # Windows example
-# or
-setwd("/home/yourname/Desktop/")       # Linux/Mac example
-
-# Load the shiny library
-library(shiny)
-
-# Run the application
-runApp("app.R")</code></pre>
-                </div>
-                
-                                <div class="path-note">
-                    <i class="fas fa-info-circle"></i> <strong>Note:</strong> Replace the path with the actual location where you saved the <code>app.R</code> file. The examples above show common locations - adjust the path to match your system.
-                </div>
-                
-                                                <p><strong>5. Open the application in a web browser </strong><br>
-                The application will open in RStudio; then click <strong>Open in Browser</strong> 
-</p>
-           
-                
+                <p><strong>1. Download app.R from GitHub</strong><br>Access the source code at: <a href="https://github.com/mudassiribrahim12/MedModr/blob/main/app.R" target="_blank">https://github.com/mudassiribrahim12/MedModr/blob/main/app.R</a></p>
+                <p><strong>2. Install required R packages</strong></p>
+                <div class="code-block-wrapper"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code>install.packages(c("shiny", "lavaan", "semPlot", "ggplot2", "readr", "readxl", "haven", "DT", "colourpicker", "officer", "magick", "flextable", "shinythemes", "shinyjs", "shinydashboard"))</code></pre></div>
+                <p><strong>3. Run the application in RStudio</strong></p>
+                <div class="code-block-wrapper"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code>library(shiny)
+runApp("path/to/app.R")</code></pre></div>
+                <div class="path-note"><i class="fas fa-info-circle"></i> Replace the path with the actual location where you saved the <code>app.R</code> file.</div>
             </section>
 
             <!-- Deployment -->
             <section id="deployment" class="topic">
                 <h2>Deployment</h2>
-                <div class="code-block-wrapper">
-                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                    <pre><code># Deploy to shinyapps.io
-install.packages("rsconnect")
-rsconnect::deployApp("path/to/MedModr")</code></pre>
-                </div>
+                <div class="code-block-wrapper"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code>rsconnect::deployApp("path/to/MedModr")</code></pre></div>
             </section>
 
             <!-- SIMPLE MEDIATION STEP-BY-STEP GUIDE -->
             <section id="simple-mediation-guide" class="topic">
                 <h2>Simple Mediation Analysis - Step-by-Step Guide</h2>
                 <p>Test whether the effect of X on Y is transmitted through a mediator M (X → M → Y).</p>
-                
                 <div class="step-container">
-
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-title">Select Your Interface</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>On startup, choose <strong>"Interactive Interface"</strong> for point-and-click selection</li>
-                                <li>Or choose <strong>"Syntax Interface"</strong> if you prefer writing lavaan code</li>
-                                <li>For beginners, the Interactive Interface is recommended</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                                        <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-title">Load Your Data</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Click <strong>"Browse"</strong> in the Data Input section</li>
-                                <li>Select your data file (CSV, XLSX, Stata or SPSS)</li>
-                                <li>Wait for the data preview to appear in the "Variables in Data" tab</li>
-                                <li>Verify that all your variables are correctly loaded and displayed</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-title">Select Analysis Type</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>From the dropdown menu, select <strong>"Simple Mediation"</strong></li>
-                                <li>Three variable selection boxes will appear: X, M, and Y</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-title">Select Your Variables</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Click on the <strong>X box</strong> (Independent Variable) and select your predictor variable</li>
-                                <li>Click on the <strong>M box</strong> (Mediator Variable) and select your mediator variable</li>
-                                <li>Click on the <strong>Y box</strong> (Dependent Variable) and select your outcome variable</li>
-                                <li>Example: X = "Stress", M = "Anxiety", Y = "Performance"</li>
-                            </ul>
-                            <div class="info-box" style="margin-top: 10px;">
-                                <i class="fas fa-lightbulb"></i> <strong>Tip:</strong> Variables are automatically validated — each box will display the selected variable name.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <div class="step-title">Run the Analysis</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Click the <strong>"Run Analysis"</strong> button (blue button with play icon)</li>
-                                <li>Wait for the analysis to complete (you'll see a notification when done)</li>
-                                <li>The Results tab will automatically open with your output</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">6</div>
-                        <div class="step-title">Interpret Your Results</div>
-                        <div class="step-content">
-                            <ul>
-                                <li><strong>Path Estimates:</strong> Look at a-path (X→M) and b-path (M→Y) significance (p < 0.05)</li>
-                                <li><strong>Indirect Effect:</strong> Check if a*b is significant - this indicates mediation</li>
-                                <li><strong>Direct Effect (c'):</strong> If not significant with significant indirect effect = full mediation</li>
-                                <li><strong>Total Effect (c):</strong> Overall effect of X on Y</li>
-                            </ul>
-                            <div class="success-box" style="margin-top: 10px;">
-                                <i class="fas fa-check-circle"></i> <strong>Interpretation Example:</strong><br>
-                                "The indirect effect of Stress on Performance through Anxiety was significant (β = -0.15, p < .001), indicating that Anxiety mediates this relationship."
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">7</div>
-                        <div class="step-title">Visualize & Export</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Go to <strong>"Diagram"</strong> tab to view and customize your path diagram</li>
-                                <li>Adjust layout, colors, and node labels as desired</li>
-                                <li>Click <strong>"Download Diagram (PNG)"</strong> to save as PNG</li>
-                                <li>Click <strong>"Download Word Report"</strong> to generate a complete analysis report</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <div class="step"><div class="step-number">1</div><div class="step-title">Select Your Interface</div><div class="step-content">Choose "Interactive Interface" for point-and-click selection or "Syntax Interface" for lavaan code.</div></div>
+                    <div class="step"><div class="step-number">2</div><div class="step-title">Load Your Data</div><div class="step-content">Click "Browse" and select your data file (CSV, XLSX, Stata, or SPSS).</div></div>
+                    <div class="step"><div class="step-number">3</div><div class="step-title">Select Analysis Type</div><div class="step-content">From dropdown, select "Simple Mediation". Three variable boxes appear: X, M, and Y.</div></div>
+                    <div class="step"><div class="step-number">4</div><div class="step-title">Select Your Variables</div><div class="step-content">Select predictor (X), mediator (M), and outcome (Y) from the dropdown lists.</div></div>
+                    <div class="step"><div class="step-number">5</div><div class="step-title">Run the Analysis</div><div class="step-content">Click "Run Analysis" and wait for results to appear.</div></div>
+                    <div class="step"><div class="step-number">6</div><div class="step-title">Interpret Results</div><div class="step-content">Check a-path (X→M), b-path (M→Y), indirect effect (a×b), direct effect (c'), and total effect (c).</div></div>
+                    <div class="step"><div class="step-number">7</div><div class="step-title">Visualize & Export</div><div class="step-content">View path diagram, customize colors, download PNG, or generate Word report.</div></div>
                 </div>
             </section>
 
@@ -685,81 +680,13 @@ rsconnect::deployApp("path/to/MedModr")</code></pre>
             <section id="serial-mediation-guide" class="topic">
                 <h2>Serial Mediation Analysis - Step-by-Step Guide</h2>
                 <p>Test sequential pathways where mediators are ordered (X → M1 → M2 → Y).</p>
-                
                 <div class="step-container">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-title">Load Your Data</div>
-                        <div class="step-content">
-                            <p>Same as Simple Mediation - upload your data file and verify variables load correctly.</p>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-title">Select Analysis Type</div>
-                        <div class="step-content">
-                            <p>From the dropdown, select <strong>"Serial Mediation"</strong>. Four variable boxes will appear: X, M1, M2, and Y.</p>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-title">Select Variables in Order</div>
-                        <div class="step-content">
-                            <ul>
-                                <li><strong>X (Independent Variable):</strong> Your predictor (e.g., "Workload")</li>
-                                <li><strong>M1 (First Mediator):</strong> The first mechanism (e.g., "Stress")</li>
-                                <li><strong>M2 (Second Mediator):</strong> The second mechanism (e.g., "Burnout")</li>
-                                <li><strong>Y (Dependent Variable):</strong> Your outcome (e.g., "Job Satisfaction")</li>
-                            </ul>
-                            <div class="info-box" style="margin-top: 10px;">
-                                <i class="fas fa-lightbulb"></i> <strong>Important:</strong> M1 and M2 must be in theoretical sequential order.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-title">Run the Analysis</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Click the <strong>"Run Analysis"</strong> button (blue button with play icon)</li>
-                                <li>Wait for the analysis to complete (you'll see a notification when done)</li>
-                                <li>The Results tab will automatically open with your output</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <div class="step-title">Interpret Results</div>
-                        <div class="step-content">
-                            <ul>
-                                <li><strong>Indirect Effect M1:</strong> X → M1 → Y pathway (a1 × b1)</li>
-                                <li><strong>Indirect Effect M2:</strong> X → M2 → Y pathway (d × b2)</li>
-                                <li><strong>Serial Indirect Effect:</strong> X → M1 → M2 → Y pathway (a1 × a2 × b2)</li>
-                                <li><strong>Total Indirect Effect:</strong> Sum of all indirect pathways</li>
-                                <li><strong>Total Effect:</strong> c + Total Indirect Effect</li>
-                            </ul>
-                            <div class="success-box" style="margin-top: 10px;">
-                                <i class="fas fa-check-circle"></i> <strong>Interpretation Example:</strong><br>
-                                "The serial indirect effect (Workload → Stress → Burnout → Satisfaction) was significant (β = -0.08, p < .01), supporting the hypothesized sequential mediation process."
-                            </div>
-                        </div>
-                    </div>
-                                        <div class="step">
-                        <div class="step-number">6</div>
-                        <div class="step-title">Visualize & Export</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Go to <strong>"Diagram"</strong> tab to view and customize your path diagram</li>
-                                <li>Adjust layout, colors, and node labels as desired</li>
-                                <li>Click <strong>"Download Diagram (PNG)"</strong> to save as PNG</li>
-                                <li>Click <strong>"Download Word Report"</strong> to generate a complete analysis report</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <div class="step"><div class="step-number">1</div><div class="step-title">Load Your Data</div><div class="step-content">Upload your data file with all variables.</div></div>
+                    <div class="step"><div class="step-number">2</div><div class="step-title">Select Analysis Type</div><div class="step-content">From dropdown, select "Serial Mediation". Four variable boxes appear: X, M1, M2, and Y.</div></div>
+                    <div class="step"><div class="step-number">3</div><div class="step-title">Select Variables in Order</div><div class="step-content">Select X (predictor), M1 (first mediator), M2 (second mediator), and Y (outcome) in theoretical sequence.</div></div>
+                    <div class="step"><div class="step-number">4</div><div class="step-title">Run the Analysis</div><div class="step-content">Click "Run Analysis" and wait for results.</div></div>
+                    <div class="step"><div class="step-number">5</div><div class="step-title">Interpret Results</div><div class="step-content">Review indirect effects: X→M1→Y, X→M2→Y, and serial X→M1→M2→Y pathways.</div></div>
+                    <div class="step"><div class="step-number">6</div><div class="step-title">Visualize & Export</div><div class="step-content">View path diagram and download report.</div></div>
                 </div>
             </section>
 
@@ -767,239 +694,139 @@ rsconnect::deployApp("path/to/MedModr")</code></pre>
             <section id="moderation-guide" class="topic">
                 <h2>Moderation Analysis - Step-by-Step Guide</h2>
                 <p>Test whether the effect of X on Y depends on the level of moderator W.</p>
-                
                 <div class="step-container">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-title">Load Your Data</div>
-                        <div class="step-content">
-                            <p>Upload your data file with X (independent), W (moderator), and Y (dependent) variables.</p>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-title">Select Analysis Type</div>
-                        <div class="step-content">
-                            <p>From dropdown, select <strong>"Moderation"</strong>. Three variable boxes appear: X, W, and Y.</p>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-title">Select Variables</div>
-                        <div class="step-content">
-                            <ul>
-                                <li><strong>X (Independent Variable):</strong> Your predictor (e.g., "Study Time")</li>
-                                <li><strong>W (Moderator Variable):</strong> The condition that modifies the relationship (e.g., "Sleep Quality")</li>
-                                <li><strong>Y (Dependent Variable):</strong> Your outcome (e.g., "Exam Score")</li>
-                            </ul>
-                            <div class="info-box" style="margin-top: 10px;">
-                                <i class="fas fa-magic"></i> <strong>Automatic:</strong> The app automatically creates centered variables and the interaction term (X_W) when you run the analysis!
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-title">Run the Analysis</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Click the <strong>"Run Analysis"</strong> button (blue button with play icon)</li>
-                                <li>Wait for the analysis to complete (you'll see a notification when done)</li>
-                                <li>The Results tab will automatically open with your output</li>
-                            </ul>
-                        </div>
-                    </div>
-
-
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <div class="step-title">Interpret Results</div>
-                        <div class="step-content">
-                            <ul>
-                                <li><strong>Interaction Term (X_W):</strong> If significant (p < 0.05), moderation is present</li>
-                                <li><strong>Simple Slopes:</strong> Check the effect of X on Y at different W levels:
-                                    <ul>
-                                        <li>Low W (-1 SD): slope = b1 + b3 × (-1)</li>
-                                        <li>Average W (mean): slope = b1</li>
-                                        <li>High W (+1 SD): slope = b1 + b3 × (+1)</li>
-                                    </ul>
-                                </li>
-                                <li><strong>Direction:</strong> Positive b3 = effect strengthens as W increases; Negative b3 = effect weakens</li>
-                            </ul>
-                            <div class="success-box" style="margin-top: 10px;">
-                                <i class="fas fa-chart-line"></i> <strong>Interpretation Example:</strong><br>
-                                "The interaction between Study Time and Sleep Quality was significant (β = 0.15, p = .002). Simple slopes analysis revealed that Study Time positively predicted Exam Score only when Sleep Quality was high (+1 SD: β = 0.32, p < .001), but not when Sleep Quality was low (-1 SD: β = 0.02, p = .85)."
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">6</div>
-                        <div class="step-title">Visualize with Slope Plot</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Go to <strong>"Diagram"</strong> tab and select <strong>"Slope Plot"</strong></li>
-                                <li>View the conditional effect at different moderator levels</li>
-                                <li>Customize colors, labels, and download the plot</li>
-                                <li>The Simple Slopes Values panel shows exact coefficients</li>
-                                                                <li>Click <strong>"Download Slope Plot (PNG)"</strong> to save as PNG</li>
-                            </ul>
-                                                            <li>Click <strong>"Download Word Report"</strong> to generate a complete analysis report</li>
-                        </div>
-                    </div>
+                    <div class="step"><div class="step-number">1</div><div class="step-title">Load Your Data</div><div class="step-content">Upload data with X, W, and Y variables.</div></div>
+                    <div class="step"><div class="step-number">2</div><div class="step-title">Select Analysis Type</div><div class="step-content">From dropdown, select "Moderation". Three variable boxes appear: X, W, and Y.</div></div>
+                    <div class="step"><div class="step-number">3</div><div class="step-title">Select Variables</div><div class="step-content">Select predictor (X), moderator (W), and outcome (Y).</div></div>
+                    <div class="step"><div class="step-number">4</div><div class="step-title">Run the Analysis</div><div class="step-content">Click "Run Analysis" - app automatically creates centered variables and interaction term.</div></div>
+                    <div class="step"><div class="step-number">5</div><div class="step-title">Interpret Results</div><div class="step-content">Check interaction term (X×W) significance and simple slopes at low (-1 SD), average, and high (+1 SD) moderator levels.</div></div>
+                    <div class="step"><div class="step-number">6</div><div class="step-title">Visualize with Slope Plot</div><div class="step-content">Go to "Diagram" tab, select "Slope Plot", customize, and download.</div></div>
                 </div>
             </section>
 
             <!-- MODERATED MEDIATION STEP-BY-STEP GUIDE -->
             <section id="moderated-mediation-guide" class="topic">
-                <h2>Moderated Mediation (Conditional Process) - Step-by-Step Guide</h2>
-                <p>Test whether the indirect effect of X on Y through M depends on moderator W (path a moderation).</p>
-                
+                <h2>Moderated Mediation - Step-by-Step Guide</h2>
+                <p>Test whether the indirect effect of X on Y through M depends on moderator W.</p>
                 <div class="step-container">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-title">Load Your Data</div>
-                        <div class="step-content">
-                            <p>Upload data with X (independent), M (mediator), W (moderator), and Y (dependent).</p>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-title">Select Analysis Type</div>
-                        <div class="step-content">
-                            <p>From dropdown, select <strong>"Moderated Mediation"</strong>. Four variable boxes appear: X, M, W, and Y.</p>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-title">Select Variables</div>
-                        <div class="step-content">
-                            <ul>
-                                <li><strong>X (Independent Variable):</strong> Your predictor (e.g., "Leadership Support")</li>
-                                <li><strong>M (Mediator Variable):</strong> The mechanism (e.g., "Job Engagement")</li>
-                                <li><strong>W (Moderator Variable):</strong> The condition (e.g., "Organizational Climate")</li>
-                                <li><strong>Y (Dependent Variable):</strong> Your outcome (e.g., "Performance")</li>
-                            </ul>
-                            <div class="info-box" style="margin-top: 10px;">
-                                <i class="fas fa-magic"></i> <strong>Note:</strong> The app automatically creates the X×W interaction term and centers variables for the path a equation.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-title">Run the Analysis</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Click the <strong>"Run Analysis"</strong> button (blue button with play icon)</li>
-                                <li>Wait for the analysis to complete (you'll see a notification when done)</li>
-                                <li>The Results tab will automatically open with your output</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <div class="step-title">Interpret Results</div>
-                        <div class="step-content">
-                            <ul>
-                                <li><strong>Path a (X → M) Moderated by W:</strong> Check a3 coefficient (X×W → M) - if significant, the a-path varies across W levels</li>
-                                <li><strong>Path b (M → Y):</strong> Should be significant for mediation to occur</li>
-                                <li><strong>Conditional Indirect Effects:</strong>
-                                    <ul>
-                                        <li>Low W (-1 SD): (a1 + a3×-1) × b</li>
-                                        <li>Average W (mean): a1 × b</li>
-                                        <li>High W (+1 SD): (a1 + a3×+1) × b</li>
-                                    </ul>
-                                </li>
-                                <li><strong>Index of Moderated Mediation (a3 × b):</strong> If significant (p < 0.05), the indirect effect significantly differs across W levels - this is evidence of moderated mediation</li>
-                            </ul>
-                            <div class="success-box" style="margin-top: 10px;">
-                                <i class="fas fa-check-circle"></i> <strong>Interpretation Example:</strong><br>
-                                "The index of moderated mediation was significant (β = 0.08, p = .01), indicating that the indirect effect of Leadership Support on Performance through Job Engagement varied significantly across levels of Organizational Climate. The conditional indirect effect was significant only when Organizational Climate was high (β = 0.24, p < .001) but not when low (β = 0.05, p = .32)."
-                            </div>
-                        </div>
-                    </div>
-
-                                        <div class="step">
-                        <div class="step-number">6</div>
-                        <div class="step-title">Export</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Click <strong>"Download Word Report"</strong> to generate a complete analysis report</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <div class="step"><div class="step-number">1</div><div class="step-title">Load Your Data</div><div class="step-content">Upload data with X, M, W, and Y variables.</div></div>
+                    <div class="step"><div class="step-number">2</div><div class="step-title">Select Analysis Type</div><div class="step-content">From dropdown, select "Moderated Mediation". Four variable boxes appear: X, M, W, and Y.</div></div>
+                    <div class="step"><div class="step-number">3</div><div class="step-title">Select Variables</div><div class="step-content">Select predictor (X), mediator (M), moderator (W), and outcome (Y).</div></div>
+                    <div class="step"><div class="step-number">4</div><div class="step-title">Run the Analysis</div><div class="step-content">Click "Run Analysis" - app creates X×W interaction term.</div></div>
+                    <div class="step"><div class="step-number">5</div><div class="step-title">Interpret Results</div><div class="step-content">Check a3 coefficient (X×W→M) significance and index of moderated mediation (a3×b).</div></div>
+                    <div class="step"><div class="step-number">6</div><div class="step-title">Export</div><div class="step-content">Download Word report with complete results.</div></div>
                 </div>
+            </section>
+
+            <!-- Statistical Engine -->
+            <section id="statistical-engine" class="topic">
+                <h2>Statistical Engine</h2>
+                <p>MedModr uses the <strong>lavaan</strong> package for structural equation modeling, implementing:</p>
+                <ul>
+                    <li><strong>Mediation:</strong> Product-of-coefficients method with bootstrap confidence intervals</li>
+                    <li><strong>Moderation:</strong> Linear regression with mean-centering and simple slopes analysis</li>
+                    <li><strong>Moderated Mediation:</strong> Conditional process modeling with index of moderated mediation</li>
+                </ul>
+            </section>
+
+            <!-- Path Diagrams -->
+            <section id="path-diagrams" class="topic">
+                <h2>Path Diagrams</h2>
+                <p>Customizable path diagrams using semPlot with options for layout, edge colors, node colors, and label sizes.</p>
+            </section>
+
+            <!-- Simple Slopes Plot -->
+            <section id="slope-plot" class="topic">
+                <h2>Simple Slopes Plot</h2>
+                <p>Visualize moderation effects with customizable colors, line types, and confidence bands.</p>
             </section>
 
             <!-- Limitations -->
             <section id="limitations" class="topic">
                 <h2>Limitations</h2>
                 <ul>
-                    <li><strong>Latent Variables:</strong> Current version focuses on observed variable models</li>
-                    <li><strong>Missing Data:</strong> Listwise deletion only (cases with missing values are removed)</li>
-                    <li><strong>Large Datasets:</strong> >10,000 rows are truncated for performance</li>
-                    <li><strong>Bootstrap:</strong> Limited to 5,000 samples</li>
+                    <li>Current version focuses on observed variable models</li>
+                    <li>Listwise deletion only for missing values</li>
+                    <li>Datasets >10,000 rows are truncated for performance</li>
+                    <li>Bootstrap limited to 5,000 samples</li>
                 </ul>
             </section>
 
             <!-- Citation -->
             <section id="citation" class="topic">
                 <h2>Citation</h2>
-                <div class="code-block-wrapper">
-                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                    <pre><code>@software{Ibrahim_MedModr_2025,
+                <div class="code-block-wrapper"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre><code>@software{Ibrahim_MedModr_2025,
   author = {Ibrahim, Mudasir Mohammed},
   title = {MedModr: An Open-Source Mediation & Moderation Software},
   year = {2025},
   version = {3.0.0},
   url = {https://github.com/mudassiribrahim12/MedModr}
-}</code></pre>
-                </div>
+}</code></pre></div>
             </section>
 
             <!-- Contact -->
             <section id="contact" class="topic">
                 <h2>Contact & Author</h2>
-                <p><strong>Author:</strong> Mudasir Mohammed Ibrahim<br>
-                <strong>Affiliation:</strong> Department of Internal Medicine (M3), Tamale Teaching Hospital, Tamale, Ghana<br>
-                <strong>Email:</strong> <a href="mailto:mudassiribrahim30@gmail.com">mudassiribrahim30@gmail.com</a></p>
-                <h3>Academic Profiles</h3>
-                <ul>
-                    <li><a href="https://www.researchgate.net/profile/Mudasir-Ibrahim" target="_blank">ResearchGate</a></li>
-                    <li><a href="https://scholar.google.com/citations?user=xEFzAvgAAAAJ&hl=en" target="_blank">Google Scholar</a></li>
-                    <li><a href="https://orcid.org/0000-0002-9049-8222" target="_blank">ORCID</a></li>
-                </ul>
+                <p><strong>Author:</strong> Mudasir Mohammed Ibrahim<br><strong>Affiliation:</strong> Department of Internal Medicine, Tamale Teaching Hospital, Tamale, Ghana<br><strong>Email:</strong> <a href="mailto:mudassiribrahim30@gmail.com">mudassiribrahim30@gmail.com</a></p>
             </section>
 
             <!-- Acknowledgments -->
             <section id="acknowledgments" class="topic">
                 <h2>Acknowledgments</h2>
-                <p>MedModr was built using the following R packages:</p>
                 <div class="package-list">
-                    <div class="package-item">shiny</div>
-                    <div class="package-item">lavaan</div>
-                    <div class="package-item">semPlot</div>
-                    <div class="package-item">ggplot2</div>
-                    <div class="package-item">readr</div>
-                    <div class="package-item">readxl</div>
-                    <div class="package-item">haven</div>
-                    <div class="package-item">DT</div>
-                    <div class="package-item">colourpicker</div>
-                    <div class="package-item">officer</div>
-                    <div class="package-item">magick</div>
-                    <div class="package-item">flextable</div>
-                    <div class="package-item">shinythemes</div>
-                    <div class="package-item">shinyjs</div>
-                    <div class="package-item">shinydashboard</div>
+                    <div class="package-item">shiny</div><div class="package-item">lavaan</div><div class="package-item">semPlot</div>
+                    <div class="package-item">ggplot2</div><div class="package-item">readr</div><div class="package-item">readxl</div>
+                    <div class="package-item">haven</div><div class="package-item">DT</div><div class="package-item">colourpicker</div>
+                    <div class="package-item">officer</div><div class="package-item">magick</div><div class="package-item">flextable</div>
+                    <div class="package-item">shinythemes</div><div class="package-item">shinyjs</div><div class="package-item">shinydashboard</div>
                 </div>
-                <p>Special thanks to the developers and maintainers of these packages, particularly the <strong>lavaan</strong> team (Yves Rosseel) for providing the structural equation modeling engine.</p>
-                <div class="footer">
+                <p>Special thanks to the lavaan team (Yves Rosseel) for providing the structural equation modeling engine.</p>
+            </section>
+
+            <!-- YOUTUBE TUTORIALS SECTION - FOUR VIDEOS VERTICAL LAYOUT -->
+            <section id="tutorials" class="topic">
+                <h2><i class="fab fa-youtube"></i> Video Tutorials: Professional Use</h2>
+                <p>Watch these tutorials to master MedModr. Click the videos below for step-by-step demonstrations of each analysis type.</p>
+                
+                <div class="youtube-section">
+                    <!-- Tutorial 1: Simple Mediation -->
+                    <div class="youtube-card">
+                        <h3>📊 1. Simple Mediation Analysis</h3>
+                        <p>Complete walkthrough: test whether the effect of X on Y is transmitted through mediator M (X → M → Y). Learn variable selection, interpretation of a-path, b-path, indirect effect, and bootstrap confidence intervals.</p>
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Simple Mediation Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    
+                    <!-- Tutorial 2: Serial Mediation -->
+                    <div class="youtube-card">
+                        <h3>📈 2. Serial Mediation Analysis</h3>
+                        <p>Step-by-step guide: test sequential pathways with two mediators in order (X → M1 → M2 → Y). Learn to interpret specific indirect effects and the serial indirect effect.</p>
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY" title="Serial Mediation Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    
+                    <!-- Tutorial 3: Moderation -->
+                    <div class="youtube-card">
+                        <h3>⚖️ 3. Moderation Analysis</h3>
+                        <p>Complete guide: test whether the effect of X on Y depends on moderator W. Learn about mean-centering, interaction terms, simple slopes analysis, and creating slope plots.</p>
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/3JZ_D3ELwOQ" title="Moderation Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    
+                    <!-- Tutorial 4: Moderated Mediation -->
+                    <div class="youtube-card">
+                        <h3>🔗 4. Moderated Mediation (Conditional Process)</h3>
+                        <p>Advanced tutorial: test whether the indirect effect of X on Y through M depends on moderator W. Learn to interpret the index of moderated mediation and conditional indirect effects.</p>
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/9bZkp7q19f0" title="Moderated Mediation Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="final-footer">
                     <p>MedModr: Empowering researchers with intuitive mediation and moderation analysis tools.</p>
                     <p>License: MIT — Free to use, modify, and distribute.</p>
                 </div>
@@ -1008,11 +835,9 @@ rsconnect::deployApp("path/to/MedModr")</code></pre>
     </div>
 
     <script>
-        // Copy code functionality
         function copyCode(button) {
             const pre = button.parentElement.querySelector('pre');
             const code = pre.innerText;
-            
             navigator.clipboard.writeText(code).then(() => {
                 const originalText = button.textContent;
                 button.textContent = 'Copied!';
@@ -1021,16 +846,12 @@ rsconnect::deployApp("path/to/MedModr")</code></pre>
                     button.textContent = originalText;
                     button.classList.remove('copied');
                 }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy:', err);
+            }).catch(() => {
                 button.textContent = 'Error!';
-                setTimeout(() => {
-                    button.textContent = 'Copy';
-                }, 2000);
+                setTimeout(() => { button.textContent = 'Copy'; }, 1500);
             });
         }
 
-        // Theme toggle
         const themeToggle = document.getElementById('themeToggle');
         const prefersDark = localStorage.getItem('docsTheme') === 'dark';
         if (prefersDark) {
@@ -1044,25 +865,19 @@ rsconnect::deployApp("path/to/MedModr")</code></pre>
             themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         });
 
-        // Smooth scroll and active link highlighting
         const links = document.querySelectorAll('.nav-link');
         const sections = document.querySelectorAll('.topic');
         function setActiveLink() {
             let current = '';
             const scrollPos = window.scrollY + 120;
             sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                const sectionBottom = sectionTop + section.offsetHeight;
-                if (scrollPos >= sectionTop && scrollPos < sectionBottom) {
-                    current = section.getAttribute('id');
-                }
+                const top = section.offsetTop;
+                const bottom = top + section.offsetHeight;
+                if (scrollPos >= top && scrollPos < bottom) current = section.getAttribute('id');
             });
             links.forEach(link => {
                 link.classList.remove('active');
-                const href = link.getAttribute('data-section');
-                if (href === current) {
-                    link.classList.add('active');
-                }
+                if (link.getAttribute('data-section') === current) link.classList.add('active');
             });
         }
         window.addEventListener('scroll', setActiveLink);
@@ -1071,9 +886,9 @@ rsconnect::deployApp("path/to/MedModr")</code></pre>
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const targetId = link.getAttribute('data-section');
-                const targetEl = document.getElementById(targetId);
-                if (targetEl) {
-                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const target = document.getElementById(targetId);
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     history.pushState(null, null, `#${targetId}`);
                     links.forEach(l => l.classList.remove('active'));
                     link.classList.add('active');
@@ -1081,9 +896,9 @@ rsconnect::deployApp("path/to/MedModr")</code></pre>
             });
         });
         if (window.location.hash) {
-            const hashId = window.location.hash.substring(1);
-            const target = document.getElementById(hashId);
-            if (target) target.scrollIntoView({ behavior: 'smooth' });
+            const id = window.location.hash.substring(1);
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 </body>
