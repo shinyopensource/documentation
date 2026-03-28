@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedModr • Open-Source Mediation & Moderation Software</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Fira Code for monospace -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --r-blue: #2081C3;
+            --r-dark-blue: #0C4C8A;
+            --r-light-bg: #F7F9FB;
+            --r-border: #E5E9ED;
+            --r-text: #1A2C3E;
+            --r-text-light: #4A627A;
+            --r-code-bg: #F4F6F9;
+            --r-sidebar-bg: #FFFFFF;
+            --r-nav-active: #2081C3;
+            --r-hr: #DCE3E9;
+            --r-warning-bg: #FFF8E7;
+            --r-warning-border: #FFE0A3;
+            --r-success-bg: #E6F4EA;
+            --r-link: #2081C3;
+            --copy-btn-bg: #e2e8f0;
+            --copy-btn-hover: #cbd5e0;
+        }
+
+        body.dark {
+            --r-blue: #5A9FD4;
+            --r-dark-blue: #2C6A9E;
+            --r-light-bg: #1A1F2A;
+            --r-border: #2D3748;
+            --r-text: #E8EDF2;
+            --r-text-light: #B0C4DE;
+            --r-code-bg: #252B36;
+            --r-sidebar-bg: #1E2430;
+            --r-hr: #2D3748;
+            --r-warning-bg: #2D2A1F;
+            --r-warning-border: #8B6B2C;
+            --r-success-bg: #1E3A2A;
+            --r-link: #7AB3D9;
+            --copy-btn-bg: #2D3748;
+            --copy-btn-hover: #4A5568;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--r-light-bg);
+            color: var(--r-text);
+            line-height: 1.5;
+            font-size: 16px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .docs-container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .sidebar {
+            width: 320px;
+            background: var(--r-sidebar-bg);
+            border-right: 1px solid var(--r-border);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 2rem 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--r-border);
+        }
+
+        .pkg-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--r-blue);
+            letter-spacing: -0.3px;
+        }
+
+        .pkg-version {
+            font-size: 0.8rem;
+            color: var(--r-text-light);
+            margin-top: 0.25rem;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.3rem;
+        }
+
+        .sidebar-nav a {
+            text-decoration: none;
+            color: var(--r-text);
+            font-weight: 500;
+            display: block;
+            padding: 0.4rem 0.6rem;
+            border-radius: 8px;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-nav a:hover {
+            background: var(--r-code-bg);
+            color: var(--r-blue);
+        }
+
+        .sidebar-nav .active {
+            color: var(--r-blue);
+            background: rgba(32, 129, 195, 0.08);
+            border-left: 3px solid var(--r-blue);
+            font-weight: 600;
+        }
+
+        .nav-section {
+            margin-top: 1.5rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+            color: var(--r-text-light);
+            margin-bottom: 0.6rem;
+            padding-left: 0.6rem;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem 2.5rem;
+            max-width: calc(100% - 320px);
+            overflow-x: auto;
+        }
+
+        .topic {
+            margin-bottom: 3rem;
+            scroll-margin-top: 1rem;
+        }
+
+        .topic h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid var(--r-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .topic h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin: 1.8rem 0 1rem 0;
+            color: var(--r-blue);
+        }
+
+        .topic h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.8rem 0;
+        }
+
+        .topic p {
+            margin-bottom: 1rem;
+            color: var(--r-text);
+        }
+
+        .code-block-wrapper {
+            position: relative;
+            margin: 1rem 0;
+        }
+
+        .code-block-wrapper pre {
+            background: var(--r-code-bg);
+            padding: 1rem;
+            padding-right: 3rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            border: 1px solid var(--r-border);
+            margin: 0;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--copy-btn-bg);
+            border: 1px solid var(--r-border);
+            border-radius: 6px;
+            padding: 0.3rem 0.6rem;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            color: var(--r-text);
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .copy-btn:hover {
+            background: var(--copy-btn-hover);
+            transform: scale(1.02);
+        }
+
+        .copy-btn.copied {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        code {
+            font-family: 'Fira Code', monospace;
+            background: var(--r-code-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .note-box {
+            background: var(--r-warning-bg);
+            border-left: 4px solid var(--r-warning-border);
+            padding: 1rem 1.2rem;
+            border-radius: 10px;
+            margin: 1.2rem 0;
+        }
+
+        .success-box {
+            background: var(--r-success-bg);
+            border-left: 4px solid #28a745;
+            padding: 1rem 1.2rem;
+            border-radius: 10px;
+            margin: 1.2rem 0;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .feature-card {
+            background: var(--r-code-bg);
+            border: 1px solid var(--r-border);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+        
+        .feature-card i {
+            color: var(--r-blue);
+            margin-right: 8px;
+        }
+        
+        .footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--r-border);
+            font-size: 0.85rem;
+            color: var(--r-text-light);
+            text-align: center;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--r-blue);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: transform 0.2s;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 900px) {
+            .docs-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid var(--r-border);
+            }
+            .main-content {
+                max-width: 100%;
+                padding: 1.5rem;
+            }
+        }
+
+        .package-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .package-item {
+            background: var(--r-code-bg);
+            border-radius: 8px;
+            padding: 0.5rem 0.8rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            border: 1px solid var(--r-border);
+        }
+
+        .example-path {
+            background: var(--r-code-bg);
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            display: inline-block;
+        }
+
+        .path-note {
+            font-size: 0.85rem;
+            color: var(--r-text-light);
+            margin-top: 0.25rem;
+        }
+
+        .analysis-badge {
+            display: inline-block;
+            background: var(--r-blue);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle" aria-label="Dark mode">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="docs-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="pkg-name">MedModr</div>
+                <div class="pkg-version">v3.0.0 (October 2025)</div>
+                <div class="pkg-version">Open-Source Mediation & Moderation Software</div>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="#overview" class="nav-link active" data-section="overview"><i class="fas fa-info-circle"></i> Overview</a></li>
+                <li><a href="#features" class="nav-link" data-section="features"><i class="fas fa-star"></i> Features</a></li>
+                <li><a href="#live-app" class="nav-link" data-section="live-app"><i class="fas fa-globe"></i> Live Application</a></li>
+                <li class="nav-section">Installation & Setup</li>
+                <li><a href="#prerequisites" class="nav-link" data-section="prerequisites"><i class="fas fa-cogs"></i> Prerequisites</a></li>
+                <li><a href="#installation" class="nav-link" data-section="installation"><i class="fas fa-download"></i> Local Installation</a></li>
+                <li><a href="#deployment" class="nav-link" data-section="deployment"><i class="fas fa-cloud-upload-alt"></i> Deployment</a></li>
+                <li class="nav-section">Usage Guide</li>
+                <li><a href="#dual-interfaces" class="nav-link" data-section="dual-interfaces"><i class="fas fa-mouse-pointer"></i> Dual Interfaces</a></li>
+                <li><a href="#simple-mediation" class="nav-link" data-section="simple-mediation"><i class="fas fa-chart-line"></i> Simple Mediation</a></li>
+                <li><a href="#serial-mediation" class="nav-link" data-section="serial-mediation"><i class="fas fa-layer-group"></i> Serial Mediation</a></li>
+                <li><a href="#moderation" class="nav-link" data-section="moderation"><i class="fas fa-balance-scale"></i> Moderation</a></li>
+                <li><a href="#moderated-mediation" class="nav-link" data-section="moderated-mediation"><i class="fas fa-project-diagram"></i> Moderated Mediation</a></li>
+                <li class="nav-section">Visualization</li>
+                <li><a href="#path-diagrams" class="nav-link" data-section="path-diagrams"><i class="fas fa-chart-pie"></i> Path Diagrams</a></li>
+                <li><a href="#slope-plot" class="nav-link" data-section="slope-plot"><i class="fas fa-chart-line"></i> Simple Slopes Plot</a></li>
+                <li class="nav-section">Technical Notes</li>
+                <li><a href="#statistical-engine" class="nav-link" data-section="statistical-engine"><i class="fas fa-chart-bar"></i> Statistical Engine</a></li>
+                <li><a href="#limitations" class="nav-link" data-section="limitations"><i class="fas fa-exclamation-triangle"></i> Limitations</a></li>
+                <li><a href="#project-structure" class="nav-link" data-section="project-structure"><i class="fas fa-folder-tree"></i> Project Structure</a></li>
+                <li><a href="#citation" class="nav-link" data-section="citation"><i class="fas fa-quote-right"></i> Citation</a></li>
+                <li><a href="#contact" class="nav-link" data-section="contact"><i class="fas fa-envelope"></i> Contact & Author</a></li>
+                <li><a href="#acknowledgments" class="nav-link" data-section="acknowledgments"><i class="fas fa-heart"></i> Acknowledgments</a></li>
+            </ul>
+        </div>
+
+        <!-- Main content -->
+        <div class="main-content" id="mainContent">
+            <!-- Overview -->
+            <section id="overview" class="topic">
+                <h1>MedModr</h1>
+                <p><strong>An Open-Source Mediation & Moderation Software for Structural Equation Modeling</strong></p>
+                <p>MedModr is a free, web-based R-Shiny application that provides an intuitive interface for conducting mediation and moderation analyses. Built on the powerful <strong>lavaan</strong> package, it enables researchers to test complex statistical models without requiring advanced programming skills. The tool supports simple mediation, serial mediation, moderation, and moderated mediation models with professional visualization and report generation.</p>
+                <div class="note-box">
+                    <i class="fas fa-exclamation-triangle"></i> <strong>Common research problems solved:</strong>
+                    <ul style="margin-top: 8px; margin-left: 1.5rem;">
+                        <li>Complex mediation pathways requiring advanced statistical knowledge</li>
+                        <li>Difficulty testing moderated mediation (conditional process models)</li>
+                        <li>Manual calculation of indirect effects and standard errors</li>
+                        <li>Lack of publication-ready diagrams and tables</li>
+                    </ul>
+                </div>
+                <p>MedModr solves these problems by automatically generating lavaan syntax, computing indirect effects with bootstrap confidence intervals, and producing customizable path diagrams with coefficient estimates.</p>
+            </section>
+
+            <!-- Features -->
+            <section id="features" class="topic">
+                <h2>Features</h2>
+                <h3>Supported Analysis Types</h3>
+                <div class="feature-grid">
+                    <div class="feature-card"><i class="fas fa-chart-line"></i> Simple Mediation</div>
+                    <div class="feature-card"><i class="fas fa-layer-group"></i> Serial Mediation</div>
+                    <div class="feature-card"><i class="fas fa-balance-scale"></i> Moderation</div>
+                    <div class="feature-card"><i class="fas fa-project-diagram"></i> Moderated Mediation</div>
+                </div>
+                <h3>Supported Input Formats</h3>
+                <div class="feature-grid">
+                    <div class="feature-card"><i class="fas fa-file-csv"></i> CSV</div>
+                    <div class="feature-card"><i class="fas fa-file-alt"></i> TSV, TXT</div>
+                    <div class="feature-card"><i class="fas fa-file-excel"></i> Excel (.xlsx, .xls)</div>
+                    <div class="feature-card"><i class="fas fa-chart-line"></i> Stata (.dta)</div>
+                    <div class="feature-card"><i class="fas fa-chart-bar"></i> SPSS (.sav)</div>
+                    <div class="feature-card"><i class="fab fa-r-project"></i> RData (.rdata)</div>
+                </div>
+                <h3>Key Features</h3>
+                <ul>
+                    <li><strong>Dual Interfaces:</strong> Interactive point-and-click OR syntax-based model specification</li>
+                    <li><strong>Automatic Syntax Generation:</strong> The app generates proper lavaan syntax based on your variable selections</li>
+                    <li><strong>Bootstrap Confidence Intervals:</strong> Robust standard errors for indirect effects</li>
+                    <li><strong>Comprehensive Fit Measures:</strong> Chi-square, CFI, TLI, RMSEA, SRMR</li>
+                    <li><strong>Customizable Path Diagrams:</strong> Display standardized coefficients with p-values</li>
+                    <li><strong>Simple Slopes Visualization:</strong> Plot conditional effects for moderation analysis</li>
+                    <li><strong>Professional Word Reports:</strong> Download analysis results with tables and interpretation</li>
+                    <li><strong>Covariate Adjustment:</strong> Control for confounding variables (categorical or continuous)</li>
+                    <li><strong>Dark/Light Theme Toggle:</strong> User preference saved locally</li>
+                </ul>
+            </section>
+
+            <!-- Live Application -->
+            <section id="live-app" class="topic">
+                <h2>Live Application</h2>
+                <p>Access the live application at: <a href="https://mudassiribrahim30.shinyapps.io/MedModr/" target="_blank">https://mudassiribrahim30.shinyapps.io/MedModr/</a></p>
+                <div class="success-box">
+                    <i class="fas fa-infinity"></i> <strong>No installation required:</strong> Use the web version directly in your browser. Upload your data, run analyses, and download reports instantly.
+                </div>
+            </section>
+
+            <!-- Prerequisites -->
+            <section id="prerequisites" class="topic">
+                <h2>Prerequisites for Local Installation</h2>
+                <ul>
+                    <li>R version 4.4 or higher</li>
+                    <li>RStudio (recommended) or any R environment</li>
+                </ul>
+            </section>
+
+            <!-- Installation -->
+            <section id="installation" class="topic">
+                <h2>Installation and Local Setup</h2>
+                <h3>Steps to Run Locally</h3>
+                <p><strong>1. Download app.R from GitHub</strong><br>
+                Access the source code at: <a href="https://github.com/mudassiribrahim12/MedModr/blob/main/app.R" target="_blank">https://github.com/mudassiribrahim12/MedModr/blob/main/app.R</a></p>
+                <p><strong>2. Install required R packages</strong></p>
+                <div class="code-block-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code># Install required packages
+install.packages(c(
+  "shiny", "lavaan", "semPlot", "ggplot2", "readr", "readxl",
+  "haven", "DT", "colourpicker", "officer", "magick", "flextable",
+  "shinythemes", "shinyjs", "shinydashboard"
+))</code></pre>
+                </div>
+                <p><strong>3. Run the application in RStudio</strong></p>
+                <div class="code-block-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code># Set your working directory to where you saved app.R
+# Example: if app.R is on your Desktop
+setwd("C:/Users/YourName/Desktop/")    # Windows example
+# or
+setwd("/home/yourname/Desktop/")       # Linux/Mac example
+
+# Load the shiny library
+library(shiny)
+
+# Run the application
+runApp("app.R")</code></pre>
+                </div>
+                <div class="path-note">
+                    <i class="fas fa-info-circle"></i> <strong>Note:</strong> Replace the path with the actual location where you saved the <code>app.R</code> file. Alternatively, open the file in RStudio and click the "Run App" button.
+                </div>
+            </section>
+
+            <!-- Deployment -->
+            <section id="deployment" class="topic">
+                <h2>Deployment Options</h2>
+                <h3>ShinyApps.io (Free)</h3>
+                <div class="code-block-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code># Install rsconnect
+install.packages("rsconnect")
+
+# Deploy (replace with the actual path to your app folder)
+rsconnect::deployApp("path/to/MedModr")</code></pre>
+                </div>
+                <div class="path-note">
+                    <i class="fas fa-info-circle"></i> <strong>Note:</strong> Replace <code>"path/to/MedModr"</code> with the actual folder path containing your <code>app.R</code> file.
+                </div>
+                <h3>Institutional Server</h3>
+                <ul>
+                    <li>Shiny Server (open source)</li>
+                    <li>RStudio Connect (commercial)</li>
+                    <li>Docker containerization</li>
+                </ul>
+            </section>
+
+            <!-- Dual Interfaces -->
+            <section id="dual-interfaces" class="topic">
+                <h2>Dual Interfaces</h2>
+                <p>MedModr offers two ways to specify your model:</p>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-mouse-pointer"></i>
+                        <strong>Interactive Interface</strong><br>
+                        Point-and-click variable selection. Perfect for beginners and quick analyses. Simply select variables from dropdown boxes and let the app generate the lavaan syntax automatically.
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-code"></i>
+                        <strong>Syntax Interface</strong><br>
+                        Write lavaan syntax directly for maximum flexibility. Ideal for advanced users who want complete control over model specification.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Simple Mediation -->
+            <section id="simple-mediation" class="topic">
+                <h2>Simple Mediation Analysis</h2>
+                <p>Test whether the effect of an independent variable (X) on a dependent variable (Y) is transmitted through a mediator (M).</p>
+                <div class="note-box">
+                    <i class="fas fa-info-circle"></i> <strong>Model Specification:</strong> X → M → Y
+                </div>
+                <h3>Interactive Mode Syntax</h3>
+                <div class="code-block-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code># Simple Mediation Model
+M ~ a*X
+Y ~ b*M + c*X
+
+# Indirect and total effects
+Indirect_Effect_M := a*b
+Total_Effect := c + (a*b)</code></pre>
+                </div>
+                <h3>Example with Real Variables</h3>
+                <div class="code-block-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code># Example: Stress → Anxiety → Performance
+Anxiety ~ a*Stress
+Performance ~ b*Anxiety + c*Stress
+
+Indirect_Effect := a*b
+Total_Effect := c + (a*b)</code></pre>
+                </div>
+            </section>
+
+            <!-- Serial Mediation -->
+            <section id="serial-mediation" class="topic">
+                <h2>Serial Mediation Analysis</h2>
+                <p>Test sequential pathways where mediators are ordered (X → M1 → M2 → Y).</p>
+                <div class="note-box">
+                    <i class="fas fa-info-circle"></i> <strong>Model Specification:</strong> X → M1 → M2 → Y
+                </div>
+                <div class="code-block-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code># Serial Mediation Model
+M1 ~ a1*X
+M2 ~ a2*M1 + d*X
+Y ~ b1*M1 + b2*M2 + c*X
+
+# User-friendly indirect effects
+Indirect_Effect_M1 := a1 * b1
+Indirect_Effect_M2 := d * b2
+Indirect_Effect_Serial := a1 * a2 * b2
+Total_Indirect_Effect := Indirect_Effect_M1 + Indirect_Effect_M2 + Indirect_Effect_Serial
+Total_Effect := c + Total_Indirect_Effect</code></pre>
+                </div>
+            </section>
+
+            <!-- Moderation -->
+            <section id="moderation" class="topic">
+                <h2>Moderation Analysis</h2>
+                <p>Test whether the effect of X on Y depends on the level of a moderator (W).</p>
+                <div class="note-box">
+                    <i class="fas fa-lightbulb"></i> <strong>Automatic Interaction Term:</strong> The app automatically creates centered variables and the interaction term when you select variables for moderation analysis.
+                </div>
+                <div class="code-block-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code># Moderation Model
+Y ~ b1*X + b2*W + b3*X_W
+
+# Simple slopes (W centered at -1 SD, mean, +1 SD)
+Simple_Slope_Low := b1 + b3*(-1)
+Simple_Slope_Avg := b1 + b3*(0)
+Simple_Slope_High := b1 + b3*(1)</code></pre>
+                </div>
+            </section>
+
+            <!-- Moderated Mediation -->
+            <section id="moderated-mediation" class="topic">
+                <h2>Moderated Mediation (Conditional Process Model)</h2>
+                <p>Test whether the indirect effect of X on Y through M depends on the level of a moderator W (path a moderation).</p>
+                <div class="note-box">
+                    <i class="fas fa-info-circle"></i> <strong>Model Specification:</strong> Path a (X → M) is moderated by W
+                </div>
+                <div class="code-block-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code># Moderated Mediation Model
+M ~ a1*X + a2*W + a3*X_W
+Y ~ b*M + cp*X
+
+# Conditional indirect effects at different levels of W
+Conditional_Indirect_Low := (a1 + a3*(-1)) * b
+Conditional_Indirect_Avg := (a1 + a3*(0)) * b
+Conditional_Indirect_High := (a1 + a3*(1)) * b
+
+# Index of Moderated Mediation
+Index_Moderated_Mediation := a3 * b</code></pre>
+                </div>
+            </section>
+
+            <!-- Path Diagrams -->
+            <section id="path-diagrams" class="topic">
+                <h2>Path Diagrams</h2>
+                <p>Visualize your model with customizable diagrams that display standardized coefficients and p-values.</p>
+                <ul>
+                    <li><strong>Layout options:</strong> tree, circle, spring, tree2, tree3</li>
+                    <li><strong>Customizable colors:</strong> observed and latent variable colors</li>
+                    <li><strong>Node labels:</strong> Customize variable names displayed on the diagram</li>
+                    <li><strong>Edge labels:</strong> Display standardized coefficients with significance indicators</li>
+                    <li><strong>Download options:</strong> High-resolution PNG with mediation effects annotation</li>
+                </ul>
+                <div class="success-box">
+                    <i class="fas fa-chart-pie"></i> <strong>Diagram Features:</strong> Path diagrams automatically display standardized coefficients with p-values, and for mediation analyses, effect estimates are annotated directly on the diagram.
+                </div>
+            </section>
+
+            <!-- Simple Slopes Plot -->
+            <section id="slope-plot" class="topic">
+                <h2>Simple Slopes Plot</h2>
+                <p>For moderation analysis, visualize the conditional effect of X on Y at different levels of the moderator W.</p>
+                <ul>
+                    <li>Plot shows regression lines at low (-1 SD), average (mean), and high (+1 SD) moderator levels</li>
+                    <li>Customizable colors, line widths, and point transparency</li>
+                    <li>Interactive interpretation panel with slope values</li>
+                    <li>Download as high-resolution PNG for publication</li>
+                </ul>
+            </section>
+
+            <!-- Statistical Engine -->
+            <section id="statistical-engine" class="topic">
+                <h2>Statistical Engine: lavaan</h2>
+                <p>MedModr uses the <strong>lavaan</strong> (Latent Variable Analysis) package for all structural equation modeling analyses. Key features:</p>
+                <ul>
+                    <li><strong>Maximum Likelihood (ML) estimation</strong> as default</li>
+                    <li><strong>Bootstrap support</strong> for robust standard errors and confidence intervals (up to 5,000 samples)</li>
+                    <li><strong>Comprehensive fit measures:</strong> χ², CFI, TLI, RMSEA, SRMR</li>
+                    <li><strong>Standardized solutions</strong> (std.all) for effect size interpretation</li>
+                    <li><strong>User-defined parameters</strong> using := operator for indirect effects</li>
+                </ul>
+            </section>
+
+            <!-- Limitations -->
+            <section id="limitations" class="topic">
+                <h2>Current Limitations</h2>
+                <ul>
+                    <li><strong>Latent Variables:</strong> The current version focuses on observed variable models. Latent variable SEM will be added in future releases.</li>
+                    <li><strong>Complex Models:</strong> Very large datasets (>10,000 rows) are automatically truncated for performance.</li>
+                    <li><strong>Missing Data:</strong> Listwise deletion is used. Multiple imputation is not currently supported.</li>
+                    <li><strong>Bootstrap Samples:</strong> Limited to 5,000 samples for performance reasons.</li>
+                    <li><strong>File Size:</strong> Performance depends on system resources. Very large datasets may require longer processing times.</li>
+                </ul>
+            </section>
+
+            <!-- Project Structure -->
+            <section id="project-structure" class="topic">
+                <h2>Project Structure</h2>
+                <div class="code-block-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code>MedModr/
+├── app.R              # Main application file
+├── README.md          # Documentation
+├── LICENSE            # MIT License
+└── .gitignore         # Git ignore file</code></pre>
+                </div>
+            </section>
+
+            <!-- Citation -->
+            <section id="citation" class="topic">
+                <h2>Citation</h2>
+                <p>If you use MedModr in your research, please cite:</p>
+                <div class="code-block-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code>@software{Ibrahim_MedModr_2025,
+  author = {Ibrahim, Mudasir Mohammed},
+  title = {MedModr: An Open-Source Mediation & Moderation Software},
+  year = {2025},
+  version = {3.0.0},
+  url = {https://github.com/mudassiribrahim12/MedModr}
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Contact -->
+            <section id="contact" class="topic">
+                <h2>Contact & Author</h2>
+                <p><strong>Author:</strong> Mudasir Mohammed Ibrahim<br>
+                <strong>Affiliation:</strong> Department of Internal Medicine (M3), Tamale Teaching Hospital, Tamale, Ghana<br>
+                <strong>Email:</strong> <a href="mailto:mudassiribrahim30@gmail.com">mudassiribrahim30@gmail.com</a></p>
+                <h3>Academic Profiles</h3>
+                <ul>
+                    <li><a href="https://www.researchgate.net/profile/Mudasir-Ibrahim" target="_blank">ResearchGate</a></li>
+                    <li><a href="https://scholar.google.com/citations?user=xEFzAvgAAAAJ&hl=en" target="_blank">Google Scholar</a></li>
+                    <li><a href="https://orcid.org/0000-0002-9049-8222" target="_blank">ORCID</a></li>
+                </ul>
+            </section>
+
+            <!-- Acknowledgments -->
+            <section id="acknowledgments" class="topic">
+                <h2>Acknowledgments</h2>
+                <p>MedModr was built using the following R packages:</p>
+                <div class="package-list">
+                    <div class="package-item">shiny</div>
+                    <div class="package-item">lavaan</div>
+                    <div class="package-item">semPlot</div>
+                    <div class="package-item">ggplot2</div>
+                    <div class="package-item">readr</div>
+                    <div class="package-item">readxl</div>
+                    <div class="package-item">haven</div>
+                    <div class="package-item">DT</div>
+                    <div class="package-item">colourpicker</div>
+                    <div class="package-item">officer</div>
+                    <div class="package-item">magick</div>
+                    <div class="package-item">flextable</div>
+                    <div class="package-item">shinythemes</div>
+                    <div class="package-item">shinyjs</div>
+                    <div class="package-item">shinydashboard</div>
+                </div>
+                <p>Special thanks to the developers and maintainers of these packages for making advanced statistical analysis accessible in R, particularly the <strong>lavaan</strong> team for providing the structural equation modeling engine.</p>
+                <div class="footer">
+                    <p>MedModr: Empowering researchers with intuitive mediation and moderation analysis tools.</p>
+                    <p>License: MIT — Free to use, modify, and distribute for academic and research purposes.</p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // Set current year
+        document.getElementById('current-year')?.remove();
+
+        // Copy code functionality
+        function copyCode(button) {
+            const pre = button.parentElement.querySelector('pre');
+            const code = pre.innerText;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                button.textContent = 'Error!';
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                }, 2000);
+            });
+        }
+
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const prefersDark = localStorage.getItem('docsTheme') === 'dark';
+        if (prefersDark) {
+            document.body.classList.add('dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            localStorage.setItem('docsTheme', isDark ? 'dark' : 'light');
+            themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+
+        // Smooth scroll and active link highlighting
+        const links = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.topic');
+        function setActiveLink() {
+            let current = '';
+            const scrollPos = window.scrollY + 120;
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionBottom = sectionTop + section.offsetHeight;
+                if (scrollPos >= sectionTop && scrollPos < sectionBottom) {
+                    current = section.getAttribute('id');
+                }
+            });
+            links.forEach(link => {
+                link.classList.remove('active');
+                const href = link.getAttribute('data-section');
+                if (href === current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        window.addEventListener('scroll', setActiveLink);
+        window.addEventListener('load', setActiveLink);
+        links.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('data-section');
+                const targetEl = document.getElementById(targetId);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    history.pushState(null, null, `#${targetId}`);
+                    links.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                }
+            });
+        });
+        if (window.location.hash) {
+            const hashId = window.location.hash.substring(1);
+            const target = document.getElementById(hashId);
+            if (target) target.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
