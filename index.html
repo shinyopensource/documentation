@@ -37,6 +37,7 @@
             --toc-bg: #f8f9fa;
             --toc-hover: #e9ecef;
             --loading-bar-color: #2081C3;
+            --credit-text-color: #000000;
         }
 
         /* Dark theme */
@@ -53,6 +54,7 @@
             --toc-bg: #16213e;
             --toc-hover: #1e2a3a;
             --loading-bar-color: #5a9fd4;
+            --credit-text-color: #e0e0e0;
         }
 
         body {
@@ -190,7 +192,7 @@
             bottom: 20px;
             left: 20px;
             font-size: 0.85rem;
-            color: #000000;
+            color: var(--credit-text-color);
             opacity: 0.7;
             z-index: 10;
             font-family: system-ui, -apple-system, 'Segoe UI', monospace;
@@ -198,28 +200,45 @@
             font-weight: 400;
         }
 
-        body.dark .copyright {
-            color: #e0e0e0;
-        }
-
-        /* Developer credit at bottom center - professional styling */
+        /* Developer credit at bottom center - professional styling with visible text in both modes */
         .developer-credit {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             font-size: 0.85rem;
-            color: #000000;
-            opacity: 0.7;
+            color: var(--credit-text-color);
+            opacity: 0.85;
             z-index: 10;
             font-family: system-ui, -apple-system, 'Segoe UI', monospace;
             letter-spacing: 0.3px;
             font-weight: 400;
             white-space: nowrap;
+            background: transparent;
         }
-
-        body.dark .developer-credit {
+        
+        /* Style for the link inside developer credit - underlined and no new tab */
+        .developer-credit a {
+            color: var(--credit-text-color);
+            text-decoration: underline;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+        
+        .developer-credit a:hover {
+            opacity: 0.7;
+        }
+        
+        /* Ensure dark mode link is clearly visible */
+        body.dark .developer-credit,
+        body.dark .developer-credit a {
             color: #e0e0e0;
+        }
+        
+        /* Light mode explicit styling */
+        body:not(.dark) .developer-credit,
+        body:not(.dark) .developer-credit a {
+            color: #000000;
         }
 
         /* Dark theme toggle button */
@@ -339,6 +358,7 @@
                 text-align: center;
                 width: auto;
                 padding: 0 10px;
+                background: transparent;
             }
 
             .theme-toggle {
@@ -385,9 +405,9 @@
         Copyright 2025-<span id="currentYear"></span>
     </div>
 
-    <!-- Developer credit at bottom center -->
+    <!-- Developer credit at bottom center - WITH CLICKABLE LINK, UNDERLINED, AND VISIBLE IN BOTH MODES -->
     <div class="developer-credit">
-        Site built by Mudasir Mohammed Ibrahim
+        Site built by <a href="#" id="developerLink">Mudasir Mohammed Ibrahim</a>
     </div>
 
     <!-- Dark theme toggle button -->
@@ -533,7 +553,7 @@
             }
         });
 
-        // Dark theme toggle functionality
+        // Dark theme toggle functionality with proper icon and visibility
         const themeToggle = document.getElementById('themeToggle');
         const savedTheme = localStorage.getItem('shiny-docs-theme');
         
@@ -541,6 +561,7 @@
             document.body.classList.add('dark');
             themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
         } else {
+            document.body.classList.remove('dark');
             themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
         }
         
@@ -551,13 +572,43 @@
             themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         });
 
+        // --- Handle click on developer name link (opens in same tab, no new window) ---
+        const developerLink = document.getElementById('developerLink');
+        if (developerLink) {
+            developerLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Open the website in the same tab (no new tab) - using the personal website URL
+                window.location.href = 'https://mudasiribrahim.vercel.app/';
+            });
+        }
+
+        // Additional safety: ensure developer credit text is always visible on theme toggle
+        function ensureCreditVisibility() {
+            const creditDiv = document.querySelector('.developer-credit');
+            const creditLink = document.getElementById('developerLink');
+            if (document.body.classList.contains('dark')) {
+                if (creditDiv) creditDiv.style.color = '#e0e0e0';
+                if (creditLink) creditLink.style.color = '#e0e0e0';
+            } else {
+                if (creditDiv) creditDiv.style.color = '#000000';
+                if (creditLink) creditLink.style.color = '#000000';
+            }
+        }
+        
+        // Run on load and whenever theme changes
+        document.addEventListener('DOMContentLoaded', ensureCreditVisibility);
+        themeToggle.addEventListener('click', function() {
+            setTimeout(ensureCreditVisibility, 10);
+        });
+
         // Log to console
         console.log('Documentation Hub Ready');
         console.log('Click on any numbered link to view documentation');
         console.log('Loading bar runs for 5 seconds before opening content');
         console.log('Make sure Data2SPSS.html, MedModr.html, and CATrend Analyzer.html are in the same directory');
         console.log('Copyright year auto-updates: 2025-' + new Date().getFullYear());
-        console.log('Developer: Mudasir Mohammed Ibrahim');
+        console.log('Developer: Mudasir Mohammed Ibrahim - name is a clickable underlined link that opens website in same tab');
+        console.log('Dark mode now properly shows white text for developer credit');
     </script>
 </body>
 </html>
