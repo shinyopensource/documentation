@@ -34,6 +34,8 @@
             --copy-btn-hover: #cbd5e0;
             --step-bg: #F0F7FF;
             --step-border: #2081C3;
+            --youtube-card-bg: #FFFFFF;
+            --main-bg: #FFFFFF;
         }
 
         body.dark {
@@ -54,6 +56,8 @@
             --copy-btn-hover: #4A5568;
             --step-bg: #1E2A3A;
             --step-border: #5A9FD4;
+            --youtube-card-bg: #1E2430;
+            --main-bg: #1A1F2A;
         }
 
         body {
@@ -65,6 +69,52 @@
             transition: background 0.2s, color 0.2s;
         }
 
+        /* ALL sections use CSS variables for proper dark mode */
+        .sidebar,
+        .main-content,
+        .topic,
+        .feature-card,
+        .step,
+        .note-box,
+        .success-box,
+        .info-box,
+        .code-block-wrapper pre,
+        .package-item,
+        .formula,
+        .youtube-card {
+            background-color: var(--main-bg);
+            transition: background-color 0.2s;
+        }
+
+        /* Ensure code blocks use code background variable */
+        .code-block-wrapper pre {
+            background-color: var(--r-code-bg);
+        }
+        
+        /* Ensure sidebar uses sidebar background */
+        .sidebar {
+            background-color: var(--r-sidebar-bg);
+        }
+        
+        /* Feature cards and step backgrounds */
+        .feature-card,
+        .step {
+            background-color: var(--r-code-bg);
+        }
+        
+        /* Box backgrounds */
+        .note-box {
+            background-color: var(--r-warning-bg);
+        }
+        
+        .success-box {
+            background-color: var(--r-success-bg);
+        }
+        
+        .info-box {
+            background-color: var(--step-bg);
+        }
+        
         .docs-container {
             display: flex;
             max-width: 1400px;
@@ -74,7 +124,6 @@
 
         .sidebar {
             width: 320px;
-            background: var(--r-sidebar-bg);
             border-right: 1px solid var(--r-border);
             position: sticky;
             top: 0;
@@ -118,13 +167,16 @@
             display: block;
             padding: 0.4rem 0.6rem;
             border-radius: 8px;
-            transition: 0.2s;
+            transition: text-decoration 0.2s;
             font-size: 0.9rem;
         }
 
+        /* Hover effect: underline instead of background/transform */
         .sidebar-nav a:hover {
-            background: var(--r-code-bg);
-            color: var(--r-blue);
+            text-decoration: underline;
+            text-decoration-thickness: 2px;
+            text-underline-offset: 4px;
+            background: transparent;
         }
 
         .sidebar-nav .active {
@@ -132,6 +184,12 @@
             background: rgba(32, 129, 195, 0.08);
             border-left: 3px solid var(--r-blue);
             font-weight: 600;
+        }
+
+        /* Remove hover effect for active item to keep clean */
+        .sidebar-nav .active:hover {
+            text-decoration: none;
+            background: rgba(32, 129, 195, 0.08);
         }
 
         .nav-section {
@@ -163,6 +221,7 @@
             margin-bottom: 0.5rem;
             border-bottom: 2px solid var(--r-border);
             padding-bottom: 0.5rem;
+            color: var(--r-text);
         }
 
         .topic h2 {
@@ -176,10 +235,17 @@
             font-size: 1.3rem;
             font-weight: 600;
             margin: 1.5rem 0 0.8rem 0;
+            color: var(--r-text);
         }
 
         .topic p {
             margin-bottom: 1rem;
+            color: var(--r-text);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .topic ul, .topic li {
             color: var(--r-text);
         }
 
@@ -189,7 +255,6 @@
         }
 
         .code-block-wrapper pre {
-            background: var(--r-code-bg);
             padding: 1rem;
             padding-right: 3rem;
             border-radius: 12px;
@@ -219,7 +284,6 @@
 
         .copy-btn:hover {
             background: var(--copy-btn-hover);
-            transform: scale(1.02);
         }
 
         .copy-btn.copied {
@@ -234,30 +298,34 @@
             padding: 0.2rem 0.4rem;
             border-radius: 6px;
             font-size: 0.85rem;
+            color: var(--r-text);
         }
 
         .note-box {
-            background: var(--r-warning-bg);
             border-left: 4px solid var(--r-warning-border);
             padding: 1rem 1.2rem;
             border-radius: 10px;
             margin: 1.2rem 0;
+            border: 1px solid var(--r-border);
+            border-left-width: 4px;
         }
-
+        
         .success-box {
-            background: var(--r-success-bg);
             border-left: 4px solid #28a745;
             padding: 1rem 1.2rem;
             border-radius: 10px;
             margin: 1.2rem 0;
+            border: 1px solid var(--r-border);
+            border-left-width: 4px;
         }
-
+        
         .info-box {
-            background: var(--step-bg);
             border-left: 4px solid var(--step-border);
             padding: 1rem 1.2rem;
             border-radius: 10px;
             margin: 1.2rem 0;
+            border: 1px solid var(--r-border);
+            border-left-width: 4px;
         }
 
         .step-container {
@@ -265,18 +333,18 @@
         }
 
         .step {
-            background: var(--r-code-bg);
             border: 1px solid var(--r-border);
             border-radius: 12px;
             padding: 1.2rem;
             margin-bottom: 1rem;
             position: relative;
-            transition: all 0.2s;
+            transition: none;
         }
 
+        /* Remove transform hover effect, just keep static */
         .step:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: none;
+            transform: none;
         }
 
         .step-number {
@@ -314,10 +382,16 @@
         }
         
         .feature-card {
-            background: var(--r-code-bg);
             border: 1px solid var(--r-border);
             border-radius: 12px;
             padding: 1rem;
+            transition: none;
+        }
+        
+        /* Remove hover effect from feature cards */
+        .feature-card:hover {
+            transform: none;
+            box-shadow: none;
         }
         
         .feature-card i {
@@ -348,11 +422,12 @@
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             z-index: 1000;
-            transition: transform 0.2s;
+            transition: none;
         }
 
         .theme-toggle:hover {
-            transform: scale(1.05);
+            transform: none;
+            opacity: 0.9;
         }
 
         @media (max-width: 900px) {
@@ -380,7 +455,6 @@
         }
         
         .package-item {
-            background: var(--r-code-bg);
             border-radius: 8px;
             padding: 0.5rem 0.8rem;
             font-family: 'Fira Code', monospace;
@@ -395,7 +469,6 @@
         }
 
         .formula {
-            background: var(--r-code-bg);
             padding: 1.5rem;
             border-radius: 12px;
             text-align: center;
@@ -409,6 +482,104 @@
             margin: 1.5rem 0;
             border: none;
             border-top: 1px solid var(--r-border);
+        }
+
+        /* YouTube embed styles - vertical layout */
+        .youtube-section {
+            margin-top: 1rem;
+        }
+        
+        .youtube-card {
+            border: 1px solid var(--r-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: none;
+            transition: none;
+        }
+        
+        /* Remove hover effect from youtube cards */
+        .youtube-card:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .youtube-card:last-child {
+            margin-bottom: 0;
+        }
+        
+        .youtube-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: var(--r-blue);
+        }
+        
+        .youtube-card p {
+            color: var(--r-text-light);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            margin-top: 0.5rem;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            border: none;
+        }
+        
+        /* Final footer at the very end */
+        .final-footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--r-border);
+            font-size: 0.85rem;
+            color: var(--r-text-light);
+            text-align: center;
+        }
+        
+        /* Ensure links have proper dark mode colors and underline on hover */
+        a {
+            color: var(--r-link);
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Ensure list items have proper colors */
+        ul, ol {
+            color: var(--r-text);
+        }
+        
+        /* Remove all transform and scale effects from any interactive elements */
+        button, .copy-btn, .theme-toggle {
+            transition: none;
+        }
+        
+        .copy-btn:hover {
+            transform: none;
+        }
+        
+        .theme-toggle:hover {
+            transform: none;
+        }
+        
+        /* Sidebar link active state clean */
+        .sidebar-nav .active:hover {
+            text-decoration: none;
         }
     </style>
 </head>
@@ -441,6 +612,7 @@
                 <li><a href="#citation" class="nav-link" data-section="citation"><i class="fas fa-quote-right"></i> Citation</a></li>
                 <li><a href="#contact" class="nav-link" data-section="contact"><i class="fas fa-envelope"></i> Contact & Author</a></li>
                 <li><a href="#acknowledgments" class="nav-link" data-section="acknowledgments"><i class="fas fa-heart"></i> Acknowledgments</a></li>
+                <li><a href="#tutorials" class="nav-link" data-section="tutorials"><i class="fab fa-youtube"></i> Video Tutorials</a></li>
             </ul>
         </div>
 
@@ -528,27 +700,24 @@
                     <li>R version 4.4 or higher (for local installation)</li>
                     <li>RStudio (recommended for local development)</li>
                     <li>A modern web browser (for web version)</li>
-                <p><strong>2. Install required R packages</strong></p>
                 </ul>
             </section>
 
             <!-- Installation -->
             <section id="installation" class="topic">
                 <h2>Steps to Run Locally</h2>
-                  <p><strong>1. Download app.R from GitHub</strong><br>
-                                                   Access the source code at: <a href="https://github.com/mudassiribrahim12/CATrend-Analyzer/blob/main/app.R" target="_blank">https://github.com/mudassiribrahim12/CATrend-Analyzer/blob/main/app.R</a></p>
-                                                            <p><strong>2. Install required R packages</strong></p>
+                <p><strong>1. Download app.R from GitHub</strong><br>
+                Access the source code at: <a href="https://github.com/mudassiribrahim12/CATrend-Analyzer/blob/main/app.R" target="_blank">https://github.com/mudassiribrahim12/CATrend-Analyzer/blob/main/app.R</a></p>
+                <p><strong>2. Install required R packages</strong></p>
                 <div class="code-block-wrapper">
                     <button class="copy-btn" onclick="copyCode(this)">Copy</button>
                     <pre><code># Install required packages
 install.packages(c(
   "shiny", "shinydashboard", "DT", "haven", "readxl", "ggplot2",
   "officer", "rmarkdown", "tidyverse", "sortable", "scales"
-))
-</code></pre>
-</div>
+))</code></pre>
+                </div>
 
-              
                 <p><strong>3. Load required R packages</strong></p>
                 <div class="code-block-wrapper">
                     <button class="copy-btn" onclick="copyCode(this)">Copy</button>
@@ -582,14 +751,12 @@ library(shiny)
 runApp("app.R")</code></pre>
                 </div>
                 
-                                <div class="path-note">
-                    <i class="fas fa-info-circle"></i> <strong>Note:</strong> Replace the path with the actual location where you saved the <code>app.R</code> file. The examples above show common locations - adjust the path to match your system.
+                <div class="path-note">
+                    <i class="fas fa-info-circle"></i> <strong>Note:</strong> Replace the path with the actual location where you saved the <code>app.R</code> file.
                 </div>
                 
-                                                <p><strong>5. Open the application in a web browser </strong><br>
-                The application will open in RStudio; then click <strong>Open in Browser</strong> 
-</p>
-
+                <p><strong>5. Open the application in a web browser</strong><br>
+                The application will open in RStudio; then click <strong>Open in Browser</strong></p>
             </section>
 
             <!-- Deployment -->
@@ -603,7 +770,7 @@ rsconnect::deployApp("path/to/CATrend")</code></pre>
                 </div>
             </section>
 
-            <!-- COMPLETE STEP-BY-STEP GUIDE - SINGLE CONTINUOUS PROCEDURE -->
+            <!-- COMPLETE STEP-BY-STEP GUIDE -->
             <section id="complete-guide" class="topic">
                 <h2>Complete Analysis Workflow - Step-by-Step Guide</h2>
                 <p>Follow these steps in order to perform a complete trend analysis from data upload to report download.</p>
@@ -612,191 +779,42 @@ rsconnect::deployApp("path/to/CATrend")</code></pre>
                     <div class="step">
                         <div class="step-number">1</div>
                         <div class="step-title">Select Data Type</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>In the <strong>Data Upload</strong> tab, choose either <strong>"Normal Data"</strong> (raw dataset) or <strong>"Crosstabulation Data"</strong> (pre-summarized counts)</li>
-                                <li>For Normal Data: Each row represents one observation</li>
-                                <li>For Crosstabulation Data: Enter counts directly in a contingency table format</li>
-                            </ul>
-                        </div>
+                        <div class="step-content">Choose either "Normal Data" (raw dataset) or "Crosstabulation Data" (pre-summarized counts).</div>
                     </div>
-
                     <div class="step">
                         <div class="step-number">2</div>
-                        <div class="step-title">Upload Your Data File (Normal Data Mode)</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Select file type: CSV, Excel, Stata, or SPSS</li>
-                                <li>Click <strong>"Browse"</strong> and select your data file</li>
-                                <li>For CSV: specify separator, header, and quote settings</li>
-                                <li>For Excel: specify sheet number and optional cell range</li>
-                                <li>Wait for data preview to appear in the "Data Preview" table</li>
-                            </ul>
-                        </div>
+                        <div class="step-title">Upload Your Data File</div>
+                        <div class="step-content">Select file type (CSV, Excel, Stata, SPSS) and browse to upload your data.</div>
                     </div>
-
                     <div class="step">
                         <div class="step-number">3</div>
-                        <div class="step-title">Enter Crosstabulation Data (Crosstab Mode)</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Enter Dependent Variable Name and Independent Variable Name</li>
-                                <li>Set number of levels for both variables</li>
-                                <li>Click <strong>"Setup Crosstabulation Table"</strong></li>
-                                <li>Enter labels for each level and counts for each cell</li>
-                                <li>Click <strong>"Create Dataset from Crosstabulation"</strong> to expand counts into observations</li>
-                            </ul>
-                        </div>
+                        <div class="step-title">Review Missing Data</div>
+                        <div class="step-content">Check missing data summary and remove rows with missing values if needed.</div>
                     </div>
-
                     <div class="step">
                         <div class="step-number">4</div>
-                        <div class="step-title">Review Missing Data</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Go to the <strong>Data Cleaning</strong> tab</li>
-                                <li>Review the missing data summary table showing missing values by variable</li>
-                                <li>Click <strong>"Remove Rows with Missing Values in Selected Variables"</strong> to clean data</li>
-                                <li>Check the cleaned data preview to confirm removal of missing cases</li>
-                            </ul>
-                        </div>
+                        <div class="step-title">Select Variables</div>
+                        <div class="step-content">Choose dependent (outcome) and independent (exposure) variables.</div>
                     </div>
-
                     <div class="step">
                         <div class="step-number">5</div>
-                        <div class="step-title">Select Variables for Analysis</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Navigate to the <strong>Variable Selection</strong> tab</li>
-                                <li><strong>Dependent Variable:</strong> Select your binary or categorical outcome variable</li>
-                                <li><strong>Independent Variable:</strong> Select your ordered exposure or grouping variable</li>
-                                <li>Review the variable information panel to confirm selections</li>
-                            </ul>
-                        </div>
+                        <div class="step-title">Order Independent Variable Levels</div>
+                        <div class="step-content">Drag levels from lowest to highest order for accurate trend detection.</div>
                     </div>
-
                     <div class="step">
                         <div class="step-number">6</div>
-                        <div class="step-title">Order Independent Variable Levels</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>In the <strong>"Order Independent Variable Levels"</strong> section, locate the bucket list</li>
-                                <li>Drag levels from the left bucket to the right bucket in the correct order</li>
-                                <li>Place <strong>LOWEST level at the TOP</strong> and <strong>HIGHEST level at the BOTTOM</strong></li>
-                                <li>Example: Placebo → Low Dose → Medium Dose → High Dose</li>
-                                <li>Click <strong>"Update Level Ordering"</strong> to save the order</li>
-                                <li>Verify the order appears correctly in the "Current Variable Information" panel</li>
-                            </ul>
-                            <div class="info-box" style="margin-top: 10px;">
-                                <i class="fas fa-lightbulb"></i> <strong>Critical:</strong> Correct level ordering is essential for accurate trend detection. The order determines whether the test detects an increasing or decreasing trend.
-                            </div>
-                        </div>
+                        <div class="step-title">Configure Test Options</div>
+                        <div class="step-content">Select test type (two-sided/increasing/decreasing) and continuity correction.</div>
                     </div>
-
                     <div class="step">
                         <div class="step-number">7</div>
-                        <div class="step-title">Order Dependent Variable Levels (Optional)</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>If your dependent variable has more than 2 levels, you can reorder them</li>
-                                <li>The first level will be treated as the "success" category for the trend test</li>
-                                <li>For binary variables, ordering does not affect the test results</li>
-                                <li>Click <strong>"Update Level Ordering"</strong> after making changes</li>
-                            </ul>
-                        </div>
+                        <div class="step-title">Run the Cochran-Armitage Test</div>
+                        <div class="step-content">Click "Run Cochran-Armitage Test" to generate results.</div>
                     </div>
-
                     <div class="step">
                         <div class="step-number">8</div>
-                        <div class="step-title">Configure Test Options</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Go to the <strong>Analysis</strong> tab</li>
-                                <li><strong>Test Type:</strong> Choose one:
-                                    <ul>
-                                        <li>Two-sided: Detects any trend (increasing or decreasing)</li>
-                                        <li>One-sided (increasing): Tests if proportion increases across levels</li>
-                                        <li>One-sided (decreasing): Tests if proportion decreases across levels</li>
-                                    </ul>
-                                </li>
-                                <li><strong>Continuity Correction:</strong> Check this box to apply continuity correction for small samples (recommended)</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">9</div>
-                        <div class="step-title">Run the Cochran-Armitage Test</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Click the <strong>"Run Cochran-Armitage Test"</strong> button</li>
-                                <li>Wait for the analysis to complete (a notification will appear)</li>
-                                <li>The test results will appear in the "Cochran-Armitage Test Results" section</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">10</div>
-                        <div class="step-title">Review Test Results</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Check the <strong>Z-statistic</strong> (positive = increasing trend, negative = decreasing trend)</li>
-                                <li>Check the <strong>p-value</strong> (p < 0.05 indicates statistical significance)</li>
-                                <li>Review the <strong>Enhanced Crosstabulation Results</strong> showing counts, row %, column %, and total %</li>
-                                <li>Examine the detailed test calculations including numerator, variance term, and intermediate values</li>
-                                <li>Read the interpretation section for guidance on your results</li>
-                            </ul>
-                            <div class="success-box" style="margin-top: 10px;">
-                                <i class="fas fa-check-circle"></i> <strong>Interpretation Example:</strong><br>
-                                "The Cochran-Armitage test revealed a significant increasing trend in disease prevalence across dose levels (Z = 4.12, p < 0.001)."
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">11</div>
-                        <div class="step-title">Customize Visualization</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>In the <strong>Plot Customization</strong> section, select <strong>Plot Value Type</strong>:
-                                    <ul>
-                                        <li>Counts: Raw frequencies</li>
-                                        <li>Row Percentages: Percentage within each independent variable level</li>
-                                        <li>Column Percentages: Percentage within each dependent variable level</li>
-                                    </ul>
-                                </li>
-                                <li>Set <strong>Plot Title</strong>, <strong>Title Size</strong>, and other text sizes</li>
-                                <li>Click on color pickers to customize colors for each dependent variable level</li>
-                                <li>The <strong>Enhanced Stacked Bar Plot</strong> will update automatically with your settings</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="step">
-                        <div class="step-number">12</div>
-                        <div class="step-title">Download Full Analysis Report</div>
-                        <div class="step-content">
-                            <ul>
-                                <li>Navigate to the <strong>Results</strong> tab</li>
-                                <li>Review the report preview showing key findings</li>
-                                <li>Select <strong>"Word Document"</strong> as the report format</li>
-                                <li>Click the <strong>"Download Full Report"</strong> button</li>
-                                <li>The report will include:
-                                    <ul>
-                                        <li>Complete test results with Z-statistic and p-value</li>
-                                        <li>Enhanced contingency table with counts and percentages</li>
-                                        <li>Customized stacked bar plot with your chosen settings</li>
-                                        <li>Detailed interpretation of findings</li>
-                                        <li>Methodological details and assumptions</li>
-                                    </ul>
-                                </li>
-                                <li>The report will save to your computer as a Word document (.docx)</li>
-                            </ul>
-                            <div class="note-box" style="margin-top: 10px;">
-                                <i class="fas fa-download"></i> <strong>Note:</strong> The report includes all analysis outputs, the customized plot, and statistical interpretation. You can share this report directly with colleagues or include it in your research.
-                            </div>
-                        </div>
+                        <div class="step-title">Review Results & Download Report</div>
+                        <div class="step-content">Examine Z-statistic, p-value, and download Word document report.</div>
                     </div>
                 </div>
             </section>
@@ -807,19 +825,10 @@ rsconnect::deployApp("path/to/CATrend")</code></pre>
                 <ul>
                     <li><strong>Independence:</strong> Observations are independent of each other</li>
                     <li><strong>Ordered Categories:</strong> Independent variable levels have a natural order</li>
-                    <li><strong>Monotonic Trend:</strong> The trend is assumed to be monotonic (consistently increasing or decreasing)</li>
-                    <li><strong>Adequate Sample Size:</strong> Expected cell counts should ideally be >5 for reliable results</li>
-                    <li><strong>Binary Outcome:</strong> The test is designed for binary dependent variables (though it can be adapted for multi-category by specifying a reference level)</li>
+                    <li><strong>Monotonic Trend:</strong> The trend is assumed to be monotonic</li>
+                    <li><strong>Adequate Sample Size:</strong> Expected cell counts should ideally be >5</li>
+                    <li><strong>Binary Outcome:</strong> The test is designed for binary dependent variables</li>
                 </ul>
-                
-                <div class="info-box">
-                    <i class="fas fa-lightbulb"></i> <strong>Checking Assumptions:</strong>
-                    <ul style="margin-top: 8px;">
-                        <li>Review the contingency table for small cell counts (values less than 5)</li>
-                        <li>Ensure independent variable levels are correctly ordered from lowest to highest</li>
-                        <li>Verify independence (no repeated measures or clustering in your study design)</li>
-                    </ul>
-                </div>
             </section>
 
             <!-- Limitations -->
@@ -827,10 +836,9 @@ rsconnect::deployApp("path/to/CATrend")</code></pre>
                 <h2>Limitations</h2>
                 <ul>
                     <li><strong>Small Sample Sizes:</strong> Results may be unreliable when expected cell counts < 5</li>
-                    <li><strong>Sparse Data:</strong> Many zero cells can affect test accuracy and power</li>
-                    <li><strong>Multi-category Outcomes:</strong> Test is designed for binary outcomes; multi-category requires specifying a reference level, which may not capture all patterns</li>
-                    <li><strong>Non-monotonic Trends:</strong> The test may not detect non-linear patterns (e.g., U-shaped or J-shaped relationships)</li>
-                    <li><strong>Confounding:</strong> The test does not adjust for other variables (unadjusted analysis only)</li>
+                    <li><strong>Sparse Data:</strong> Many zero cells can affect test accuracy</li>
+                    <li><strong>Non-monotonic Trends:</strong> The test may not detect non-linear patterns</li>
+                    <li><strong>Confounding:</strong> The test does not adjust for other variables</li>
                 </ul>
             </section>
 
@@ -881,7 +889,32 @@ rsconnect::deployApp("path/to/CATrend")</code></pre>
                     <div class="package-item">scales</div>
                 </div>
                 <p>Special thanks to the developers and maintainers of these packages for making advanced statistical analysis accessible in R.</p>
-                <div class="footer">
+            </section>
+
+            <!-- YOUTUBE TUTORIALS SECTION - LAST PAGE -->
+            <section id="tutorials" class="topic">
+                <h2><i class="fab fa-youtube"></i> Video Tutorials: Professional App Use</h2>
+                <p>Click on the videos below to watch step-by-step tutorials for using CATrend Analyzer professionally.</p>
+                
+                <div class="youtube-section">
+                    <div class="youtube-card">
+                        <h3>📊 1. Using the Normal Data Procedure</h3>
+                        <p>Complete walkthrough: upload raw dataset (CSV/Excel), variable selection, level ordering, running Cochran-Armitage test, interpreting results, and generating reports.</p>
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Normal Data Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    
+                    <div class="youtube-card">
+                        <h3>📈 2. Using the Crosstabulation Procedure</h3>
+                        <p>Step-by-step guide: entering pre-summarized contingency tables, defining row/column levels, expanding counts to dataset, performing trend test, and producing publication-ready outputs.</p>
+                        <div class="video-container">
+                            <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY" title="Crosstabulation Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="final-footer">
                     <p>CATrend Analyzer: Empowering researchers with accurate trend detection tools.</p>
                     <p>License: MIT — Free to use, modify, and distribute.</p>
                 </div>
@@ -890,7 +923,6 @@ rsconnect::deployApp("path/to/CATrend")</code></pre>
     </div>
 
     <script>
-        // Copy code functionality
         function copyCode(button) {
             const pre = button.parentElement.querySelector('pre');
             const code = pre.innerText;
@@ -912,7 +944,6 @@ rsconnect::deployApp("path/to/CATrend")</code></pre>
             });
         }
 
-        // Theme toggle
         const themeToggle = document.getElementById('themeToggle');
         const prefersDark = localStorage.getItem('docsTheme') === 'dark';
         if (prefersDark) {
@@ -926,7 +957,6 @@ rsconnect::deployApp("path/to/CATrend")</code></pre>
             themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         });
 
-        // Smooth scroll and active link highlighting
         const links = document.querySelectorAll('.nav-link');
         const sections = document.querySelectorAll('.topic');
         function setActiveLink() {
