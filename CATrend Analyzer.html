@@ -528,12 +528,16 @@
                     <li>R version 4.4 or higher (for local installation)</li>
                     <li>RStudio (recommended for local development)</li>
                     <li>A modern web browser (for web version)</li>
+                <p><strong>2. Install required R packages</strong></p>
                 </ul>
             </section>
 
             <!-- Installation -->
             <section id="installation" class="topic">
-                <h2>Local Installation</h2>
+                <h2>Steps to Run Locally</h2>
+                  <p><strong>1. Download app.R from GitHub</strong><br>
+                                                   Access the source code at: <a href="https://github.com/mudassiribrahim12/CATrend-Analyzer/blob/main/app.R" target="_blank">https://github.com/mudassiribrahim12/CATrend-Analyzer/blob/main/app.R</a></p>
+                                                            <p><strong>2. Install required R packages</strong></p>
                 <div class="code-block-wrapper">
                     <button class="copy-btn" onclick="copyCode(this)">Copy</button>
                     <pre><code># Install required packages
@@ -541,11 +545,43 @@ install.packages(c(
   "shiny", "shinydashboard", "DT", "haven", "readxl", "ggplot2",
   "officer", "rmarkdown", "tidyverse", "sortable", "scales"
 ))
+</code></pre>
+</div>
 
-# Download app.R from GitHub and run
+              
+                <p><strong>3. Load required R packages</strong></p>
+                <div class="code-block-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code># Load libraries
 library(shiny)
-runApp("path/to/app.R")</code></pre>
+library(shinydashboard)
+library(DT)
+library(haven)
+library(readxl)
+library(ggplot2)
+library(officer)
+library(rmarkdown)
+library(tidyverse)
+library(sortable)
+library(scales)</code></pre>
                 </div>
+
+                <p><strong>4. Run the application in RStudio</strong></p>
+                <div class="code-block-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code># Set your working directory to where you saved app.R
+# Example: if app.R is on your Desktop
+setwd("C:/Users/YourName/Desktop/")    # Windows example
+# or
+setwd("/home/yourname/Desktop/")       # Linux/Mac example
+
+# Load the shiny library
+library(shiny)
+
+# Run the application
+runApp("app.R")</code></pre>
+                </div>
+
             </section>
 
             <!-- Deployment -->
