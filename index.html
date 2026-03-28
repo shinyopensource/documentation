@@ -11,15 +11,43 @@
             box-sizing: border-box;
         }
 
+        /* Light theme (default) */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --header-bg: #f8f9fa;
+            --border-color: #e9ecef;
+            --link-color: #0000EE;
+            --link-visited: #551A8B;
+            --close-btn-bg: #ffffff;
+            --close-btn-hover: #e9ecef;
+            --title-color: #000000;
+        }
+
+        /* Dark theme */
+        body.dark {
+            --bg-color: #1a1a2e;
+            --text-color: #e0e0e0;
+            --header-bg: #16213e;
+            --border-color: #2d3748;
+            --link-color: #5a9fd4;
+            --link-visited: #9b6d9b;
+            --close-btn-bg: #2d3748;
+            --close-btn-hover: #4a5568;
+            --title-color: #e0e0e0;
+        }
+
         body {
             font-family: system-ui, -apple-system, 'Segoe UI', monospace;
-            background: white;
+            background: var(--bg-color);
+            color: var(--text-color);
             min-height: 100vh;
             position: relative;
             padding: 20px;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
-        /* title at the top - increased size and black color */
+        /* title at the top */
         .top-title {
             position: fixed;
             top: 20px;
@@ -29,31 +57,81 @@
             font-size: 1.25rem;
             font-weight: 500;
             font-family: system-ui, -apple-system, 'Segoe UI', monospace;
-            color: #000000;
+            color: var(--title-color);
             letter-spacing: 0.2px;
             z-index: 10;
-            background: white;
+            background: var(--bg-color);
             padding: 4px 0;
+            transition: background 0.3s ease;
         }
 
-        /* Data2SPSS on left side, shifted down */
-        .data2spss-left {
+        /* Apps container on left side */
+        .apps-left {
             position: fixed;
             top: 70px;
             left: 20px;
             z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        .plain-link {
+        .app-link {
             text-decoration: underline;
-            color: #0000EE;
+            color: var(--link-color);
             font-size: 1rem;
             font-family: inherit;
             cursor: pointer;
+            transition: color 0.2s;
         }
 
-        .plain-link:visited {
-            color: #551A8B;
+        .app-link:visited {
+            color: var(--link-visited);
+        }
+
+        .app-link:hover {
+            opacity: 0.8;
+        }
+
+        /* Author name at bottom left */
+        .author-credit {
+            position: fixed;
+            bottom: 16px;
+            left: 20px;
+            font-size: 0.7rem;
+            color: var(--text-color);
+            opacity: 0.6;
+            z-index: 10;
+            font-family: system-ui, -apple-system, 'Segoe UI', monospace;
+        }
+
+        /* Dark theme toggle button */
+        .theme-toggle {
+            position: fixed;
+            bottom: 16px;
+            right: 20px;
+            background: #002D72;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        body.dark .theme-toggle {
+            background: #4A90E2;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05) rotate(10deg);
         }
 
         /* iframe overlay - full screen with proper styling */
@@ -63,7 +141,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: white;
+            background: var(--bg-color);
             z-index: 1000;
             display: none;
             flex-direction: column;
@@ -74,8 +152,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 20px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
             box-shadow: 0 1px 4px rgba(0,0,0,0.05);
         }
 
@@ -85,38 +163,92 @@
             font-size: 0.9rem;
         }
 
+        body.dark .iframe-header span {
+            color: #5A9FD4;
+        }
+
         .close-simple {
-            background: none;
-            border: 1px solid #dee2e6;
+            background: var(--close-btn-bg);
+            border: 1px solid var(--border-color);
             padding: 5px 14px;
             cursor: pointer;
             font-family: inherit;
             font-size: 13px;
             border-radius: 20px;
-            color: #495057;
+            color: var(--text-color);
             transition: all 0.2s;
         }
 
         .close-simple:hover {
-            background: #e9ecef;
-            color: #212529;
+            background: var(--close-btn-hover);
         }
 
         iframe {
             width: 100%;
             height: calc(100% - 52px);
             border: none;
-            background: white;
+            background: var(--bg-color);
         }
 
-        /* loading indicator */
-        .loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 0.9rem;
-            color: #6c757d;
+        /* Spinner overlay - full screen with blur background */
+        .spinner-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #002D72;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        body.dark .spinner {
+            border-top: 4px solid #5A9FD4;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spinner-text {
+            color: white;
+            font-family: system-ui, -apple-system, 'Segoe UI', monospace;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* Hide iframe header initially - will be shown only after content loads */
+        .iframe-header {
+            display: none;
+        }
+
+        /* When iframe container is active and not loading, show header */
+        .iframe-overlay.active .iframe-header {
+            display: flex;
+        }
+
+        iframe {
+            display: none;
+        }
+
+        .iframe-overlay.active iframe {
+            display: block;
         }
     </style>
 </head>
@@ -126,85 +258,180 @@
         Shiny Open Source Documentation
     </div>
 
-    <!-- Data2SPSS on left side -->
-    <div class="data2spss-left">
-        <a class="plain-link" id="data2spssPlainLink">Data2SPSS</a>
+    <!-- Apps on left side -->
+    <div class="apps-left">
+        <a class="app-link" id="data2spssLink" data-path="Data2SPSS.html" data-title="📊 Data2SPSS Documentation">Data2SPSS</a>
+        <!-- Add more apps here as needed -->
+        <!-- 
+        <a class="app-link" id="otherAppLink" data-path="OtherApp.html" data-title="📁 Other App">Other App</a>
+        -->
     </div>
 
-    <!-- Iframe container for loading the Data2SPSS documentation page -->
+    <!-- Author name at bottom left -->
+    <div class="author-credit">
+        Mudasir Mohammed Ibrahim
+    </div>
+
+    <!-- Dark theme toggle button -->
+    <button class="theme-toggle" id="themeToggle">
+        <i class="fa-solid fa-moon"></i>
+    </button>
+
+    <!-- Spinner overlay - only visible during loading -->
+    <div id="spinnerOverlay" class="spinner-overlay">
+        <div class="spinner"></div>
+        <div class="spinner-text">Loading documentation...</div>
+    </div>
+
+    <!-- Iframe container - header and iframe hidden until content loads -->
     <div id="iframeContainer" class="iframe-overlay">
         <div class="iframe-header">
-            <span>📊 Data2SPSS Documentation</span>
+            <span id="iframeTitle">📄 Documentation</span>
             <button id="closeIframeBtn" class="close-simple">✕ Close</button>
         </div>
-        <div id="loadingIndicator" class="loading" style="display: none;">Loading documentation...</div>
-        <iframe id="contentFrame" src="" title="Data2SPSS Documentation"></iframe>
+        <iframe id="contentFrame" src="" title="Documentation Viewer"></iframe>
     </div>
 
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <script>
-        // The Data2SPSS.html file should be in the same directory
-        const data2spssHtmlPath = "Data2SPSS.html";
-        
-        const link = document.getElementById('data2spssPlainLink');
+        // App configurations - add more apps here
+        const apps = [
+            {
+                id: 'data2spssLink',
+                path: 'Data2SPSS.html',
+                title: '📊 Data2SPSS Documentation'
+            }
+            // Add more apps here:
+            // {
+            //     id: 'otherAppLink',
+            //     path: 'OtherApp.html',
+            //     title: '📁 Other Application'
+            // }
+        ];
+
+        const spinnerOverlay = document.getElementById('spinnerOverlay');
         const iframeContainer = document.getElementById('iframeContainer');
         const contentFrame = document.getElementById('contentFrame');
         const closeBtn = document.getElementById('closeIframeBtn');
-        const loadingIndicator = document.getElementById('loadingIndicator');
+        const iframeTitle = document.getElementById('iframeTitle');
 
-        // Function to open the Data2SPSS documentation
-        function openData2SPSS() {
-            // Show loading indicator
-            loadingIndicator.style.display = 'block';
+        // Function to show spinner
+        function showSpinner() {
+            spinnerOverlay.style.display = 'flex';
+        }
+
+        function hideSpinner() {
+            spinnerOverlay.style.display = 'none';
+        }
+
+        // Function to open a documentation page with spinner and 5 second delay
+        function openDocumentation(filePath, title) {
+            // Show spinner
+            showSpinner();
             
-            // Set iframe source to the Data2SPSS.html file
-            contentFrame.src = data2spssHtmlPath;
+            // Ensure iframe container is not active yet (header hidden)
+            iframeContainer.classList.remove('active');
             
-            // Show the iframe container
+            // Clear previous iframe content
+            contentFrame.src = '';
+            
+            // Store title for later
+            iframeTitle.textContent = title;
+            
+            // Show iframe container (without header initially)
             iframeContainer.style.display = 'flex';
             
-            // Hide loading when iframe loads
-            contentFrame.onload = function() {
-                loadingIndicator.style.display = 'none';
-            };
-            
-            // Handle iframe load error
-            contentFrame.onerror = function() {
-                loadingIndicator.style.display = 'none';
-                alert('Could not load Data2SPSS.html. Please make sure the file exists in the same directory.');
-            };
-            
-            // Timeout fallback
-            setTimeout(function() {
-                if (loadingIndicator.style.display === 'block') {
-                    loadingIndicator.style.display = 'none';
-                }
-            }, 5000);
+            // Simulate 5 second loading delay before showing content
+            setTimeout(() => {
+                // Set iframe source to the HTML file
+                contentFrame.src = filePath;
+                
+                // When iframe loads, hide spinner and show header + iframe
+                const onIframeLoad = () => {
+                    // Hide spinner
+                    hideSpinner();
+                    // Make iframe container active to show header and iframe
+                    iframeContainer.classList.add('active');
+                    contentFrame.removeEventListener('load', onIframeLoad);
+                };
+                
+                contentFrame.addEventListener('load', onIframeLoad);
+                
+                // Handle iframe load error
+                contentFrame.onerror = function() {
+                    hideSpinner();
+                    iframeContainer.classList.remove('active');
+                    alert(`Could not load ${filePath}. Please make sure the file exists in the same directory.`);
+                };
+                
+                // Fallback: in case iframe load doesn't trigger within 1.5 seconds
+                setTimeout(() => {
+                    if (spinnerOverlay.style.display === 'flex') {
+                        hideSpinner();
+                        iframeContainer.classList.add('active');
+                    }
+                }, 1500);
+                
+            }, 5000); // 5 second delay before loading the content
         }
 
         // Function to close the iframe
-        function closeData2SPSS() {
+        function closeDocumentation() {
+            // Clear iframe content
             contentFrame.src = '';
+            // Hide iframe container
             iframeContainer.style.display = 'none';
-            loadingIndicator.style.display = 'none';
+            // Remove active class
+            iframeContainer.classList.remove('active');
+            // Hide spinner if visible
+            hideSpinner();
         }
 
-        // Event listener for clicking Data2SPSS link
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            openData2SPSS();
+        // Initialize event listeners for all apps
+        apps.forEach(app => {
+            const link = document.getElementById(app.id);
+            if (link) {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openDocumentation(app.path, app.title);
+                });
+            }
         });
 
-        // Event listener for close button
+        // Close button event listener
         closeBtn.addEventListener('click', () => {
-            closeData2SPSS();
+            closeDocumentation();
         });
 
         // Handle Escape key to close
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && iframeContainer.style.display === 'flex') {
-                closeData2SPSS();
+                closeDocumentation();
             }
         });
+
+        // Dark theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('shiny-docs-theme');
+        
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark');
+            themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
+        } else {
+            themeToggle.innerHTML = '<i class="fa-solid fa-moon"></i>';
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            const isDark = document.body.classList.contains('dark');
+            localStorage.setItem('shiny-docs-theme', isDark ? 'dark' : 'light');
+            themeToggle.innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        });
+
+        // Optional: Add a note that Data2SPSS.html must exist
+        console.log('Click on Data2SPSS to load the documentation. Make sure Data2SPSS.html is in the same directory.');
     </script>
 </body>
 </html>
