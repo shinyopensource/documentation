@@ -172,22 +172,48 @@
             font-weight: 500;
         }
 
-        /* Copyright at bottom left - dynamic year */
+        /* Copyright at bottom left - professional styling */
         .copyright {
             position: fixed;
-            bottom: 16px;
+            bottom: 20px;
             left: 20px;
-            font-size: 0.7rem;
-            color: var(--text-color);
-            opacity: 0.6;
+            font-size: 0.85rem;
+            color: #000000;
+            opacity: 0.7;
             z-index: 10;
             font-family: system-ui, -apple-system, 'Segoe UI', monospace;
+            letter-spacing: 0.3px;
+            font-weight: 400;
+        }
+
+        body.dark .copyright {
+            color: #e0e0e0;
+        }
+
+        /* Developer credit at bottom center - professional styling */
+        .developer-credit {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.85rem;
+            color: #000000;
+            opacity: 0.7;
+            z-index: 10;
+            font-family: system-ui, -apple-system, 'Segoe UI', monospace;
+            letter-spacing: 0.3px;
+            font-weight: 400;
+            white-space: nowrap;
+        }
+
+        body.dark .developer-credit {
+            color: #e0e0e0;
         }
 
         /* Dark theme toggle button */
         .theme-toggle {
             position: fixed;
-            bottom: 16px;
+            bottom: 20px;
             right: 20px;
             background: #2081C3;
             color: white;
@@ -286,6 +312,29 @@
             body {
                 padding: 15px;
             }
+
+            .copyright, .developer-credit {
+                font-size: 0.75rem;
+                bottom: 15px;
+            }
+
+            .copyright {
+                left: 15px;
+            }
+
+            .developer-credit {
+                white-space: normal;
+                text-align: center;
+                width: auto;
+                padding: 0 10px;
+            }
+
+            .theme-toggle {
+                bottom: 15px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+            }
         }
     </style>
 </head>
@@ -319,9 +368,14 @@
         </ul>
     </div>
 
-    <!-- Copyright at bottom left - dynamic year -->
+    <!-- Copyright at bottom left -->
     <div class="copyright">
         Copyright 2025-<span id="currentYear"></span>
+    </div>
+
+    <!-- Developer credit at bottom center -->
+    <div class="developer-credit">
+        Developer: Mudasir Mohammed Ibrahim
     </div>
 
     <!-- Dark theme toggle button -->
@@ -491,6 +545,7 @@
         console.log('Loading bar runs for 5 seconds before opening content');
         console.log('Make sure Data2SPSS.html, MedModr.html, and CATrend Analyzer.html are in the same directory');
         console.log('Copyright year auto-updates: 2025-' + new Date().getFullYear());
+        console.log('Developer: Mudasir Mohammed Ibrahim');
     </script>
 </body>
 </html>
