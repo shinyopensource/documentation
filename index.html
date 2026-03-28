@@ -31,6 +31,9 @@
             font-family: system-ui, -apple-system, 'Segoe UI', monospace;
             color: #000000;
             letter-spacing: 0.2px;
+            z-index: 10;
+            background: white;
+            padding: 4px 0;
         }
 
         /* Data2SPSS on left side, shifted down */
@@ -38,6 +41,7 @@
             position: fixed;
             top: 70px;
             left: 20px;
+            z-index: 10;
         }
 
         .plain-link {
@@ -52,7 +56,7 @@
             color: #551A8B;
         }
 
-        /* iframe overlay */
+        /* iframe overlay - full screen with proper styling */
         .iframe-overlay {
             position: fixed;
             top: 0;
@@ -62,70 +66,144 @@
             background: white;
             z-index: 1000;
             display: none;
+            flex-direction: column;
+        }
+
+        .iframe-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+
+        .iframe-header span {
+            font-weight: 500;
+            color: #002D72;
+            font-size: 0.9rem;
+        }
+
+        .close-simple {
+            background: none;
+            border: 1px solid #dee2e6;
+            padding: 5px 14px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            border-radius: 20px;
+            color: #495057;
+            transition: all 0.2s;
+        }
+
+        .close-simple:hover {
+            background: #e9ecef;
+            color: #212529;
         }
 
         iframe {
             width: 100%;
-            height: 100%;
+            height: calc(100% - 52px);
             border: none;
-        }
-
-        .close-simple {
-            position: fixed;
-            top: 10px;
-            right: 20px;
             background: white;
-            border: 1px solid #ccc;
-            padding: 5px 12px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 14px;
-            z-index: 1001;
-            border-radius: 4px;
         }
 
-        .close-simple:hover {
-            background: #f5f5f5;
+        /* loading indicator */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.9rem;
+            color: #6c757d;
         }
     </style>
 </head>
 <body>
-    <!-- Title at the top - larger size, black color -->
+    <!-- Title at the top -->
     <div class="top-title">
         Shiny Open Source Documentation
     </div>
 
-    <!-- Data2SPSS on left side, shifted down -->
+    <!-- Data2SPSS on left side -->
     <div class="data2spss-left">
         <a class="plain-link" id="data2spssPlainLink">Data2SPSS</a>
     </div>
 
-    <!-- Simple iframe container for local HTML file -->
+    <!-- Iframe container for loading the Data2SPSS documentation page -->
     <div id="iframeContainer" class="iframe-overlay">
-        <button id="closeIframeBtn" class="close-simple">Close</button>
-        <iframe id="externalFrame" src="" title="Data2SPSS Documentation"></iframe>
+        <div class="iframe-header">
+            <span>📊 Data2SPSS Documentation</span>
+            <button id="closeIframeBtn" class="close-simple">✕ Close</button>
+        </div>
+        <div id="loadingIndicator" class="loading" style="display: none;">Loading documentation...</div>
+        <iframe id="contentFrame" src="" title="Data2SPSS Documentation"></iframe>
     </div>
 
     <script>
-        // Path to the local Data2SPSS.html file (same directory)
-        const localHtmlPath = "Data2SPSS.html";
+        // The Data2SPSS.html file should be in the same directory
+        const data2spssHtmlPath = "Data2SPSS.html";
         
         const link = document.getElementById('data2spssPlainLink');
         const iframeContainer = document.getElementById('iframeContainer');
-        const externalFrame = document.getElementById('externalFrame');
+        const contentFrame = document.getElementById('contentFrame');
         const closeBtn = document.getElementById('closeIframeBtn');
+        const loadingIndicator = document.getElementById('loadingIndicator');
 
-        // open iframe with the local HTML file when clicking "Data2SPSS"
+        // Function to open the Data2SPSS documentation
+        function openData2SPSS() {
+            // Show loading indicator
+            loadingIndicator.style.display = 'block';
+            
+            // Set iframe source to the Data2SPSS.html file
+            contentFrame.src = data2spssHtmlPath;
+            
+            // Show the iframe container
+            iframeContainer.style.display = 'flex';
+            
+            // Hide loading when iframe loads
+            contentFrame.onload = function() {
+                loadingIndicator.style.display = 'none';
+            };
+            
+            // Handle iframe load error
+            contentFrame.onerror = function() {
+                loadingIndicator.style.display = 'none';
+                alert('Could not load Data2SPSS.html. Please make sure the file exists in the same directory.');
+            };
+            
+            // Timeout fallback
+            setTimeout(function() {
+                if (loadingIndicator.style.display === 'block') {
+                    loadingIndicator.style.display = 'none';
+                }
+            }, 5000);
+        }
+
+        // Function to close the iframe
+        function closeData2SPSS() {
+            contentFrame.src = '';
+            iframeContainer.style.display = 'none';
+            loadingIndicator.style.display = 'none';
+        }
+
+        // Event listener for clicking Data2SPSS link
         link.addEventListener('click', (e) => {
             e.preventDefault();
-            externalFrame.src = localHtmlPath;
-            iframeContainer.style.display = 'block';
+            openData2SPSS();
         });
 
-        // close iframe and clear source
+        // Event listener for close button
         closeBtn.addEventListener('click', () => {
-            externalFrame.src = '';
-            iframeContainer.style.display = 'none';
+            closeData2SPSS();
+        });
+
+        // Handle Escape key to close
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && iframeContainer.style.display === 'flex') {
+                closeData2SPSS();
+            }
         });
     </script>
 </body>
