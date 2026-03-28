@@ -133,23 +133,35 @@
             transition: background 0.3s ease;
         }
 
-        /* Table of Contents container */
-        .toc-wrapper {
-            position: fixed;
-            top: 70px;
-            left: 20px;
-            z-index: 10;
-            min-width: 220px;
+        /* Main title outside card */
+        .main-title {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            width: 100%;
+            z-index: 5;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--link-color);
+            letter-spacing: 1px;
+            margin-bottom: 20px;
         }
 
-        .toc-title {
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-color);
-            opacity: 0.6;
-            margin-bottom: 12px;
+        /* Table of Contents container - positioned in the middle */
+        .toc-wrapper {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            min-width: 320px;
+            background: var(--toc-bg);
+            border-radius: 16px;
+            padding: 28px 32px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
         }
 
         .toc-list {
@@ -159,16 +171,33 @@
         }
 
         .toc-item {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .toc-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .toc-number {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--link-color);
+            width: 35px;
+            display: inline-block;
         }
 
         .toc-link {
-            text-decoration: underline;
+            text-decoration: none;
             color: var(--link-color);
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-family: inherit;
             cursor: pointer;
-            transition: color 0.2s;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 6px;
             display: inline-block;
         }
 
@@ -177,13 +206,8 @@
         }
 
         .toc-link:hover {
-            opacity: 0.8;
-        }
-
-        .toc-number {
-            display: inline-block;
-            margin-right: 8px;
-            font-weight: 500;
+            background: var(--toc-hover);
+            transform: translateX(5px);
         }
 
         /* Copyright at bottom left - professional styling */
@@ -324,24 +348,44 @@
 
         /* Responsive */
         @media (max-width: 768px) {
+            .main-title {
+                position: relative;
+                top: auto;
+                margin-top: 60px;
+                margin-bottom: 20px;
+                transform: none;
+            }
+            
             .toc-wrapper {
                 position: relative;
-                top: 0;
-                left: 0;
-                margin-bottom: 20px;
-                padding: 15px;
-                background: var(--toc-bg);
-                border-radius: 8px;
-                border: 1px solid var(--border-color);
+                top: auto;
+                left: auto;
+                transform: none;
+                margin: 0 auto 40px;
+                width: 90%;
+                padding: 24px 20px;
             }
             
             .top-title {
-                position: relative;
-                margin-bottom: 20px;
+                position: fixed;
+                top: 20px;
+                left: 0;
+                right: 0;
+                background: var(--bg-color);
+                z-index: 20;
             }
             
             body {
                 padding: 15px;
+            }
+
+            .toc-link {
+                font-size: 1rem;
+            }
+            
+            .toc-number {
+                font-size: 1rem;
+                width: 30px;
             }
 
             .copyright, .developer-credit {
@@ -381,9 +425,13 @@
         Shiny Open Source Documentation
     </div>
 
-    <!-- Table of Contents on left side - updated with CATrend Analyzer -->
+    <!-- Main title outside card -->
+    <div class="main-title">
+        Select A Documentation
+    </div>
+
+    <!-- Table of Contents - positioned in the middle with numbered left alignment -->
     <div class="toc-wrapper">
-        <div class="toc-title">CONTENTS</div>
         <ul class="toc-list">
             <li class="toc-item">
                 <span class="toc-number">1.</span>
