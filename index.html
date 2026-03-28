@@ -75,7 +75,7 @@
             top: 70px;
             left: 20px;
             z-index: 10;
-            min-width: 200px;
+            min-width: 220px;
         }
 
         .toc-title {
@@ -122,8 +122,8 @@
             font-weight: 500;
         }
 
-        /* Author name at bottom left */
-        .author-credit {
+        /* Copyright at bottom left - dynamic year */
+        .copyright {
             position: fixed;
             bottom: 16px;
             left: 20px;
@@ -293,7 +293,7 @@
         Shiny Open Source Documentation
     </div>
 
-    <!-- Table of Contents on left side -->
+    <!-- Table of Contents on left side - updated with CATrend Analyzer -->
     <div class="toc-wrapper">
         <div class="toc-title">CONTENTS</div>
         <ul class="toc-list">
@@ -305,12 +305,16 @@
                 <span class="toc-number">2.</span>
                 <a class="toc-link" id="medmodrLink" data-path="MedModr.html" data-title="MedModr Documentation">MedModr</a>
             </li>
+            <li class="toc-item">
+                <span class="toc-number">3.</span>
+                <a class="toc-link" id="catrendLink" data-path="CATrendAnalyzer.html" data-title="CATrend Analyzer Documentation">CATrend Analyzer</a>
+            </li>
         </ul>
     </div>
 
-    <!-- Author name at bottom left -->
-    <div class="author-credit">
-        Mudasir Mohammed Ibrahim
+    <!-- Copyright at bottom left - dynamic year -->
+    <div class="copyright">
+        Copyright 2025-<span id="currentYear"></span>
     </div>
 
     <!-- Dark theme toggle button -->
@@ -337,6 +341,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <script>
+        // Set dynamic copyright year
+        const currentYearSpan = document.getElementById('currentYear');
+        if (currentYearSpan) {
+            const currentYear = new Date().getFullYear();
+            currentYearSpan.textContent = currentYear;
+        }
+
         const spinnerOverlay = document.getElementById('spinnerOverlay');
         const iframeContainer = document.getElementById('iframeContainer');
         const contentFrame = document.getElementById('contentFrame');
@@ -366,7 +377,7 @@
             // Clear previous iframe content
             contentFrame.src = '';
             
-            // Show iframe container
+            // Show iframe container (but hidden until loaded via active class)
             iframeContainer.style.display = 'flex';
             
             // Set iframe source to the HTML file
@@ -388,13 +399,13 @@
                 alert(`Could not load ${filePath}. Please make sure the file exists in the same directory.`);
             };
             
-            // Fallback: in case iframe load doesn't trigger within 3 seconds
+            // Fallback: in case iframe load doesn't trigger within 4 seconds
             setTimeout(() => {
                 if (spinnerOverlay.style.display === 'flex') {
                     hideSpinner();
                     iframeContainer.classList.add('active');
                 }
-            }, 3000);
+            }, 4000);
         }
 
         // Function to close the iframe
@@ -412,6 +423,7 @@
         // Initialize event listeners for links
         const data2spssLink = document.getElementById('data2spssLink');
         const medmodrLink = document.getElementById('medmodrLink');
+        const catrendLink = document.getElementById('catrendLink');
 
         if (data2spssLink) {
             data2spssLink.addEventListener('click', (e) => {
@@ -424,6 +436,13 @@
             medmodrLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 openDocumentation('MedModr.html', 'MedModr Documentation');
+            });
+        }
+
+        if (catrendLink) {
+            catrendLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                openDocumentation('CATrendAnalyzer.html', 'CATrend Analyzer Documentation');
             });
         }
 
@@ -460,7 +479,8 @@
         // Log to console
         console.log('Documentation Hub Ready');
         console.log('Click on any numbered link to view documentation');
-        console.log('Make sure Data2SPSS.html and MedModr.html are in the same directory');
+        console.log('Make sure Data2SPSS.html, MedModr.html, and CATrendAnalyzer.html are in the same directory');
+        console.log('Copyright year auto-updates: 2025-' + new Date().getFullYear());
     </script>
 </body>
 </html>
