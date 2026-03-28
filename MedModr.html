@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedModr • Open-Source Mediation & Moderation Software</title>
+    <title>MedModr: Open-Source Mediation & Moderation Software</title>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- Fira Code for monospace -->
@@ -421,7 +421,6 @@
         <div class="sidebar">
             <div class="sidebar-header">
                 <div class="pkg-name">MedModr</div>
-                <div class="pkg-version">v3.0.0 (October 2025)</div>
                 <div class="pkg-version">Open-Source Mediation & Moderation Software</div>
             </div>
             <ul class="sidebar-nav">
@@ -505,7 +504,10 @@
 
             <!-- Installation -->
             <section id="installation" class="topic">
-                <h2>Local Installation</h2>
+                <h2>Steps to Run Locally</h2>
+                           <p><strong>1. Download app.R from GitHub</strong><br>
+                                                   Access the source code at: <a href="https://github.com/mudassiribrahim12/MedModr/blob/main/app.R" target="_blank">https://github.com/mudassiribrahim12/MedModr/blob/main/app.R</a></p>
+                                                            <p><strong>2. Install required R packages</strong></p>
                 <div class="code-block-wrapper">
                     <button class="copy-btn" onclick="copyCode(this)">Copy</button>
                     <pre><code># Install required packages
@@ -514,11 +516,47 @@ install.packages(c(
   "haven", "DT", "colourpicker", "officer", "magick", "flextable",
   "shinythemes", "shinyjs", "shinydashboard"
 ))
-
-# Download app.R from GitHub and run
-library(shiny)
-runApp("path/to/app.R")</code></pre>
+</code></pre>
                 </div>
+                
+                                <p><strong>3. Load required packages</strong></p>
+                <div class="code-block-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code># Load required packages
+library(shiny)
+library(lavaan)
+library(semPlot)
+library(ggplot2)
+library(readr)
+library(readxl)
+library(haven)
+library(DT)
+library(colourpicker)
+library(officer)
+library(magick)
+library(flextable)
+library(shinythemes)
+library(shinyjs)
+library(shinydashboard)</code></pre>
+                </div>
+                
+                
+                <p><strong>4. Run the application in RStudio</strong></p>
+                <div class="code-block-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre><code># Set your working directory to where you saved app.R
+# Example: if app.R is on your Desktop
+setwd("C:/Users/YourName/Desktop/")    # Windows example
+# or
+setwd("/home/yourname/Desktop/")       # Linux/Mac example
+
+# Load the shiny library
+library(shiny)
+
+# Run the application
+runApp("app.R")</code></pre>
+                </div>
+                
             </section>
 
             <!-- Deployment -->
