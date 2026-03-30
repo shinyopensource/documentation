@@ -2,11 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Shiny Open Source | Documentation Hub</title>
   <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=Source+Code+Pro:wght@400;500&family=Lato:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     :root {
       --white: #ffffff;
       --bg: #f8f8f8;
@@ -20,13 +26,11 @@
       --accent-bg: #eaf4fb;
       --warn-bg: #fef9e7;
       --warn-border: #f39c12;
-      --success-bg: #eafaf1;
-      --success-border: #27ae60;
       --code-bg: #f5f5f5;
       --header-h: 52px;
+      --back-btn-size: 44px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+
     body {
       font-family: 'Source Serif 4', Georgia, serif;
       background: var(--white);
@@ -34,19 +38,26 @@
       font-size: 15.5px;
       line-height: 1.85;
       overflow-x: hidden;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
-    
-    /* Header */
+
+    /* Fixed header (original) */
     header {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
       height: var(--header-h);
       background: var(--accent);
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      transition: background-color 0.2s ease;
     }
+
     .logo {
       font-family: 'Lato', sans-serif;
       font-weight: 700;
@@ -54,87 +65,96 @@
       color: #fff;
       text-decoration: none;
     }
+
     .header-right {
       display: flex;
       align-items: center;
       gap: 12px;
     }
+
     .header-nav {
       display: flex;
       align-items: center;
       gap: 4px;
     }
+
     .header-nav a {
       font-family: 'Lato', sans-serif;
       font-size: 0.85rem;
       font-weight: 700;
-      color: rgba(255,255,255,0.85);
+      color: rgba(255, 255, 255, 0.85);
       text-decoration: none;
       padding: 5px 12px;
       border-radius: 4px;
       transition: background .15s, color .15s;
     }
+
     .header-nav a:hover {
-      background: rgba(255,255,255,0.18);
+      background: rgba(255, 255, 255, 0.18);
       color: #fff;
     }
-    
-    /* Search Bar */
+
+    /* Search styles */
     .search-wrapper {
       display: flex;
       align-items: center;
       position: relative;
     }
+
     .search-input {
       font-family: 'Lato', sans-serif;
       font-size: 0.8rem;
       padding: 6px 12px 6px 32px;
       border: none;
       border-radius: 20px;
-      background: rgba(255,255,255,0.2);
+      background: rgba(255, 255, 255, 0.2);
       color: #fff;
       width: 180px;
       transition: all 0.2s ease;
       outline: none;
     }
+
     .search-input::placeholder {
-      color: rgba(255,255,255,0.7);
+      color: rgba(255, 255, 255, 0.7);
       font-size: 0.75rem;
     }
+
     .search-input:focus {
-      background: rgba(255,255,255,0.3);
+      background: rgba(255, 255, 255, 0.3);
       width: 220px;
     }
+
     .search-icon {
       position: absolute;
       left: 10px;
       top: 50%;
       transform: translateY(-50%);
-      color: rgba(255,255,255,0.8);
+      color: rgba(255, 255, 255, 0.8);
       font-size: 0.75rem;
       pointer-events: none;
     }
+
     .search-clear {
       position: absolute;
       right: 8px;
       top: 50%;
       transform: translateY(-50%);
-      color: rgba(255,255,255,0.7);
+      color: rgba(255, 255, 255, 0.7);
       font-size: 0.7rem;
       cursor: pointer;
-      display: none;
       background: none;
       border: none;
       font-family: inherit;
     }
+
     .search-clear:hover {
       color: #fff;
     }
-    .search-input:not(:placeholder-shown) ~ .search-clear {
+
+    .search-input:not(:placeholder-shown)~.search-clear {
       display: block;
     }
-    
-    /* Search Results Dropdown */
+
     .search-results {
       position: absolute;
       top: 100%;
@@ -145,15 +165,12 @@
       border-radius: 8px;
       min-width: 280px;
       max-width: 320px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       z-index: 200;
       display: none;
       overflow: hidden;
     }
-    body.dark .search-results {
-      background: var(--bg);
-      border-color: var(--border);
-    }
+
     .search-result-item {
       padding: 10px 14px;
       cursor: pointer;
@@ -161,29 +178,23 @@
       border-bottom: 1px solid var(--border-light);
       font-family: 'Lato', sans-serif;
     }
-    .search-result-item:last-child {
-      border-bottom: none;
-    }
+
     .search-result-item:hover {
       background: var(--accent-bg);
     }
+
     .search-result-title {
       font-weight: 700;
       font-size: 0.85rem;
       color: var(--text);
       margin-bottom: 2px;
     }
+
     .search-result-desc {
       font-size: 0.7rem;
       color: var(--muted);
     }
-    .search-no-results {
-      padding: 12px 14px;
-      font-size: 0.8rem;
-      color: var(--muted);
-      text-align: center;
-    }
-    
+
     /* Main container */
     .container {
       padding-top: var(--header-h);
@@ -194,28 +205,30 @@
       padding-right: 2rem;
       padding-bottom: 3rem;
     }
-    
-    /* Hero Section */
+
     .hero {
       text-align: center;
       padding: 2.5rem 1rem 1.5rem;
       border-bottom: 2px solid var(--border);
       margin-bottom: 2rem;
+      transition: border-color 0.2s;
     }
+
     .hero h1 {
       font-family: 'Lato', sans-serif;
       font-size: 2rem;
       font-weight: 700;
-      color: var(--text);
       letter-spacing: -0.3px;
       margin-bottom: 0.5rem;
     }
+
     .hero p {
       color: var(--muted);
       font-size: 1rem;
       max-width: 550px;
       margin: 0 auto;
     }
+
     .badges {
       display: flex;
       gap: 8px;
@@ -223,6 +236,7 @@
       margin-top: 1rem;
       flex-wrap: wrap;
     }
+
     .badge {
       font-family: 'Lato', sans-serif;
       font-size: 0.68rem;
@@ -230,19 +244,30 @@
       padding: 3px 10px;
       border-radius: 3px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
-    .badge-blue { background: var(--accent); color: #fff; }
-    .badge-gray { background: #666; color: #fff; }
-    .badge-green { background: #27ae60; color: #fff; }
-    
-    /* Card Grid */
+
+    .badge-blue {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .badge-green {
+      background: #27ae60;
+      color: #fff;
+    }
+
+    .badge-gray {
+      background: #666;
+      color: #fff;
+    }
+
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 1.5rem;
       margin: 1.5rem 0 2rem;
     }
+
     .doc-card {
       background: var(--bg);
       border: 1px solid var(--border);
@@ -250,13 +275,14 @@
       padding: 1.25rem;
       transition: all 0.2s ease;
       cursor: pointer;
-      position: relative;
     }
+
     .doc-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
       border-color: var(--accent);
     }
+
     .card-icon {
       width: 44px;
       height: 44px;
@@ -266,24 +292,28 @@
       align-items: center;
       justify-content: center;
       margin-bottom: 0.9rem;
+      transition: background 0.2s;
     }
+
     .card-icon i {
       font-size: 22px;
       color: var(--accent);
     }
+
     .doc-card h3 {
       font-family: 'Lato', sans-serif;
       font-size: 1.15rem;
       font-weight: 700;
-      color: var(--text);
       margin-bottom: 0.4rem;
     }
+
     .doc-card p {
       color: var(--muted);
       font-size: 0.8rem;
       line-height: 1.5;
       margin-bottom: 0.9rem;
     }
+
     .card-meta {
       display: flex;
       align-items: center;
@@ -293,15 +323,7 @@
       font-weight: 700;
       color: var(--accent);
     }
-    .card-meta i {
-      font-size: 0.65rem;
-      transition: transform 0.2s ease;
-    }
-    .doc-card:hover .card-meta i {
-      transform: translateX(3px);
-    }
-    
-    /* Info Section */
+
     .info-section {
       background: var(--accent-bg);
       border: 1px solid #bee3f8;
@@ -312,28 +334,9 @@
       display: flex;
       align-items: flex-start;
       gap: 0.75rem;
+      transition: background 0.2s, border-color 0.2s;
     }
-    .info-icon {
-      font-size: 1.2rem;
-      color: var(--accent);
-      flex-shrink: 0;
-    }
-    .info-content h4 {
-      font-family: 'Lato', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--accent);
-      margin-bottom: 0.25rem;
-    }
-    .info-content p {
-      color: var(--muted);
-      font-size: 0.85rem;
-      margin: 0;
-    }
-    
-    /* Footer */
+
     footer {
       background: var(--bg);
       border-top: 1px solid var(--border);
@@ -342,19 +345,43 @@
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 10px;
       font-family: 'Lato', sans-serif;
       font-size: 0.75rem;
       color: var(--light);
-      margin-top: 1.5rem;
+      transition: background 0.2s, border-color 0.2s;
     }
+
     footer a {
       color: var(--accent);
       text-decoration: none;
     }
-    footer a:hover { text-decoration: underline; }
-    
-    /* Iframe Overlay - NO HEADER, just fullscreen iframe with ESC to close */
+
+    /* Theme Toggle Button (footer) */
+    .theme-toggle-btn {
+      background: var(--accent);
+      border: none;
+      color: white;
+      font-size: 0.8rem;
+      font-family: 'Lato', sans-serif;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 30px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .theme-toggle-btn i {
+      font-size: 0.75rem;
+    }
+    .theme-toggle-btn:hover {
+      opacity: 0.9;
+      transform: scale(0.97);
+    }
+
+    /* IFrame Overlay — fullscreen with back button matching header color */
     .iframe-overlay {
       position: fixed;
       top: 0;
@@ -364,109 +391,162 @@
       background: var(--white);
       z-index: 1000;
       display: none;
+      overflow: hidden;
     }
+
     .fullscreen-iframe {
       width: 100%;
       height: 100%;
       border: none;
       background: var(--white);
+      display: block;
     }
-    
-    /* Loading Bar */
+
+    /* BACK BUTTON — matches header color (accent) exactly */
+    .back-home-btn {
+      position: fixed;
+      bottom: 28px;
+      left: 28px;
+      z-index: 1010;
+      background: var(--accent);
+      border-radius: 40px;
+      padding: 0;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      font-family: 'Lato', sans-serif;
+      font-weight: 500;
+      text-decoration: none;
+      color: white;
+    }
+
+    .back-home-btn i {
+      font-size: 1.35rem;
+      margin-right: 0;
+    }
+
+    .back-home-btn span {
+      display: none;
+    }
+
+    .back-home-btn:hover {
+      background: var(--accent-dark);
+      width: auto;
+      padding: 0 18px 0 14px;
+      gap: 8px;
+      transform: scale(1.02);
+    }
+
+    .back-home-btn:hover i {
+      margin-right: 6px;
+    }
+
+    .back-home-btn:hover span {
+      display: inline-block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+
+    /* Loading bar */
     .loading-bar-container {
       position: fixed;
       top: var(--header-h);
       left: 0;
       width: 100%;
       height: 3px;
-      background: rgba(41,128,185,0.15);
+      background: rgba(41, 128, 185, 0.15);
       z-index: 1001;
       visibility: hidden;
       opacity: 0;
       transition: visibility 0s, opacity 0.2s ease;
     }
+
     .loading-bar-container.active {
       visibility: visible;
       opacity: 1;
     }
+
     .loading-bar {
       width: 0%;
       height: 100%;
       background: var(--accent);
       transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
-    /* Dark Theme */
+
+    /* DARK THEME VARIABLES */
     body.dark {
-      --white: #1a1f2a;
-      --bg: #1e2430;
+      --white: #121826;
+      --bg: #1a1f2c;
       --border: #2d3748;
-      --border-light: #2d3748;
-      --text: #e8edf2;
-      --muted: #b0c4de;
-      --light: #94a3b8;
+      --border-light: #2a2f3c;
+      --text: #eef2ff;
+      --muted: #b9c7d9;
+      --light: #8d9bb0;
       --accent: #5a9fd4;
-      --accent-dark: #2c6a9e;
-      --accent-bg: #1e2a3a;
-      --code-bg: #252b36;
-      --warn-bg: #2d2a1f;
-      --success-bg: #1e3a2a;
+      --accent-dark: #3f7fb0;
+      --accent-bg: #20273a;
+      --warn-bg: #2e2a1f;
+      --warn-border: #e6b450;
     }
-    
+
     body.dark .doc-card {
       background: var(--bg);
+      border-color: var(--border);
     }
     body.dark .card-icon {
-      background: var(--accent-bg);
+      background: #2a3146;
     }
     body.dark .info-section {
       background: var(--accent-bg);
+      border-color: #2f405c;
+    }
+    body.dark .search-results {
+      background: var(--bg);
+      border-color: var(--border);
     }
     body.dark .iframe-overlay {
       background: var(--white);
     }
-    
-    /* Responsive */
+    body.dark .back-home-btn {
+      background: var(--accent);
+      color: white;
+    }
+    body.dark .back-home-btn:hover {
+      background: var(--accent-dark);
+    }
+
     @media (max-width: 900px) {
       .cards-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 1.25rem;
-      }
-      .search-input {
-        width: 140px;
-      }
-      .search-input:focus {
-        width: 160px;
       }
     }
+
     @media (max-width: 640px) {
       .cards-grid {
         grid-template-columns: 1fr;
       }
-      .container {
-        padding-left: 1.25rem;
-        padding-right: 1.25rem;
+      .back-home-btn {
+        bottom: 20px;
+        left: 20px;
+        width: 40px;
+        height: 40px;
       }
-      .hero h1 {
-        font-size: 1.6rem;
+      .back-home-btn:hover {
+        width: auto;
+        padding: 0 14px 0 12px;
       }
       footer {
         flex-direction: column;
-        text-align: center;
-        padding: 1rem;
-      }
-      .search-input {
-        width: 120px;
-        font-size: 0.7rem;
-        padding: 5px 10px 5px 28px;
-      }
-      .search-input:focus {
-        width: 140px;
-      }
-      .search-results {
-        right: 0;
-        left: auto;
-        min-width: 240px;
+        align-items: center;
+        gap: 12px;
       }
     }
   </style>
@@ -489,7 +569,6 @@
 </header>
 
 <div class="container">
-  <!-- Hero Section -->
   <div class="hero">
     <h1>Shiny Open Source<br>Documentation Hub</h1>
     <p>Comprehensive documentation for statistical analysis tools built with R-Shiny</p>
@@ -500,7 +579,6 @@
     </div>
   </div>
 
-  <!-- Cards Grid -->
   <div class="cards-grid" id="cardsGrid">
     <div class="doc-card" data-doc="Data2SPSS.html" data-title="Data2SPSS Documentation" data-name="Data2SPSS" data-keywords="spss conversion data convert statistics">
       <div class="card-icon"><i class="fas fa-exchange-alt"></i></div>
@@ -543,211 +621,254 @@
 
 <footer>
   <div>© 2025-<span id="currentYear"></span> Mudasir Mohammed Ibrahim · MIT License</div>
-  <div>
+  <div style="display: flex; align-items: center; gap: 16px;">
     <a href="https://github.com/mudassiribrahim30" target="_blank">GitHub</a> ·
     <a href="https://mudasiribrahim.vercel.app/" target="_blank">Portfolio</a> ·
     <a href="mailto:mudassiribrahim30@gmail.com">Contact</a>
+    <button id="darkModeToggle" class="theme-toggle-btn" aria-label="Toggle dark mode">
+      <i class="fas fa-moon"></i> <span>Dark</span>
+    </button>
   </div>
 </footer>
 
-<!-- Iframe Overlay - NO HEADER, just fullscreen iframe -->
+<!-- Iframe Overlay: full-screen doc viewer, back button matching header -->
 <div id="iframeContainer" class="iframe-overlay">
   <iframe id="contentFrame" class="fullscreen-iframe" src="" title="Documentation Viewer"></iframe>
+  <div id="floatingBackBtn" class="back-home-btn" aria-label="Go back to home">
+    <i class="fas fa-arrow-left"></i>
+    <span>Home</span>
+  </div>
 </div>
 
-<!-- Loading Bar -->
 <div id="loadingBarContainer" class="loading-bar-container">
   <div id="loadingBar" class="loading-bar"></div>
 </div>
 
 <script>
-  // Set copyright year
-  document.getElementById('currentYear').textContent = new Date().getFullYear();
+  (function() {
+    // Year
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-  // DOM elements
-  const loadingContainer = document.getElementById('loadingBarContainer');
-  const loadingBar = document.getElementById('loadingBar');
-  const iframeContainer = document.getElementById('iframeContainer');
-  const contentFrame = document.getElementById('contentFrame');
-  const disclaimerBox = document.getElementById('disclaimerBox');
-  
-  // Search elements
-  const searchInput = document.getElementById('searchInput');
-  const searchClear = document.getElementById('searchClear');
-  const searchResults = document.getElementById('searchResults');
-  const cards = document.querySelectorAll('.doc-card');
+    // DOM elements
+    const loadingContainer = document.getElementById('loadingBarContainer');
+    const loadingBar = document.getElementById('loadingBar');
+    const iframeContainer = document.getElementById('iframeContainer');
+    const contentFrame = document.getElementById('contentFrame');
+    const disclaimerBox = document.getElementById('disclaimerBox');
+    const backButton = document.getElementById('floatingBackBtn');
+    const themeToggle = document.getElementById('darkModeToggle');
 
-  // Card data for search
-  const docsData = Array.from(cards).map(card => ({
-    element: card,
-    name: card.getAttribute('data-name'),
-    title: card.getAttribute('data-title'),
-    description: card.querySelector('p').innerText,
-    keywords: card.getAttribute('data-keywords'),
-    docPath: card.getAttribute('data-doc')
-  }));
-
-  // Loading animation
-  function animateLoading(duration = 4000) {
-    return new Promise((resolve) => {
-      loadingContainer.classList.add('active');
-      loadingBar.style.width = '0%';
-      const start = performance.now();
-      
-      function update(now) {
-        const elapsed = now - start;
-        const progress = Math.min(1, elapsed / duration);
-        const eased = 1 - Math.pow(1 - progress, 2);
-        loadingBar.style.width = (eased * 100) + '%';
-        if (progress < 1) {
-          requestAnimationFrame(update);
-        } else {
-          setTimeout(() => {
-            loadingContainer.classList.remove('active');
-            loadingBar.style.width = '0%';
-            resolve();
-          }, 200);
+    // Theme handling
+    function setTheme(theme) {
+      if (theme === 'dark') {
+        document.body.classList.add('dark');
+        localStorage.setItem('shiny-docs-theme', 'dark');
+        if (themeToggle) {
+          themeToggle.innerHTML = '<i class="fas fa-sun"></i> <span>Light</span>';
+        }
+      } else {
+        document.body.classList.remove('dark');
+        localStorage.setItem('shiny-docs-theme', 'light');
+        if (themeToggle) {
+          themeToggle.innerHTML = '<i class="fas fa-moon"></i> <span>Dark</span>';
         }
       }
-      requestAnimationFrame(update);
-    });
-  }
-
-  // Open documentation - NO HEADER, just iframe
-  async function openDocumentation(filePath) {
-    await animateLoading(4000);
-    iframeContainer.style.display = 'block';
-    contentFrame.src = filePath;
-    
-    contentFrame.onerror = () => {
-      alert(`Could not load "${filePath}". Please ensure the file exists in the same directory.`);
-      closeDocumentation();
-    };
-  }
-
-  function closeDocumentation() {
-    contentFrame.src = '';
-    iframeContainer.style.display = 'none';
-  }
-
-  // Search functionality
-  function performSearch() {
-    const query = searchInput.value.toLowerCase().trim();
-    
-    if (query === '') {
-      searchResults.style.display = 'none';
-      cards.forEach(card => card.style.display = 'block');
-      return;
     }
-    
-    const matches = docsData.filter(doc => {
-      const searchableText = `${doc.name} ${doc.description} ${doc.keywords}`.toLowerCase();
-      return searchableText.includes(query);
-    });
-    
-    cards.forEach(card => {
-      const cardName = card.getAttribute('data-name').toLowerCase();
-      const cardDesc = card.querySelector('p').innerText.toLowerCase();
-      const cardKeywords = card.getAttribute('data-keywords').toLowerCase();
-      const matchesCard = cardName.includes(query) || cardDesc.includes(query) || cardKeywords.includes(query);
-      card.style.display = matchesCard ? 'block' : 'none';
-    });
-    
-    if (matches.length === 0) {
-      searchResults.innerHTML = '<div class="search-no-results">No matching documentation found</div>';
+
+    function toggleTheme() {
+      if (document.body.classList.contains('dark')) {
+        setTheme('light');
+      } else {
+        setTheme('dark');
+      }
+    }
+
+    const savedTheme = localStorage.getItem('shiny-docs-theme');
+    if (savedTheme === 'dark') {
+      setTheme('dark');
     } else {
-      searchResults.innerHTML = matches.map(match => `
-        <div class="search-result-item" data-path="${match.docPath}">
-          <div class="search-result-title">${match.name}</div>
-          <div class="search-result-desc">${match.description.substring(0, 80)}${match.description.length > 80 ? '...' : ''}</div>
-        </div>
-      `).join('');
-      
-      document.querySelectorAll('.search-result-item').forEach(item => {
-        item.addEventListener('click', () => {
-          const path = item.getAttribute('data-path');
-          openDocumentation(path);
-          searchResults.style.display = 'none';
-          searchInput.value = '';
-          cards.forEach(card => card.style.display = 'block');
-        });
+      setTheme('light');
+    }
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', toggleTheme);
+    }
+
+    // Search elements and cards data
+    const searchInput = document.getElementById('searchInput');
+    const searchClear = document.getElementById('searchClear');
+    const searchResults = document.getElementById('searchResults');
+    const cards = document.querySelectorAll('.doc-card');
+
+    const docsData = Array.from(cards).map(card => ({
+      element: card,
+      name: card.getAttribute('data-name'),
+      title: card.getAttribute('data-title'),
+      description: card.querySelector('p').innerText,
+      keywords: card.getAttribute('data-keywords'),
+      docPath: card.getAttribute('data-doc')
+    }));
+
+    // Loading simulation
+    function animateLoading(duration = 4000) {
+      return new Promise((resolve) => {
+        loadingContainer.classList.add('active');
+        loadingBar.style.width = '0%';
+        const start = performance.now();
+        function update(now) {
+          const elapsed = now - start;
+          const progress = Math.min(1, elapsed / duration);
+          const eased = 1 - Math.pow(1 - progress, 2);
+          loadingBar.style.width = (eased * 100) + '%';
+          if (progress < 1) {
+            requestAnimationFrame(update);
+          } else {
+            setTimeout(() => {
+              loadingContainer.classList.remove('active');
+              loadingBar.style.width = '0%';
+              resolve();
+            }, 200);
+          }
+        }
+        requestAnimationFrame(update);
       });
     }
-    
-    searchResults.style.display = 'block';
-  }
 
-  function clearSearch() {
-    searchInput.value = '';
-    searchResults.style.display = 'none';
-    cards.forEach(card => card.style.display = 'block');
-    searchInput.focus();
-  }
-
-  const searchWrapper = document.querySelector('.search-wrapper');
-  document.addEventListener('click', (e) => {
-    if (!searchWrapper.contains(e.target)) {
-      searchResults.style.display = 'none';
+    async function openDocumentation(filePath) {
+      await animateLoading(4000);
+      iframeContainer.style.display = 'block';
+      contentFrame.src = filePath;
+      contentFrame.onerror = () => {
+        alert(`Could not load documentation: "${filePath}". Please ensure the file exists.`);
+        closeDocumentation();
+      };
     }
-  });
-  
-  searchInput.addEventListener('input', performSearch);
-  searchClear.addEventListener('click', clearSearch);
-  searchInput.addEventListener('focus', () => {
-    if (searchInput.value.trim() !== '') performSearch();
-  });
 
-  // Card click handlers - open documentation with NO header
-  document.querySelectorAll('.doc-card').forEach(card => {
-    card.addEventListener('click', (e) => {
-      const filePath = card.getAttribute('data-doc');
-      if (filePath) openDocumentation(filePath);
+    function closeDocumentation() {
+      contentFrame.src = '';
+      iframeContainer.style.display = 'none';
+    }
+
+    if (backButton) {
+      backButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeDocumentation();
+      });
+    }
+
+    // Card click handlers
+    document.querySelectorAll('.doc-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        const filePath = card.getAttribute('data-doc');
+        if (filePath) openDocumentation(filePath);
+      });
     });
-  });
 
-  // Close iframe with ESC key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && iframeContainer.style.display === 'block') {
-      closeDocumentation();
+    // Search logic
+    function performSearch() {
+      const query = searchInput.value.toLowerCase().trim();
+      if (query === '') {
+        searchResults.style.display = 'none';
+        cards.forEach(card => card.style.display = 'block');
+        return;
+      }
+      cards.forEach(card => {
+        const cardName = card.getAttribute('data-name').toLowerCase();
+        const cardDesc = card.querySelector('p').innerText.toLowerCase();
+        const cardKeywords = card.getAttribute('data-keywords').toLowerCase();
+        const matchesCard = cardName.includes(query) || cardDesc.includes(query) || cardKeywords.includes(query);
+        card.style.display = matchesCard ? 'block' : 'none';
+      });
+      const matches = docsData.filter(doc => {
+        const searchableText = `${doc.name} ${doc.description} ${doc.keywords}`.toLowerCase();
+        return searchableText.includes(query);
+      });
+      if (matches.length === 0) {
+        searchResults.innerHTML = '<div class="search-no-results">No matching documentation found</div>';
+      } else {
+        searchResults.innerHTML = matches.map(match => `
+          <div class="search-result-item" data-path="${escapeHtml(match.docPath)}">
+            <div class="search-result-title">${escapeHtml(match.name)}</div>
+            <div class="search-result-desc">${escapeHtml(match.description.substring(0, 80))}${match.description.length > 80 ? '...' : ''}</div>
+          </div>
+        `).join('');
+        document.querySelectorAll('.search-result-item').forEach(item => {
+          item.addEventListener('click', () => {
+            const path = item.getAttribute('data-path');
+            openDocumentation(path);
+            searchResults.style.display = 'none';
+            searchInput.value = '';
+            cards.forEach(card => card.style.display = 'block');
+          });
+        });
+      }
+      searchResults.style.display = 'block';
     }
-  });
 
-  // Dark mode preference
-  const savedTheme = localStorage.getItem('shiny-docs-theme');
-  if (savedTheme === 'dark') document.body.classList.add('dark');
+    function clearSearch() {
+      searchInput.value = '';
+      searchResults.style.display = 'none';
+      cards.forEach(card => card.style.display = 'block');
+      searchInput.focus();
+    }
 
-  // Disclaimer auto-hide
-  const disclaimerHidden = sessionStorage.getItem('disclaimerAutoHidden');
-  if (disclaimerHidden === 'true') {
-    disclaimerBox.style.display = 'none';
-  } else {
-    setTimeout(() => {
-      if (disclaimerBox) {
-        disclaimerBox.style.transition = 'opacity 0.4s ease';
-        disclaimerBox.style.opacity = '0';
-        setTimeout(() => {
-          if (disclaimerBox) {
+    function escapeHtml(str) {
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      });
+    }
+
+    const searchWrapper = document.querySelector('.search-wrapper');
+    document.addEventListener('click', (e) => {
+      if (!searchWrapper.contains(e.target)) searchResults.style.display = 'none';
+    });
+    searchInput.addEventListener('input', performSearch);
+    searchClear.addEventListener('click', clearSearch);
+    searchInput.addEventListener('focus', () => {
+      if (searchInput.value.trim() !== '') performSearch();
+    });
+
+    // ESC key to close documentation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && iframeContainer.style.display === 'block') {
+        closeDocumentation();
+      }
+    });
+
+    // Disclaimer auto-hide
+    const disclaimerHidden = sessionStorage.getItem('disclaimerAutoHidden');
+    if (disclaimerHidden === 'true') {
+      if (disclaimerBox) disclaimerBox.style.display = 'none';
+    } else {
+      setTimeout(() => {
+        if (disclaimerBox) {
+          disclaimerBox.style.transition = 'opacity 0.4s ease';
+          disclaimerBox.style.opacity = '0';
+          setTimeout(() => {
+            if (disclaimerBox) {
+              disclaimerBox.style.display = 'none';
+              sessionStorage.setItem('disclaimerAutoHidden', 'true');
+            }
+          }, 400);
+        }
+      }, 10000);
+    }
+
+    if (disclaimerBox) {
+      disclaimerBox.addEventListener('click', () => {
+        if (disclaimerBox.style.display !== 'none') {
+          disclaimerBox.style.opacity = '0';
+          setTimeout(() => {
             disclaimerBox.style.display = 'none';
             sessionStorage.setItem('disclaimerAutoHidden', 'true');
-          }
-        }, 400);
-      }
-    }, 10000);
-  }
-  
-  if (disclaimerBox) {
-    disclaimerBox.addEventListener('click', () => {
-      if (disclaimerBox.style.display !== 'none') {
-        disclaimerBox.style.opacity = '0';
-        setTimeout(() => {
-          disclaimerBox.style.display = 'none';
-          sessionStorage.setItem('disclaimerAutoHidden', 'true');
-        }, 300);
-      }
-    });
-  }
-
-  console.log('Documentation Hub — Clean header, fullscreen iframe with no header, ESC to close');
+          }, 300);
+        }
+      });
+    }
+  })();
 </script>
 </body>
 </html>
