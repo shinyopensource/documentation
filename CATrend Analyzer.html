@@ -1,1112 +1,706 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CATrend Analyzer: Cochran-Armitage Trend Test Software</title>
-    <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Fira Code for monospace -->
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CATrend Analyzer: Cochran-Armitage Trend Test Software</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=Source+Code+Pro:wght@400;500&family=Lato:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --white: #ffffff;
+      --bg: #f8f8f8;
+      --border: #e0e0e0;
+      --border-light: #eeeeee;
+      --text: #212121;
+      --muted: #555555;
+      --light: #888888;
+      --accent: #2980b9;
+      --accent-dark: #1a5f8a;
+      --accent-bg: #eaf4fb;
+      --warn-bg: #fef9e7;
+      --warn-border: #f39c12;
+      --success-bg: #eafaf1;
+      --success-border: #27ae60;
+      --code-bg: #f5f5f5;
+      --sidebar-w: 240px;
+      --header-h: 52px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Source Serif 4', Georgia, serif;
+      background: var(--white);
+      color: var(--text);
+      font-size: 15.5px;
+      line-height: 1.85;
+    }
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--header-h);
+      background: var(--accent);
+      display: flex; align-items: center;
+      padding: 0 20px; gap: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .logo {
+      font-family: 'Lato', sans-serif;
+      font-weight: 700; font-size: 1.1rem;
+      color: #fff; text-decoration: none; white-space: nowrap;
+    }
+    .header-nav { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+    .header-nav a {
+      font-family: 'Lato', sans-serif;
+      font-size: 0.85rem; font-weight: 700;
+      color: rgba(255,255,255,0.85); text-decoration: none;
+      padding: 5px 12px; border-radius: 4px;
+      transition: background .15s, color .15s;
+    }
+    .header-nav a:hover { background: rgba(255,255,255,0.18); color: #fff; }
+    .header-nav .btn-app {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.35); color: #fff;
+    }
+    .header-nav .btn-app:hover { background: rgba(255,255,255,0.32); }
+    .shell { display: flex; padding-top: var(--header-h); min-height: 100vh; }
+    aside {
+      width: var(--sidebar-w); flex-shrink: 0;
+      position: sticky; top: var(--header-h);
+      height: calc(100vh - var(--header-h));
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      background: var(--bg); padding: 20px 0 40px;
+    }
+    aside::-webkit-scrollbar { width: 3px; }
+    aside::-webkit-scrollbar-thumb { background: var(--border); }
+    .toc-title {
+      font-family: 'Lato', sans-serif;
+      font-size: 0.72rem; font-weight: 700;
+      color: var(--light); text-transform: uppercase; letter-spacing: 1.2px;
+      padding: 0 18px 10px;
+      border-bottom: 1px solid var(--border-light); margin-bottom: 10px;
+    }
+    .toc-group { margin-bottom: 6px; }
+    .toc-group-label {
+      font-family: 'Lato', sans-serif;
+      font-size: 0.7rem; font-weight: 700;
+      color: var(--light); text-transform: uppercase; letter-spacing: 1px;
+      padding: 10px 18px 4px;
+    }
+    aside a {
+      display: block; font-family: 'Lato', sans-serif;
+      font-size: 0.84rem; color: var(--muted); text-decoration: none;
+      padding: 4px 18px 4px 22px;
+      border-left: 3px solid transparent;
+      transition: all .12s; line-height: 1.5;
+    }
+    aside a:hover { color: var(--accent); background: rgba(41,128,185,0.06); }
+    aside a.active { color: var(--accent); border-left-color: var(--accent); background: rgba(41,128,185,0.07); font-weight: 700; }
+    main { flex: 1; min-width: 0; padding: 40px 60px 80px 52px; max-width: 860px; }
+    section { margin-bottom: 52px; }
+    .page-title { border-bottom: 2px solid var(--border); padding-bottom: 18px; margin-bottom: 32px; }
+    .page-title h1 {
+      font-family: 'Lato', sans-serif; font-size: 2.2rem; font-weight: 700;
+      color: var(--text); letter-spacing: -0.3px; margin-bottom: 8px;
+    }
+    .page-title p { color: var(--muted); font-size: 1rem; font-style: italic; margin: 0; }
+    .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .badge {
+      font-family: 'Lato', sans-serif; font-size: 0.72rem; font-weight: 700;
+      padding: 3px 10px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .badge-blue { background: var(--accent); color: #fff; }
+    .badge-gray { background: #666; color: #fff; }
+    .badge-green { background: #27ae60; color: #fff; }
+    .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .btn {
+      font-family: 'Lato', sans-serif; font-size: 0.85rem; font-weight: 700;
+      padding: 8px 18px; border-radius: 4px; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: all .15s; border: 1px solid transparent;
+    }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary:hover { background: var(--accent-dark); }
+    .btn-outline { background: #fff; color: var(--accent); border-color: var(--accent); }
+    .btn-outline:hover { background: var(--accent-bg); }
+    h2 {
+      font-family: 'Lato', sans-serif; font-size: 1.5rem; font-weight: 700;
+      color: var(--text); border-bottom: 1px solid var(--border);
+      padding-bottom: 10px; margin-bottom: 16px;
+    }
+    h3 { font-family: 'Lato', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); margin: 24px 0 10px; }
+    p { color: var(--muted); margin-bottom: 14px; }
+    a { color: var(--accent); }
+    .callout {
+      border: 1px solid #bee3f8; border-left: 4px solid var(--accent);
+      background: var(--accent-bg); border-radius: 4px;
+      padding: 12px 16px; font-size: 0.9rem; color: var(--text); margin: 16px 0;
+    }
+    .callout.warn { background: var(--warn-bg); border-color: #f9d78e; border-left-color: var(--warn-border); }
+    .callout.success { background: var(--success-bg); border-color: #a9dfbf; border-left-color: var(--success-border); }
+    .callout p { margin: 0; color: inherit; }
+    .callout-title {
+      font-family: 'Lato', sans-serif; font-weight: 700; font-size: 0.82rem;
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; color: var(--accent);
+    }
+    .callout.warn .callout-title { color: #b7770d; }
+    .callout.success .callout-title { color: #1e8449; }
+    .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+    .problem-card {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+      padding: 14px 16px; font-size: 0.88rem; color: var(--muted); display: flex; gap: 10px;
+    }
+    .problem-card .icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .problem-card strong { font-family: 'Lato', sans-serif; display: block; color: var(--text); margin-bottom: 2px; }
+    .format-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .format-box { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 16px; }
+    .format-box h4 {
+      font-family: 'Lato', sans-serif; font-size: 0.8rem; font-weight: 700;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px;
+    }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag {
+      font-family: 'Source Code Pro', monospace; font-size: 0.78rem;
+      background: #fff; border: 1px solid var(--border); color: var(--text);
+      padding: 2px 8px; border-radius: 3px;
+    }
+    .steps { counter-reset: step; margin-top: 16px; }
+    .step { display: flex; gap: 14px; margin-bottom: 18px; }
+    .step-num {
+      font-family: 'Lato', sans-serif; font-weight: 700; font-size: 0.78rem;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 3px;
+    }
+    .step-body strong { font-family: 'Lato', sans-serif; font-weight: 700; font-size: 0.92rem; color: var(--text); display: block; margin-bottom: 4px; }
+    .step-body p { margin: 0; font-size: 0.9rem; }
 
-        :root {
-            --r-blue: #2081C3;
-            --r-dark-blue: #0C4C8A;
-            --r-light-bg: #F7F9FB;
-            --r-border: #E5E9ED;
-            --r-text: #1A2C3E;
-            --r-text-light: #4A627A;
-            --r-code-bg: #F4F6F9;
-            --r-sidebar-bg: #FFFFFF;
-            --r-nav-active: #2081C3;
-            --r-hr: #DCE3E9;
-            --r-warning-bg: #FFF8E7;
-            --r-warning-border: #FFE0A3;
-            --r-success-bg: #E6F4EA;
-            --r-link: #2081C3;
-            --copy-btn-bg: #e2e8f0;
-            --copy-btn-hover: #cbd5e0;
-            --step-bg: #F0F7FF;
-            --step-border: #2081C3;
-            --youtube-card-bg: #FFFFFF;
-            --main-bg: #FFFFFF;
-            --table-header-bg: #eef2f7;
-        }
-
-        body.dark {
-            --r-blue: #5A9FD4;
-            --r-dark-blue: #2C6A9E;
-            --r-light-bg: #1A1F2A;
-            --r-border: #2D3748;
-            --r-text: #E8EDF2;
-            --r-text-light: #B0C4DE;
-            --r-code-bg: #252B36;
-            --r-sidebar-bg: #1E2430;
-            --r-hr: #2D3748;
-            --r-warning-bg: #2D2A1F;
-            --r-warning-border: #8B6B2C;
-            --r-success-bg: #1E3A2A;
-            --r-link: #7AB3D9;
-            --copy-btn-bg: #2D3748;
-            --copy-btn-hover: #4A5568;
-            --step-bg: #1E2A3A;
-            --step-border: #5A9FD4;
-            --youtube-card-bg: #1E2430;
-            --main-bg: #1A1F2A;
-            --table-header-bg: #2D3748;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--r-light-bg);
-            color: var(--r-text);
-            line-height: 1.5;
-            font-size: 16px;
-            transition: background 0.2s, color 0.2s;
-        }
-
-        .sidebar,
-        .main-content,
-        .topic,
-        .feature-card,
-        .step,
-        .note-box,
-        .success-box,
-        .info-box,
-        .code-block-wrapper pre,
-        .package-item,
-        .formula,
-        .youtube-card,
-        .data-table {
-            background-color: var(--main-bg);
-            transition: background-color 0.2s;
-        }
-
-        .code-block-wrapper pre {
-            background-color: var(--r-code-bg);
-        }
-        
-        .sidebar {
-            background-color: var(--r-sidebar-bg);
-        }
-        
-        .feature-card,
-        .step {
-            background-color: var(--r-code-bg);
-        }
-        
-        .note-box {
-            background-color: var(--r-warning-bg);
-        }
-        
-        .success-box {
-            background-color: var(--r-success-bg);
-        }
-        
-        .info-box {
-            background-color: var(--step-bg);
-        }
-        
-        .docs-container {
-            display: flex;
-            max-width: 1400px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .sidebar {
-            width: 320px;
-            border-right: 1px solid var(--r-border);
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
-            padding: 2rem 1.2rem;
-            flex-shrink: 0;
-        }
-
-        .sidebar-header {
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--r-border);
-        }
-
-        .pkg-name {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--r-blue);
-            letter-spacing: -0.3px;
-        }
-
-        .pkg-version {
-            font-size: 0.8rem;
-            color: var(--r-text-light);
-            margin-top: 0.25rem;
-        }
-
-        .sidebar-nav {
-            list-style: none;
-        }
-
-        .sidebar-nav li {
-            margin-bottom: 0.3rem;
-        }
-
-        .sidebar-nav a {
-            text-decoration: none;
-            color: var(--r-text);
-            font-weight: 500;
-            display: block;
-            padding: 0.4rem 0.6rem;
-            border-radius: 8px;
-            transition: text-decoration 0.2s;
-            font-size: 0.9rem;
-        }
-
-        .sidebar-nav a:hover {
-            text-decoration: underline;
-            text-decoration-thickness: 2px;
-            text-underline-offset: 4px;
-            background: transparent;
-        }
-
-        .sidebar-nav .active {
-            color: var(--r-blue);
-            background: rgba(32, 129, 195, 0.08);
-            border-left: 3px solid var(--r-blue);
-            font-weight: 600;
-        }
-
-        .sidebar-nav .active:hover {
-            text-decoration: none;
-            background: rgba(32, 129, 195, 0.08);
-        }
-
-        .nav-section {
-            margin-top: 1.5rem;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-            color: var(--r-text-light);
-            margin-bottom: 0.6rem;
-            padding-left: 0.6rem;
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 2rem 2.5rem;
-            max-width: calc(100% - 320px);
-            overflow-x: auto;
-        }
-
-        .topic {
-            margin-bottom: 3rem;
-            scroll-margin-top: 1rem;
-        }
-
-        .topic h1 {
-            font-size: 2.2rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            border-bottom: 2px solid var(--r-border);
-            padding-bottom: 0.5rem;
-            color: var(--r-text);
-        }
-
-        .topic h2 {
-            font-size: 1.6rem;
-            font-weight: 600;
-            margin: 1.8rem 0 1rem 0;
-            color: var(--r-blue);
-        }
-
-        .topic h3 {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin: 1.5rem 0 0.8rem 0;
-            color: var(--r-text);
-        }
-
-        .topic p {
-            margin-bottom: 1rem;
-            color: var(--r-text);
-            font-size: 1rem;
-            line-height: 1.5;
-        }
-
-        .topic ul, .topic li {
-            color: var(--r-text);
-        }
-
-        .code-block-wrapper {
-            position: relative;
-            margin: 1rem 0;
-        }
-
-        .code-block-wrapper pre {
-            padding: 1rem;
-            padding-right: 3rem;
-            border-radius: 12px;
-            overflow-x: auto;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.85rem;
-            border: 1px solid var(--r-border);
-            margin: 0;
-        }
-
-        .copy-btn {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            background: var(--copy-btn-bg);
-            border: 1px solid var(--r-border);
-            border-radius: 6px;
-            padding: 0.3rem 0.6rem;
-            font-size: 0.7rem;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-            color: var(--r-text);
-            transition: all 0.2s;
-            z-index: 10;
-        }
-
-        .copy-btn:hover {
-            background: var(--copy-btn-hover);
-        }
-
-        .copy-btn.copied {
-            background: #28a745;
-            color: white;
-            border-color: #28a745;
-        }
-
-        code {
-            font-family: 'Fira Code', monospace;
-            background: var(--r-code-bg);
-            padding: 0.2rem 0.4rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            color: var(--r-text);
-        }
-
-        .note-box {
-            border-left: 4px solid var(--r-warning-border);
-            padding: 1rem 1.2rem;
-            border-radius: 10px;
-            margin: 1.2rem 0;
-            border: 1px solid var(--r-border);
-            border-left-width: 4px;
-        }
-        
-        .success-box {
-            border-left: 4px solid #28a745;
-            padding: 1rem 1.2rem;
-            border-radius: 10px;
-            margin: 1.2rem 0;
-            border: 1px solid var(--r-border);
-            border-left-width: 4px;
-        }
-        
-        .info-box {
-            border-left: 4px solid var(--step-border);
-            padding: 1rem 1.2rem;
-            border-radius: 10px;
-            margin: 1.2rem 0;
-            border: 1px solid var(--r-border);
-            border-left-width: 4px;
-        }
-
-        .step-container {
-            margin: 1.5rem 0;
-        }
-
-        .step {
-            border: 1px solid var(--r-border);
-            border-radius: 12px;
-            padding: 1.2rem;
-            margin-bottom: 1rem;
-            position: relative;
-            transition: none;
-        }
-
-        .step:hover {
-            box-shadow: none;
-            transform: none;
-        }
-
-        .step-number {
-            display: inline-block;
-            background: var(--r-blue);
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 32px;
-            font-weight: 700;
-            font-size: 1rem;
-            margin-right: 12px;
-        }
-
-        .step-title {
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            color: var(--r-blue);
-            display: inline-block;
-        }
-
-        .step-content {
-            margin-left: 44px;
-            color: var(--r-text);
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-        
-        .feature-card {
-            border: 1px solid var(--r-border);
-            border-radius: 12px;
-            padding: 1rem;
-            transition: none;
-            text-align: center;
-        }
-        
-        .feature-card:hover {
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .feature-card i {
-            color: var(--r-blue);
-            margin-right: 8px;
-        }
-
-        @media (max-width: 1000px) {
-            .feature-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .feature-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .footer {
-            margin-top: 3rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--r-border);
-            font-size: 0.85rem;
-            color: var(--r-text-light);
-            text-align: center;
-        }
-
-        .theme-toggle {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: var(--r-blue);
-            border: none;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 1000;
-            transition: none;
-        }
-
-        .theme-toggle:hover {
-            transform: none;
-            opacity: 0.9;
-        }
-
-        @media (max-width: 900px) {
-            .docs-container {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                border-right: none;
-                border-bottom: 1px solid var(--r-border);
-            }
-            .main-content {
-                max-width: 100%;
-                padding: 1.5rem;
-            }
-        }
-
-        .package-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 0.5rem;
-            margin: 1rem 0;
-        }
-        
-        .package-item {
-            border-radius: 8px;
-            padding: 0.5rem 0.8rem;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.85rem;
-            border: 1px solid var(--r-border);
-        }
-
-        .path-note {
-            font-size: 0.85rem;
-            color: var(--r-text-light);
-            margin-top: 0.25rem;
-        }
-
-        .formula {
-            padding: 1.5rem;
-            border-radius: 12px;
-            text-align: center;
-            margin: 1.5rem 0;
-            font-family: 'Fira Code', monospace;
-            font-size: 1rem;
-            border: 1px solid var(--r-border);
-        }
-
-        hr {
-            margin: 1.5rem 0;
-            border: none;
-            border-top: 1px solid var(--r-border);
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-            border: 1px solid var(--r-border);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .data-table th,
-        .data-table td {
-            border: 1px solid var(--r-border);
-            padding: 0.75rem 1rem;
-            text-align: center;
-        }
-
-        .data-table th {
-            background-color: var(--table-header-bg);
-            font-weight: 600;
-            color: var(--r-blue);
-        }
-
-        .data-table td {
-            color: var(--r-text);
-        }
-
-        .data-table caption {
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--r-text-light);
-        }
-
-        .youtube-section {
-            margin-top: 1rem;
-        }
-        
-        .youtube-card {
-            border: 1px solid var(--r-border);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: none;
-            transition: none;
-        }
-        
-        .youtube-card:hover {
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .youtube-card:last-child {
-            margin-bottom: 0;
-        }
-        
-        .youtube-card h3 {
-            font-size: 1.4rem;
-            margin-bottom: 0.5rem;
-            color: var(--r-blue);
-        }
-        
-        .youtube-card p {
-            color: var(--r-text-light);
-            margin-bottom: 1rem;
-            font-size: 0.95rem;
-        }
-        
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            border-radius: 12px;
-            margin-top: 0.5rem;
-        }
-        
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 12px;
-            border: none;
-        }
-        
-        .final-footer {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--r-border);
-            font-size: 0.85rem;
-            color: var(--r-text-light);
-            text-align: center;
-        }
-        
-        a {
-            color: var(--r-link);
-            text-decoration: none;
-        }
-        
-        a:hover {
-            text-decoration: underline;
-        }
-        
-        ul, ol {
-            color: var(--r-text);
-        }
-        
-        button, .copy-btn, .theme-toggle {
-            transition: none;
-        }
-        
-        .copy-btn:hover {
-            transform: none;
-        }
-        
-        .theme-toggle:hover {
-            transform: none;
-        }
-        
-        .sidebar-nav .active:hover {
-            text-decoration: none;
-        }
-    </style>
+    .code-container { position: relative; margin: 14px 0; }
+    pre {
+      background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px;
+      padding: 16px 18px; overflow-x: auto; font-size: 0.84rem;
+    }
+    code { font-family: 'Source Code Pro', monospace; font-size: 0.85em; color: #c0392b; }
+    pre code { color: var(--text); font-size: 0.84rem; line-height: 1.7; }
+    .ck { color: #2980b9; }
+    .cs { color: #27ae60; }
+    .cc { color: #999; font-style: italic; }
+    .cf { color: #8e44ad; }
+    p code, li code {
+      font-family: 'Source Code Pro', monospace; font-size: 0.82em;
+      background: var(--code-bg); border: 1px solid var(--border);
+      padding: 1px 5px; border-radius: 3px; color: #c0392b;
+    }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.88rem; border: 1px solid var(--border); }
+    thead { background: var(--bg); }
+    th {
+      font-family: 'Lato', sans-serif; font-size: 0.82rem; font-weight: 700;
+      color: var(--text); text-align: left; padding: 10px 14px;
+      border-bottom: 2px solid var(--border); border-right: 1px solid var(--border-light);
+    }
+    td {
+      padding: 9px 14px; border-bottom: 1px solid var(--border-light);
+      border-right: 1px solid var(--border-light); color: var(--muted); vertical-align: top;
+    }
+    td:first-child { font-family: 'Source Code Pro', monospace; font-size: 0.83rem; color: var(--text); }
+    tbody tr:nth-child(even) td { background: #fafafa; }
+    tbody tr:hover td { background: var(--accent-bg); }
+    .limit-list { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .limit-item {
+      display: flex; gap: 12px; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 4px; padding: 12px 16px; font-size: 0.88rem;
+    }
+    .limit-item .licon { font-size: 1rem; flex-shrink: 0; margin-top: 2px; }
+    .limit-item strong { font-family: 'Lato', sans-serif; color: var(--text); display: block; margin-bottom: 2px; font-size: 0.86rem; }
+    .limit-item p { margin: 0; }
+    .citation-block {
+      background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px;
+      padding: 16px 18px; font-family: 'Source Code Pro', monospace;
+      font-size: 0.82rem; color: var(--muted); line-height: 1.85;
+      white-space: pre-wrap; position: relative;
+    }
+    .copy-btn {
+      position: absolute; top: 10px; right: 10px;
+      font-family: 'Lato', sans-serif; font-size: 0.72rem; font-weight: 700;
+      background: #fff; border: 1px solid var(--border); color: var(--muted);
+      padding: 4px 10px; border-radius: 3px; cursor: pointer; transition: all .15s;
+      z-index: 5;
+    }
+    .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+    .author-card {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+      padding: 22px; display: flex; gap: 20px; align-items: flex-start; margin-top: 16px;
+    }
+    .author-avatar {
+      width: 52px; height: 52px; border-radius: 50%; background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Lato', sans-serif; font-weight: 700; font-size: 1.1rem; color: #fff; flex-shrink: 0;
+    }
+    .author-info h4 { font-family: 'Lato', sans-serif; font-weight: 700; color: var(--text); margin-bottom: 2px; font-size: 1rem; }
+    .author-info p { margin: 0 0 12px; font-size: 0.88rem; }
+    .author-links { display: flex; gap: 8px; flex-wrap: wrap; }
+    .author-links a {
+      font-family: 'Lato', sans-serif; font-size: 0.8rem; font-weight: 700;
+      color: var(--accent); text-decoration: none;
+      border: 1px solid var(--accent); padding: 4px 12px; border-radius: 3px; transition: all .15s;
+    }
+    .author-links a:hover { background: var(--accent); color: #fff; }
+    .pkg-grid { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+    .pkg {
+      font-family: 'Source Code Pro', monospace; font-size: 0.8rem;
+      background: var(--code-bg); border: 1px solid var(--border);
+      color: #8e44ad; padding: 3px 10px; border-radius: 3px;
+    }
+    .section-hr { border: none; border-top: 1px solid var(--border); margin: 0 0 52px; }
+    .video-grid { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 20px; }
+    .video-wrapper { 
+      position: relative; 
+      padding-bottom: 56.25%; 
+      height: 0; 
+      overflow: hidden; 
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #000;
+    }
+    .video-wrapper iframe { 
+      position: absolute; 
+      top: 0; left: 0; 
+      width: 100%; height: 100%; 
+    }
+    .video-desc { margin-top: 10px; font-size: 0.9rem; color: var(--muted); }
+    footer {
+      background: var(--bg); border-top: 1px solid var(--border);
+      padding: 22px 52px; display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px;
+      font-family: 'Lato', sans-serif; font-size: 0.8rem; color: var(--light);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+    @media (max-width: 768px) {
+      aside { display: none; }
+      main { padding: 24px 20px 60px; }
+      .format-grid, .problem-grid { grid-template-columns: 1fr; }
+      footer { padding: 18px 20px; }
+    }
+  </style>
 </head>
 <body>
-    <button class="theme-toggle" id="themeToggle" aria-label="Dark mode">
-        <i class="fas fa-moon"></i>
-    </button>
 
-    <div class="docs-container">
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <div class="pkg-name">CATrend Analyzer</div>
-                <div class="pkg-version">Cochran-Armitage Trend Test Software</div>
-            </div>
-            <ul class="sidebar-nav">
-                <li><a href="#overview" class="nav-link active" data-section="overview"><i class="fas fa-info-circle"></i> Overview</a></li>
-                <li><a href="#formula" class="nav-link" data-section="formula"><i class="fas fa-square-root-alt"></i> Statistical Formula</a></li>
-                <li><a href="#features" class="nav-link" data-section="features"><i class="fas fa-star"></i> Features</a></li>
-                <li><a href="#live-app" class="nav-link" data-section="live-app"><i class="fas fa-globe"></i> Live Application</a></li>
-                <li class="nav-section">Installation & Setup</li>
-                <li><a href="#prerequisites" class="nav-link" data-section="prerequisites"><i class="fas fa-cogs"></i> Prerequisites</a></li>
-                <li><a href="#installation" class="nav-link" data-section="installation"><i class="fas fa-download"></i> Local Installation</a></li>
-                <li><a href="#deployment" class="nav-link" data-section="deployment"><i class="fas fa-cloud-upload-alt"></i> Deployment</a></li>
-                <li><a href="#example-datasets" class="nav-link" data-section="example-datasets"><i class="fas fa-database"></i> Example Datasets</a></li>
-                <li class="nav-section">User Guide</li>
-                <li><a href="#workflow" class="nav-link" data-section="workflow"><i class="fas fa-list-ol"></i> Complete Analysis Workflow</a></li>
-                <li class="nav-section">Technical Notes</li>
-                <li><a href="#assumptions" class="nav-link" data-section="assumptions"><i class="fas fa-check-double"></i> Assumptions</a></li>
-                <li><a href="#limitations" class="nav-link" data-section="limitations"><i class="fas fa-exclamation-triangle"></i> Limitations</a></li>
-                <li><a href="#citation" class="nav-link" data-section="citation"><i class="fas fa-quote-right"></i> Citation</a></li>
-                <li><a href="#contact" class="nav-link" data-section="contact"><i class="fas fa-envelope"></i> Contact & Author</a></li>
-                <li><a href="#acknowledgments" class="nav-link" data-section="acknowledgments"><i class="fas fa-heart"></i> Acknowledgments</a></li>
-                <li><a href="#tutorials" class="nav-link" data-section="tutorials"><i class="fab fa-youtube"></i> Video Tutorials</a></li>
-            </ul>
-        </div>
+<header>
+  <a class="logo" href="#">CATrend Analyzer</a>
+  <nav class="header-nav">
+    <a href="#overview">Docs</a>
+    <a href="https://github.com/mudassiribrahim12/CATrend-Analyzer" target="_blank">GitHub</a>
+    <a href="https://newappstesting.shinyapps.io/CATrendAnalyzer/" target="_blank" class="btn-app">▶ Launch App</a>
+  </nav>
+</header>
 
-        <div class="main-content" id="mainContent">
-            <section id="overview" class="topic">
-                <h1>CATrend Analyzer</h1>
-                <p><strong>A Tool for Performing the Cochran-Armitage Test for Trend</strong></p>
-                <p>CATrend Analyzer is a free, web-based R-Shiny application designed specifically for detecting trends in proportions across ordered categorical variables. This test is widely used in clinical trials, epidemiology, and public health research, particularly when assessing whether the probability of a binary outcome changes consistently across increasing levels of an exposure or dose.</p>
-                <div class="note-box">
-                    <i class="fas fa-exclamation-triangle"></i> <strong>Before You Begin:</strong>
-                    <ul style="margin-top: 8px; margin-left: 1.5rem;">
-                        <li>Ensure your data is clean with no missing values (or be aware that rows with missing values will be removed)</li>
-                        <li>Variable names should not contain spaces or special characters</li>
-                        <li>Have at least 5 observations per cell for reliable estimates</li>
-                    </ul>
-                </div>
-            </section>
+<div class="shell">
+  <aside id="sidebar">
+    <div class="toc-title">Table of Contents</div>
+    <div class="toc-group">
+      <div class="toc-group-label">Getting Started</div>
+      <a href="#overview" class="active">Overview</a>
+      <a href="#features">Supported Formats & Features</a>
+      <a href="#live-app">Live Application</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-group-label">Installation</div>
+      <a href="#prerequisites">Prerequisites</a>
+      <a href="#local-setup">Local Setup</a>
+      <a href="#deployment">Deployment</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-group-label">Usage</div>
+      <a href="#workflow">Complete Analysis Workflow</a>
+      <a href="#formula">Statistical Formula</a>
+      <a href="#interpretation">Test Interpretation</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-group-label">Reference</div>
+      <a href="#assumptions">Assumptions</a>
+      <a href="#limitations">Limitations</a>
+      <a href="#example-datasets">Example Datasets</a>
+      <a href="#tutorials">Video Tutorials</a>
+      <a href="#citation">Citation</a>
+      <a href="#contact">Contact &amp; Author</a>
+      <a href="#acknowledgments">Acknowledgments</a>
+    </div>
+  </aside>
 
-            <section id="formula" class="topic">
-                <h2>Statistical Formula</h2>
-                <p>The Cochran-Armitage test for trend evaluates whether there is a linear trend in proportions across ordered groups. The application uses this formula to compute the Cochran–Armitage test for trend:</p>
-                
-                <div class="formula">
-                    <strong>Z = [Σ y<sub>j</sub> (x<sub>j</sub> - x̄)] / √[p̄(1-p̄) Σ n<sub>j</sub> (x<sub>j</sub> - x̄)²]</strong>
-                </div>
-                
-                <p>Where:</p>
-                <ul>
-                    <li><strong>x<sub>j</sub></strong> = scores assigned to the ordered groups (1, 2, 3, ..., k)</li>
-                    <li><strong>y<sub>j</sub></strong> = number of "successes" (events) in group j</li>
-                    <li><strong>n<sub>j</sub></strong> = total number of observations in group j</li>
-                    <li><strong>x̄</strong> = weighted mean of scores = Σ(n<sub>j</sub>x<sub>j</sub>) / Σn<sub>j</sub></li>
-                    <li><strong>p̄</strong> = overall proportion of successes = Σy<sub>j</sub> / Σn<sub>j</sub></li>
-                    <li><strong>k</strong> = number of ordered groups</li>
-                </ul>
-                
-                <p>The test statistic Z follows a standard normal distribution. The chi-square equivalent is Z² with 1 degree of freedom.</p>
-                
-                <div class="info-box">
-                    <i class="fas fa-info-circle"></i> <strong>Continuity Correction:</strong> For small samples, the app can apply a continuity correction of c = 0.5 × (score spacing) to improve approximation accuracy. This adjusts the numerator by ±c based on the test direction.
-                </div>
-                
-                <p><strong>Test Interpretation:</strong></p>
-                <ul>
-                    <li><strong>Z positive ( Z ):</strong> Increasing trend (As the ordered groups increase (e.g., dose, time), the proportion of the event (first level of the outcome variable) increases.)</li>
-                    <li><strong>Z negative ( −Z ):</strong> Decreasing trend (As the ordered groups increase, the proportion of the event (first level of the outcome variable) decreases.)</li>
-                    <li><strong>p-value < 0.05:</strong> Statistically significant trend at α = 0.05</li>
-                </ul>
-            </section>
-
-            <section id="features" class="topic">
-                <h2>Features</h2>
-                <div class="feature-grid">
-                    <div class="feature-card"><i class="fas fa-file-import"></i> Supported Input Formats (CSV, Excel, SPSS, Stata)</div>
-                    <div class="feature-card"><i class="fas fa-th"></i> Dual Data Input Modes (Raw Data or Crosstabulation)</div>
-                    <div class="feature-card"><i class="fas fa-sort-amount-down"></i> Interactive Level Ordering with Drag-and-Drop</div>
-                    <div class="feature-card"><i class="fas fa-chart-bar"></i>Customizable Enhanced Stacked Bar Plots</div>
-                    <div class="feature-card"><i class="fas fa-file-word"></i> Professional Word Document Report Generation</div>
-                </div>
-            </section>
-
-            <section id="live-app" class="topic">
-                <h2>Live Application</h2>
-                <p>Access the live application at: <a href="https://newappstesting.shinyapps.io/CATrendAnalyzer/" target="_blank">https://newappstesting.shinyapps.io/CATrendAnalyzer/</a></p>
-                <div class="success-box">
-                    <i class="fas fa-infinity"></i> <strong>No installation required:</strong> Use the web version directly in your browser.
-                </div>
-            </section>
-
-            <section id="prerequisites" class="topic">
-                <h2>Prerequisites</h2>
-                <ul>
-                    <li>R version 4.4 or higher</li>
-                    <li>RStudio (recommended)</li>
-                </ul>
-            </section>
-
-            <section id="installation" class="topic">
-                <h2>Steps to Run Locally</h2>
-                <p><strong>1. Download app.R from GitHub</strong><br>
-                Access the source code at: <a href="https://github.com/mudassiribrahim12/CATrend-Analyzer/blob/main/app.R" target="_blank">https://github.com/mudassiribrahim12/CATrend-Analyzer/blob/main/app.R</a></p>
-                <p><strong>2. Install required R packages</strong></p>
-                <div class="code-block-wrapper">
-                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                    <pre><code># Install required packages
-install.packages(c(
-  "shiny", "shinydashboard", "DT", "haven", "readxl", "ggplot2",
-  "officer", "rmarkdown", "tidyverse", "sortable", "scales"
-))</code></pre>
-                </div>
-
-                <p><strong>3. Load required R packages</strong></p>
-                <div class="code-block-wrapper">
-                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                    <pre><code># Load libraries
-library(shiny)
-library(shinydashboard)
-library(DT)
-library(haven)
-library(readxl)
-library(ggplot2)
-library(officer)
-library(rmarkdown)
-library(tidyverse)
-library(sortable)
-library(scales)</code></pre>
-                </div>
-
-                <p><strong>4. Run the application in RStudio</strong></p>
-                <div class="code-block-wrapper">
-                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                    <pre><code># Set your working directory to where you saved app.R
-setwd("C:/Users/YourName/Desktop/")    # Windows example
-# or
-setwd("/home/yourname/Desktop/")       # Linux/Mac example
-
-library(shiny)
-runApp("app.R")</code></pre>
-                </div>
-                
-                <div class="path-note">
-                    <i class="fas fa-info-circle"></i> <strong>Note:</strong> Replace the path with the actual location where you saved the <code>app.R</code> file.
-                </div>
-                
-                <p><strong>5. Open the application in a web browser</strong><br>
-                The application will open in RStudio; then click <strong>Open in Browser</strong></p>
-            </section>
-
-            <section id="deployment" class="topic">
-                <h2>Deployment</h2>
-                <div class="code-block-wrapper">
-                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                    <pre><code># Deploy to shinyapps.io
-install.packages("rsconnect")
-rsconnect::deployApp("path/to/CATrend")</code></pre>
-                </div>
-            </section>
-
-            <section id="example-datasets" class="topic">
-                <h2><i class="fas fa-database"></i> Example Datasets for Testing</h2>
-                <p>Use these example datasets to practice and test the Cochran-Armitage trend test.</p>
-                
-                <div class="success-box">
-                    <i class="fas fa-file-excel"></i> <strong>Example Dataset for Normal Data Procedure:</strong><br>
-                    <a href="https://archive.org/download/catrend-analyzer-example-data/CATrendAnalyzer%20example%20data.xlsx" target="_blank">https://archive.org/download/catrend-analyzer-example-data/CATrendAnalyzer%20example%20data.xlsx</a>
-                    <p style="margin-top: 8px; font-size: 0.85rem;"><i class="fas fa-info-circle"></i> This dataset contains variables such as Patient ID, Age, Sex, Drug Dose (mg), and Response (Not Recovered, Recovered).</p>
-                </div>
-                
-                <h3>Example 1 (for Crosstabulation Procedure)</h3>
-                <table class="data-table">
-                    <caption><strong>Treatment Response by Drug Dose Level</strong></caption>
-                    <thead>
-                        <tr>
-                            <th>Treatment Outcome</th>
-                            <th>Placebo (0 mg)</th>
-                            <th>Low Dose (50 mg)</th>
-                            <th>Medium Dose (100 mg)</th>
-                            <th>High Dose (200 mg)</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>No Response (Failure)</strong></td>
-                            <td>42</td>
-                            <td>35</td>
-                            <td>25</td>
-                            <td>12</td>
-                            <td>114</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Response (Success)</strong></td>
-                            <td>8</td>
-                            <td>15</td>
-                            <td>25</td>
-                            <td>38</td>
-                            <td>86</td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr style="background-color: var(--r-code-bg);">
-                            <td><strong>Total</strong></td>
-                            <td><strong>50</strong></td>
-                            <td><strong>50</strong></td>
-                            <td><strong>50</strong></td>
-                            <td><strong>50</strong></td>
-                            <td><strong>200</strong></td>
-                        </tr>
-                    </tfoot>
-                </table>
-                
-                <h3>Example 2 (for Crosstabulation Procedure)</h3>
-                <table class="data-table">
-                    <caption><strong>Disease Severity by Physical Activity Level</strong></caption>
-                    <thead>
-                        <tr>
-                            <th>Disease Outcome</th>
-                            <th>Sedentary (Low Activity)</th>
-                            <th>Moderate Activity</th>
-                            <th>High Activity</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Mild/No Disease</strong></td>
-                            <td>15</td>
-                            <td>32</td>
-                            <td>48</td>
-                            <td>95</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Severe Disease</strong></td>
-                            <td>45</td>
-                            <td>28</td>
-                            <td>12</td>
-                            <td>85</td>
-                        </tr>
-                    </tbody>
-                    <tfoot>
-                        <tr style="background-color: var(--r-code-bg);">
-                            <td><strong>Total</strong></td>
-                            <td><strong>60</strong></td>
-                            <td><strong>60</strong></td>
-                            <td><strong>60</strong></td>
-                            <td><strong>180</strong></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </section>
-
-            <section id="workflow" class="topic">
-                <h2>Complete Analysis Workflow - Step-by-Step Guide</h2>
-                <p>Follow these steps to perform a complete trend analysis from data upload to report download.</p>
-                
-                <div class="step-container">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-title">Select Data Type</div>
-                        <div class="step-content">Choose either <strong>"Normal Data"</strong> (individual-level dataset) or <strong>"Crosstabulation Data"</strong> (pre-summarized count matrix). For Normal Data, upload CSV, Excel, Stata (.dta), or SPSS (.sav) files. For Crosstabulation Data, you will define variable levels and enter counts in an interactive table.</div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-title">Upload Your Data File (Normal Data Mode)</div>
-                        <div class="step-content">Select file type (CSV, Excel, Stata, SPSS) and browse to upload your data. For CSV files, customize delimiter selection, header presence, and quote characters. For Excel files, specify sheet number and cell range. For Stata and SPSS files, the application automatically detects <code>haven_labelled</code> variables and converts them to factors with appropriate labels.</div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-title">Setup Crosstabulation Table (Crosstabulation Mode)</div>
-                        <div class="step-content">Specify names for dependent and independent variables, and define the number of levels for each variable. Click <strong>"Setup Crosstabulation Table"</strong> to generate an interactive table where you provide level names and enter counts for each cell. Then click <strong>"Create Dataset from Crosstabulation"</strong> to reconstruct the full individual-level dataset by expanding the counts into individual observations.</div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-title">Review Missing Data & Data Quality</div>
-                        <div class="step-content">Check missing data summaries showing missing counts and percentages for each variable. Use the <strong>"Remove Rows with Missing Values in Selected Variables"</strong> button to clean the data. Review the data quality report displaying dataset dimensions, complete case counts, variable types, and unique value counts to identify potential issues.</div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <div class="step-title">Select Variables</div>
-                        <div class="step-content">Choose the dependent variable (binary outcome) and the independent variable (ordered exposure or grouping variable) from dropdown menus that display all available variables in the cleaned dataset.</div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">6</div>
-                        <div class="step-title">Order Independent Variable Levels</div>
-                        <div class="step-content">Use the drag-and-drop bucket lists to arrange levels from lowest to highest. Simply drag each level and drop it before or after another level to create a meaningful order (e.g., Placebo → Low → Medium → High). Dependent variable levels can also be ordered, with the first level serving as the reference category for multi-category outcomes. Click <strong>"Update Level Ordering"</strong> to register the specified ordering.</div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">7</div>
-                        <div class="step-title">Run the Cochran-Armitage Test</div>
-                        <div class="step-content">Click <strong>"Run Cochran-Armitage Test"</strong> to generate results. The application returns the Z-statistic, chi-square statistic, p-value, and detailed intermediate calculations for validation. Optionally apply continuity correction for small samples.</div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">8</div>
-                        <div class="step-title">Customize Visualization</div>
-                        <div class="step-content">Create customizable stacked bar plots displaying counts, row percentages, or column percentages. Adjust title size, label size, legend size, and axis text sizes. Assign custom colors to dependent variable levels using the interactive color picker interface.</div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">9</div>
-                        <div class="step-title">Download Full Report</div>
-                        <div class="step-content">Click <strong>"Download Full Report"</strong> to obtain a Word document containing the complete analysis, including the customized graph, statistical test results, and detailed interpretation, suitable for inclusion in manuscripts or research records.</div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="assumptions" class="topic">
-                <h2>Assumptions of the Cochran-Armitage trend test</h2>
-                <ul>
-                    <li><strong>Independence:</strong> Observations are independent of each other</li>
-                    <li><strong>Ordered Categories:</strong> Independent variable levels have a natural order</li>
-                    <li><strong>Monotonic Trend:</strong> The trend is assumed to be monotonic</li>
-                    <li><strong>Adequate Sample Size:</strong> Expected cell counts should ideally be >5</li>
-                    <li><strong>Binary Outcome:</strong> The test is designed for binary dependent variables</li>
-                </ul>
-            </section>
-
-            <section id="limitations" class="topic">
-                <h2>Limitations</h2>
-                <ul>
-                    <li><strong>Small Sample Sizes:</strong> Results may be unreliable when expected cell counts < 5</li>
-                    <li><strong>Sparse Data:</strong> Many zero cells can affect test accuracy</li>
-                    <li><strong>Non-monotonic Trends:</strong> The test may not detect non-linear patterns</li>
-                    <li><strong>Confounding:</strong> The test does not adjust for other variables</li>
-                </ul>
-            </section>
-
-            <section id="citation" class="topic">
-                <h2>Citation</h2>
-                <div class="code-block-wrapper">
-                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                    <pre><code>@software{Ibrahim_CATrend_Analyzer_2025,
-  author = {Ibrahim, Mudasir Mohammed},
-  title = {CATrend Analyzer: A Tool for Performing Cochran-Armitage Trend Test},
-  year = {2025},
-  url = {https://github.com/mudassiribrahim12/CATrend-Analyzer}
-}</code></pre>
-                </div>
-            </section>
-
-            <section id="contact" class="topic">
-                <h2>Contact & Author</h2>
-                <p><strong>Author:</strong> Mudasir Mohammed Ibrahim<br>
-                <strong>Affiliation:</strong> Department of Internal Medicine (M3), Tamale Teaching Hospital, Tamale, Ghana<br>
-                <strong>Email:</strong> <a href="mailto:mudassiribrahim30@gmail.com">mudassiribrahim30@gmail.com</a></p>
-                <h3>Academic Profiles</h3>
-                <ul>
-                    <li><a href="https://www.researchgate.net/profile/Mudasir-Ibrahim" target="_blank">ResearchGate</a></li>
-                    <li><a href="https://scholar.google.com/citations?user=xEFzAvgAAAAJ&hl=en" target="_blank">Google Scholar</a></li>
-                    <li><a href="https://orcid.org/0000-0002-9049-8222" target="_blank">ORCID</a></li>
-                </ul>
-            </section>
-
-            <section id="acknowledgments" class="topic">
-                <h2>Acknowledgments</h2>
-                <p>CATrend Analyzer was built using the following R packages:</p>
-                <div class="package-list">
-                    <div class="package-item">shiny</div>
-                    <div class="package-item">shinydashboard</div>
-                    <div class="package-item">DT</div>
-                    <div class="package-item">haven</div>
-                    <div class="package-item">readxl</div>
-                    <div class="package-item">ggplot2</div>
-                    <div class="package-item">officer</div>
-                    <div class="package-item">rmarkdown</div>
-                    <div class="package-item">tidyverse</div>
-                    <div class="package-item">sortable</div>
-                    <div class="package-item">scales</div>
-                </div>
-                <p>Special thanks to the developers and maintainers of these packages for making advanced statistical analysis accessible in R.</p>
-            </section>
-
-            <section id="tutorials" class="topic">
-                <h2><i class="fab fa-youtube"></i> Video Tutorials</h2>
-                <p>Click on the videos below to watch step-by-step tutorials for using CATrend Analyzer.</p>
-                
-                <div class="youtube-section">
-                    <div class="youtube-card">
-                        <h3>1. Using the Normal Data Procedure</h3>
-                        <p>Complete walkthrough: upload raw dataset and perform Cochran-Armitage trend test</p>
-                        <div class="video-container">
-                            <iframe src="https://www.youtube.com/embed/_XDR2wijMU4?si=_JJ2Z776g4jhU6Sd" title="Normal Data Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                        </div>
-                    </div>
-                    
-                    <div class="youtube-card">
-                        <h3>2. Using the Crosstabulation Procedure</h3>
-                        <p>Step-by-step guide: enter pre-summarized contingency table, define row/column levels, expand counts to dataset, and perform Cochran-Armitage trend test</p>
-                        <div class="video-container">
-                            <iframe src="https://www.youtube.com/embed/UtesYwrCGGM?si=i7lXcGhsXOCC_UUg" title="Crosstabulation Tutorial" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="info-box" style="margin-top: 1rem;">
-                    <i class="fas fa-globe"></i> <strong>Lightweight HTML/JavaScript Version:</strong>
-                    <p style="margin-top: 8px;">Alternatively, a lightweight HTML/JavaScript version of the application is available that runs entirely in the browser without server-side requirements, though it is limited to crosstabulation data entry and does not support file uploads or individual-level data analysis.</p>
-                    <p style="margin-top: 8px;"><strong>Access the live application at:</strong> <a href="https://cochran-armitage.vercel.app/" target="_blank">https://cochran-armitage.vercel.app/</a></p>
-                    <p><strong>Source Code:</strong> <a href="https://github.com/mudassiribrahim12/cochran-armitage/blob/main/index.html" target="_blank">https://github.com/mudassiribrahim12/cochran-armitage/blob/main/index.html</a></p>
-                </div>
-                
-                <div class="final-footer">
-                    <p>CATrend Analyzer: Empowering researchers to easily perform the Cochran–Armitage trend test.</p>
-                    <p>License: MIT — Free to use, modify, and distribute.</p>
-                </div>
-            </section>
-        </div>
+  <main>
+    <div class="page-title" id="overview">
+      <h1>CATrend Analyzer</h1>
+      <p>A Tool for Performing the Cochran-Armitage Test for Trend</p>
+      <div class="badges">
+        <span class="badge badge-blue">R-Shiny</span>
+        <span class="badge badge-green">MIT License</span>
+        <span class="badge badge-gray">Free to Use</span>
+      </div>
+      <div class="hero-actions">
+        <a href="https://newappstesting.shinyapps.io/CATrendAnalyzer/" target="_blank" class="btn btn-primary">▶ Launch Live App</a>
+        <a href="https://github.com/mudassiribrahim12/CATrend-Analyzer" target="_blank" class="btn btn-outline">View on GitHub</a>
+        <a href="https://archive.org/download/catrend-analyzer-example-data/CATrendAnalyzer%20example%20data.xlsx" class="btn btn-outline">⬇ Example Dataset</a>
+      </div>
     </div>
 
-    <script>
-        function copyCode(button) {
-            const pre = button.parentElement.querySelector('pre');
-            const code = pre.innerText;
-            
-            navigator.clipboard.writeText(code).then(() => {
-                const originalText = button.textContent;
-                button.textContent = 'Copied!';
-                button.classList.add('copied');
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.classList.remove('copied');
-                }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy:', err);
-                button.textContent = 'Error!';
-                setTimeout(() => {
-                    button.textContent = 'Copy';
-                }, 2000);
-            });
-        }
+    <section>
+      <h2>Overview</h2>
+      <p>CATrend Analyzer is a free, web-based R-Shiny application designed specifically for detecting trends in proportions across ordered categorical variables. This test is widely used in clinical trials, epidemiology, and public health research, particularly when assessing whether the probability of a binary outcome changes consistently across increasing levels of an exposure or dose. The tool eliminates the need for manual calculations, requires no software installation or programming skills, and is completely free to use.</p>
+      
+      <h3>Common Research Problems Solved</h3>
+      <div class="problem-grid">
+        <div class="problem-card"><div class="icon">📈</div><div><strong>Detecting Dose-Response Trends</strong>Automatically identifies whether increasing drug doses lead to higher response rates.</div></div>
+        <div class="problem-card"><div class="icon">🔄</div><div><strong>Ordered Category Analysis</strong>Properly handles ordinal independent variables like disease stages or time points.</div></div>
+        <div class="problem-card"><div class="icon">📊</div><div><strong>Manual Calculation Errors</strong>Eliminates manual computation mistakes in trend test statistics.</div></div>
+        <div class="problem-card"><div class="icon">📄</div><div><strong>Report Generation</strong>Automatically creates professional Word documents with results and visualizations.</div></div>
+      </div>
+    </section>
 
-        const themeToggle = document.getElementById('themeToggle');
-        const prefersDark = localStorage.getItem('docsTheme') === 'dark';
-        if (prefersDark) {
-            document.body.classList.add('dark');
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-        }
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark');
-            const isDark = document.body.classList.contains('dark');
-            localStorage.setItem('docsTheme', isDark ? 'dark' : 'light');
-            themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        });
+    <hr class="section-hr" />
 
-        const links = document.querySelectorAll('.nav-link');
-        const sections = document.querySelectorAll('.topic');
-        function setActiveLink() {
-            let current = '';
-            const scrollPos = window.scrollY + 120;
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                const sectionBottom = sectionTop + section.offsetHeight;
-                if (scrollPos >= sectionTop && scrollPos < sectionBottom) {
-                    current = section.getAttribute('id');
-                }
-            });
-            links.forEach(link => {
-                link.classList.remove('active');
-                const href = link.getAttribute('data-section');
-                if (href === current) {
-                    link.classList.add('active');
-                }
-            });
-        }
-        window.addEventListener('scroll', setActiveLink);
-        window.addEventListener('load', setActiveLink);
-        links.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = link.getAttribute('data-section');
-                const targetEl = document.getElementById(targetId);
-                if (targetEl) {
-                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    history.pushState(null, null, `#${targetId}`);
-                    links.forEach(l => l.classList.remove('active'));
-                    link.classList.add('active');
-                }
-            });
-        });
-        if (window.location.hash) {
-            const hashId = window.location.hash.substring(1);
-            const target = document.getElementById(hashId);
-            if (target) target.scrollIntoView({ behavior: 'smooth' });
-        }
-    </script>
+    <section id="features">
+      <h2>Supported Formats & Features</h2>
+      <p>CATrend Analyzer supports multiple data input methods and provides comprehensive analysis features.</p>
+      <div class="format-grid">
+        <div class="format-box">
+          <h4>📂 Input Formats</h4>
+          <div class="tag-list">
+            <span class="tag">.csv</span><span class="tag">.tsv</span><span class="tag">.txt</span>
+            <span class="tag">.xlsx</span><span class="tag">.xls</span><span class="tag">.dta</span>
+            <span class="tag">.sav</span>
+          </div>
+        </div>
+        <div class="format-box">
+          <h4>⚙️ Core Capabilities</h4>
+          <div class="tag-list">
+            <span class="tag">Raw Data Mode</span><span class="tag">Crosstab Mode</span>
+            <span class="tag">Drag-and-Drop Ordering</span><span class="tag">Stacked Bar Plots</span>
+            <span class="tag">Word Report</span><span class="tag">Continuity Correction</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-hr" />
+
+    <section id="live-app">
+      <h2>Live Application</h2>
+      <p>Access the hosted version directly in your browser — no installation required.</p>
+      <div class="callout success">
+        <div class="callout-title">🌐 Live URL</div>
+        <p><a href="https://newappstesting.shinyapps.io/CATrendAnalyzer/" target="_blank">https://newappstesting.shinyapps.io/CATrendAnalyzer/</a></p>
+      </div>
+      <div class="callout">
+        <div class="callout-title">⚡ Lightweight Alternative</div>
+        <p>A lightweight HTML/JavaScript version is also available for quick crosstabulation analysis: <a href="https://cochran-armitage.vercel.app/" target="_blank">https://cochran-armitage.vercel.app/</a></p>
+      </div>
+    </section>
+
+    <hr class="section-hr" />
+
+    <section id="prerequisites">
+      <h2>Prerequisites</h2>
+      <p>To run CATrend Analyzer locally, the following software must be installed:</p>
+      <table>
+        <thead><tr><th>Requirement</th><th>Version</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>R</td><td>≥ 4.4</td><td>Core runtime for the Shiny application</td></tr>
+          <tr><td>RStudio</td><td>Any recent</td><td>Recommended IDE — optional but convenient</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="local-setup">
+      <h2>Local Installation</h2>
+      <h3>Step 1 — Download app.R</h3>
+      <p>Download the source file from the GitHub repository: <a href="https://github.com/mudassiribrahim12/CATrend-Analyzer/blob/main/app.R" target="_blank">github.com/mudassiribrahim12/CATrend-Analyzer</a></p>
+
+      <h3>Step 2 — Install required packages</h3>
+      <p>Run the following in your R console:</p>
+      <div class="code-container">
+        <button class="copy-btn" onclick="copyCode(this, 'code-step2')">Copy</button>
+<pre id="code-step2"><code><span class="cf">install.packages</span>(<span class="cf">c</span>(
+  <span class="cs">"shiny"</span>, <span class="cs">"shinydashboard"</span>, <span class="cs">"DT"</span>,
+  <span class="cs">"haven"</span>, <span class="cs">"readxl"</span>, <span class="cs">"ggplot2"</span>,
+  <span class="cs">"officer"</span>, <span class="cs">"rmarkdown"</span>, <span class="cs">"tidyverse"</span>,
+  <span class="cs">"sortable"</span>, <span class="cs">"scales"</span>
+))</code></pre>
+      </div>
+
+      <h3>Step 3 — Load the libraries</h3>
+      <div class="code-container">
+        <button class="copy-btn" onclick="copyCode(this, 'code-step3')">Copy</button>
+<pre id="code-step3"><code><span class="ck">library</span>(shiny)
+<span class="ck">library</span>(shinydashboard)
+<span class="ck">library</span>(DT)
+<span class="ck">library</span>(haven)
+<span class="ck">library</span>(readxl)
+<span class="ck">library</span>(ggplot2)
+<span class="ck">library</span>(officer)
+<span class="ck">library</span>(rmarkdown)
+<span class="ck">library</span>(tidyverse)
+<span class="ck">library</span>(sortable)
+<span class="ck">library</span>(scales)</code></pre>
+      </div>
+
+      <h3>Step 4 — Set working directory and run</h3>
+      <p>Replace the path below with the location of your saved <code>app.R</code> file:</p>
+      <div class="code-container">
+        <button class="copy-btn" onclick="copyCode(this, 'code-step4')">Copy</button>
+<pre id="code-step4"><code><span class="cc"># Windows</span>
+<span class="cf">setwd</span>(<span class="cs">"C:/Users/YourName/Desktop/"</span>)
+
+<span class="cc"># Linux / macOS</span>
+<span class="cf">setwd</span>(<span class="cs">"/home/yourname/Desktop/"</span>)
+
+<span class="cc"># Launch the app</span>
+<span class="ck">library</span>(shiny)
+<span class="cf">runApp</span>(<span class="cs">"app.R"</span>)</code></pre>
+      </div>
+
+      <h3>Step 5 — Open in browser</h3>
+      <p>The app opens in the RStudio viewer pane. Click <strong>Open in Browser</strong> for the best experience.</p>
+    </section>
+
+    <section id="deployment">
+      <h2>Deployment</h2>
+      <p>Deploy your own instance to shinyapps.io or any compatible hosting platform using the <code>rsconnect</code> package.</p>
+      <div class="code-container">
+        <button class="copy-btn" onclick="copyCode(this, 'code-deploy')">Copy</button>
+<pre id="code-deploy"><code><span class="cc"># Install rsconnect</span>
+<span class="cf">install.packages</span>(<span class="cs">"rsconnect"</span>)
+
+<span class="cc"># Deploy — replace with actual path to your app folder</span>
+rsconnect::<span class="cf">deployApp</span>(<span class="cs">"path/to/CATrend-Analyzer"</span>)</code></pre>
+      </div>
+      <div class="callout warn">
+        <div class="callout-title">⚠️ Note</div>
+        <p>Replace <code>"path/to/CATrend-Analyzer"</code> with the actual folder path containing your <code>app.R</code> file.</p>
+      </div>
+    </section>
+
+    <hr class="section-hr" />
+
+    <section id="workflow">
+      <h2>Complete Analysis Workflow</h2>
+      <p>Follow these steps inside the CATrend Analyzer application to perform a complete trend analysis.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Select Data Type</strong><p>Choose either <strong>"Normal Data"</strong> (individual-level dataset) or <strong>"Crosstabulation Data"</strong> (pre-summarized count matrix).</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Upload Your Data File (Normal Data Mode)</strong><p>Select file type (CSV, Excel, Stata, SPSS) and browse to upload your data. For CSV files, customize delimiter selection.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Setup Crosstabulation Table (Crosstabulation Mode)</strong><p>Specify names for dependent and independent variables, define levels, and enter counts in an interactive table.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Review Missing Data & Data Quality</strong><p>Check missing data summaries and use the <strong>"Remove Rows with Missing Values"</strong> button to clean the data.</p></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><strong>Select Variables</strong><p>Choose the dependent variable (binary outcome) and the independent variable (ordered exposure or grouping variable).</p></div></div>
+        <div class="step"><div class="step-num">6</div><div class="step-body"><strong>Order Independent Variable Levels</strong><p>Use drag-and-drop bucket lists to arrange levels from lowest to highest (e.g., Placebo → Low → Medium → High).</p></div></div>
+        <div class="step"><div class="step-num">7</div><div class="step-body"><strong>Run the Cochran-Armitage Test</strong><p>Click <strong>"Run Cochran-Armitage Test"</strong> to generate Z-statistic, chi-square statistic, p-value, and intermediate calculations.</p></div></div>
+        <div class="step"><div class="step-num">8</div><div class="step-body"><strong>Customize Visualization</strong><p>Create customizable stacked bar plots displaying counts, row percentages, or column percentages with custom colors.</p></div></div>
+        <div class="step"><div class="step-num">9</div><div class="step-body"><strong>Download Full Report</strong><p>Click <strong>"Download Full Report"</strong> to obtain a Word document containing the complete analysis, graph, and results.</p></div></div>
+      </div>
+    </section>
+
+    <section id="formula">
+      <h2>Statistical Formula</h2>
+      <p>The Cochran-Armitage test for trend evaluates whether there is a linear trend in proportions across ordered groups. The test statistic is calculated as:</p>
+      <div class="callout" style="text-align:center; font-family:'Source Code Pro', monospace;">
+        <strong>Z = [Σ y<sub>j</sub> (x<sub>j</sub> - x̄)] / √[p̄(1-p̄) Σ n<sub>j</sub> (x<sub>j</sub> - x̄)²]</strong>
+      </div>
+      <p>Where:</p>
+      <ul>
+        <li><strong>x<sub>j</sub></strong> = scores assigned to ordered groups (1, 2, 3, ..., k)</li>
+        <li><strong>y<sub>j</sub></strong> = number of "successes" (events) in group j</li>
+        <li><strong>n<sub>j</sub></strong> = total number of observations in group j</li>
+        <li><strong>x̄</strong> = weighted mean of scores = Σ(n<sub>j</sub>x<sub>j</sub>) / Σn<sub>j</sub></li>
+        <li><strong>p̄</strong> = overall proportion of successes = Σy<sub>j</sub> / Σn<sub>j</sub></li>
+      </ul>
+      <div class="callout">
+        <div class="callout-title">📐 Continuity Correction</div>
+        <p>For small samples, the app can apply a continuity correction of c = 0.5 × (score spacing) to improve approximation accuracy.</p>
+      </div>
+    </section>
+
+    <section id="interpretation">
+      <h2>Test Interpretation</h2>
+      <div class="measure-cards">
+        <div class="measure-card">
+          <div class="measure-label nom">Z Positive (+Z)</div>
+          <p>Increasing trend — As the ordered groups increase (e.g., dose, time), the proportion of the event (first level of the outcome variable) increases.</p>
+        </div>
+        <div class="measure-card">
+          <div class="measure-label ord">Z Negative (-Z)</div>
+          <p>Decreasing trend — As the ordered groups increase, the proportion of the event decreases.</p>
+        </div>
+      </div>
+      <div class="callout success">
+        <div class="callout-title">📊 p-value Interpretation</div>
+        <p>p-value < 0.05: Statistically significant trend at α = 0.05. The test statistic Z follows a standard normal distribution; the chi-square equivalent is Z² with 1 degree of freedom.</p>
+      </div>
+    </section>
+
+    <hr class="section-hr" />
+
+    <section id="assumptions">
+      <h2>Assumptions of the Cochran-Armitage Trend Test</h2>
+      <div class="limit-list">
+        <div class="limit-item"><div class="licon">🔗</div><div><strong>Independence</strong><p>Observations are independent of each other.</p></div></div>
+        <div class="limit-item"><div class="licon">📊</div><div><strong>Ordered Categories</strong><p>Independent variable levels have a natural order.</p></div></div>
+        <div class="limit-item"><div class="licon">📈</div><div><strong>Monotonic Trend</strong><p>The trend is assumed to be monotonic (consistently increasing or decreasing).</p></div></div>
+        <div class="limit-item"><div class="licon">🔢</div><div><strong>Adequate Sample Size</strong><p>Expected cell counts should ideally be >5 for reliable results.</p></div></div>
+        <div class="limit-item"><div class="licon">⚖️</div><div><strong>Binary Outcome</strong><p>The test is designed for binary dependent variables.</p></div></div>
+      </div>
+    </section>
+
+    <section id="limitations">
+      <h2>Limitations</h2>
+      <p>The following known limitations apply to the current version of CATrend Analyzer:</p>
+      <div class="limit-list">
+        <div class="limit-item"><div class="licon">📉</div><div><strong>Small Sample Sizes</strong><p>Results may be unreliable when expected cell counts are less than 5.</p></div></div>
+        <div class="limit-item"><div class="licon">🔄</div><div><strong>Non-monotonic Trends</strong><p>The test may not detect non-linear or non-monotonic patterns.</p></div></div>
+        <div class="limit-item"><div class="licon">⚠️</div><div><strong>No Confounder Adjustment</strong><p>The test does not adjust for other variables or confounders.</p></div></div>
+        <div class="limit-item"><div class="licon">🧮</div><div><strong>Sparse Data</strong><p>Many zero cells can affect test accuracy.</p></div></div>
+      </div>
+    </section>
+
+    <section id="example-datasets">
+      <h2>Example Datasets</h2>
+      <p>Use these example datasets to practice and test the Cochran-Armitage trend test.</p>
+      <div class="callout success">
+        <div class="callout-title">📥 Example Dataset Download</div>
+        <p><a href="https://archive.org/download/catrend-analyzer-example-data/CATrendAnalyzer%20example%20data.xlsx" target="_blank">Download CATrendAnalyzer example data.xlsx</a> — Contains variables: Patient ID, Age, Sex, Drug Dose (mg), and Response (Not Recovered, Recovered).</p>
+      </div>
+      <h3>Example 1: Treatment Response by Drug Dose Level</h3>
+      <table>
+        <thead><tr><th>Treatment Outcome</th><th>Placebo (0 mg)</th><th>Low Dose (50 mg)</th><th>Medium Dose (100 mg)</th><th>High Dose (200 mg)</th><th>Total</th></tr></thead>
+        <tbody>
+          <tr><td>No Response (Failure)</td><td>42</td><td>35</td><td>25</td><td>12</td><td>114</td></tr>
+          <tr><td>Response (Success)</td><td>8</td><td>15</td><td>25</td><td>38</td><td>86</td></tr>
+          <tr style="background: var(--bg);"><td><strong>Total</strong></td><td><strong>50</strong></td><td><strong>50</strong></td><td><strong>50</strong></td><td><strong>50</strong></td><td><strong>200</strong></td></tr>
+        </tbody>
+      </table>
+      <h3>Example 2: Disease Severity by Physical Activity Level</h3>
+      <table>
+        <thead><tr><th>Disease Outcome</th><th>Sedentary (Low Activity)</th><th>Moderate Activity</th><th>High Activity</th><th>Total</th></tr></thead>
+        <tbody>
+          <tr><td>Mild/No Disease</td><td>15</td><td>32</td><td>48</td><td>95</td></tr>
+          <tr><td>Severe Disease</td><td>45</td><td>28</td><td>12</td><td>85</td></tr>
+          <tr style="background: var(--bg);"><td><strong>Total</strong></td><td><strong>60</strong></td><td><strong>60</strong></td><td><strong>60</strong></td><td><strong>180</strong></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <hr class="section-hr" />
+
+    <section id="tutorials">
+      <h2>Video Tutorials</h2>
+      <p>Watch these step-by-step guides to master CATrend Analyzer.</p>
+      <div class="video-grid">
+        <div class="video-item">
+          <h3>1. Using the Normal Data Procedure</h3>
+          <div class="video-wrapper">
+            <iframe src="https://www.youtube.com/embed/_XDR2wijMU4?si=_JJ2Z776g4jhU6Sd" title="Normal Data Tutorial" allowfullscreen></iframe>
+          </div>
+          <p class="video-desc">Complete walkthrough: upload raw dataset, select variables, order levels, and perform Cochran-Armitage trend test.</p>
+        </div>
+        <div class="video-item">
+          <h3>2. Using the Crosstabulation Procedure</h3>
+          <div class="video-wrapper">
+            <iframe src="https://www.youtube.com/embed/UtesYwrCGGM?si=i7lXcGhsXOCC_UUg" title="Crosstabulation Tutorial" allowfullscreen></iframe>
+          </div>
+          <p class="video-desc">Step-by-step guide: enter pre-summarized contingency table, define row/column levels, expand counts to dataset, and perform test.</p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-hr" />
+
+    <section id="citation">
+      <h2>Citation</h2>
+      <p>If you use CATrend Analyzer in your research, please cite it as follows:</p>
+      <div class="citation-block" id="cite-block">@software{Ibrahim_CATrend_Analyzer_2025,
+  author = {Ibrahim, Mudasir Mohammed},
+  title  = {CATrend Analyzer: A Tool for Performing 
+            Cochran-Armitage Trend Test},
+  year   = {2025},
+  url    = {https://github.com/mudassiribrahim12/CATrend-Analyzer}
+}<button class="copy-btn" onclick="copyCite()">Copy</button></div>
+    </section>
+
+    <section id="acknowledgments">
+      <h2>Acknowledgments</h2>
+      <p>CATrend Analyzer was built using the following R packages. Special thanks to the developers and maintainers of these packages for making advanced statistical analysis accessible in R.</p>
+      <div class="pkg-grid">
+        <span class="pkg">shiny</span><span class="pkg">shinydashboard</span><span class="pkg">DT</span>
+        <span class="pkg">haven</span><span class="pkg">readxl</span><span class="pkg">ggplot2</span>
+        <span class="pkg">officer</span><span class="pkg">rmarkdown</span><span class="pkg">tidyverse</span>
+        <span class="pkg">sortable</span><span class="pkg">scales</span>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2>Developer Information</h2>
+      <div class="author-card">
+        <div class="author-avatar">MI</div>
+        <div class="author-info">
+          <h4>Mudasir Mohammed Ibrahim</h4>
+          <p>
+            Department of Internal Medicine (M3), Tamale Teaching Hospital, Tamale, Ghana<br />
+            <a href="mailto:mudassiribrahim30@gmail.com">mudassiribrahim30@gmail.com</a>
+          </p>
+          <div class="author-links" style="margin-top: 15px;">
+            <a href="https://www.researchgate.net/profile/Mudasir-Ibrahim" target="_blank">ResearchGate</a>
+            <a href="https://scholar.google.com/citations?user=xEFzAvgAAAAJ&hl=en" target="_blank">Google Scholar</a>
+            <a href="https://orcid.org/0000-0002-9049-8222" target="_blank">ORCID</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <div>© 2025-Present Mudasir Mohammed Ibrahim · MIT License</div>
+  <div>
+    <a href="https://github.com/mudassiribrahim30" target="_blank">GitHub</a> ·
+    <a href="mailto:mudassiribrahim30@gmail.com">Contact</a>
+  </div>
+</footer>
+
+<script>
+  function copyCode(btn, elementId) {
+    const element = document.getElementById(elementId);
+    let textToCopy = element.innerText || element.textContent;
+    if (elementId === 'cite-block') {
+      textToCopy = textToCopy.replace('Copy', '').trim();
+    }
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      const originalText = btn.textContent;
+      btn.textContent = '✓ Copied';
+      btn.style.color = 'var(--success-border)';
+      btn.style.borderColor = 'var(--success-border)';
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.style.color = '';
+        btn.style.borderColor = '';
+      }, 2000);
+    });
+  }
+
+  function copyCite() {
+    const btn = document.querySelector('#cite-block .copy-btn');
+    if (btn) copyCode(btn, 'cite-block');
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        document.querySelectorAll('aside a').forEach(a => a.classList.remove('active'));
+        const link = document.querySelector(`aside a[href="#${entry.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-15% 0px -75% 0px' });
+  document.querySelectorAll('section[id], .page-title[id]').forEach(s => observer.observe(s));
+</script>
 </body>
 </html>
