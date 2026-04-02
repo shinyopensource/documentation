@@ -55,7 +55,7 @@
     }
 
     /* All major containers must respect viewport width */
-    .container, .disclaimer-wrapper, footer, .footer-container, .cards-grid, .hero, .info-section {
+    .container, .disclaimer-wrapper, footer, .footer-container, .hero, .info-section {
       max-width: 100%;
       overflow-x: hidden;
     }
@@ -275,11 +275,11 @@
       }
     }
 
-    /* Main container and cards - no horizontal overflow */
+    /* Main container and carousel section */
     .container {
       padding-top: var(--header-h);
       min-height: 100vh;
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
       padding-left: 2rem;
       padding-right: 2rem;
@@ -329,28 +329,60 @@
     .badge-green { background: #27ae60; color: #fff; }
     .badge-gray { background: #666; color: #fff; }
 
-    /* Cards grid - no overflow, use safe gap and wrap */
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
+    /* ----- Horizontal Carousel Styles ----- */
+    .carousel-wrapper {
+      position: relative;
       margin: 1.5rem 0 2rem;
       width: 100%;
+      overflow: hidden;
     }
-
+    .cards-scroll-container {
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      width: 100%;
+      padding: 0.5rem 0 1rem 0;
+      cursor: grab;
+      scrollbar-color: var(--accent) var(--border);
+    }
+    .cards-scroll-container::-webkit-scrollbar {
+      height: 6px;
+    }
+    .cards-scroll-container::-webkit-scrollbar-track {
+      background: var(--border);
+      border-radius: 8px;
+    }
+    .cards-scroll-container::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 8px;
+    }
+    .cards-grid-horizontal {
+      display: flex;
+      gap: 1.5rem;
+      width: max-content;
+      padding: 0.25rem 0.5rem;
+    }
     .doc-card {
+      width: 280px;
+      flex-shrink: 0;
       background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 12px;
       padding: 1.25rem;
       transition: all 0.2s ease;
       cursor: pointer;
       overflow-x: hidden;
       word-wrap: break-word;
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
     .doc-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
       border-color: var(--accent);
     }
     .card-icon {
@@ -365,8 +397,57 @@
     }
     .card-icon i { font-size: 22px; color: var(--accent); }
     .doc-card h3 { font-family: 'Lato', sans-serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 0.4rem; }
-    .doc-card p { color: var(--muted); font-size: 0.8rem; line-height: 1.5; margin-bottom: 0.9rem; }
-    .card-meta { display: flex; align-items: center; gap: 0.4rem; font-family: 'Lato', sans-serif; font-size: 0.72rem; font-weight: 700; color: var(--accent); flex-wrap: wrap; }
+    .doc-card p { color: var(--muted); font-size: 0.8rem; line-height: 1.5; margin-bottom: 0.9rem; flex: 1; }
+    .card-meta { display: flex; align-items: center; gap: 0.4rem; font-family: 'Lato', sans-serif; font-size: 0.72rem; font-weight: 700; color: var(--accent); flex-wrap: wrap; margin-top: auto; }
+    
+    /* Navigation arrows */
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--accent);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: background 0.2s, opacity 0.2s;
+      opacity: 0.8;
+      font-size: 1.2rem;
+    }
+    .carousel-arrow:hover {
+      background: var(--accent-dark);
+      opacity: 1;
+    }
+    .arrow-left {
+      left: -10px;
+    }
+    .arrow-right {
+      right: -10px;
+    }
+    @media (max-width: 768px) {
+      .carousel-arrow {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+      }
+      .arrow-left { left: -6px; }
+      .arrow-right { right: -6px; }
+      .doc-card { width: 260px; }
+      .container { padding-left: 1rem; padding-right: 1rem; }
+    }
+    @media (max-width: 560px) {
+      .carousel-arrow { width: 28px; height: 28px; }
+      .arrow-left { left: -4px; }
+      .arrow-right { right: -4px; }
+      .doc-card { width: 240px; }
+    }
 
     .info-section {
       background: var(--accent-bg);
@@ -382,7 +463,7 @@
 
     /* Disclaimer wrapper */
     .disclaimer-wrapper {
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto 1rem auto;
       padding: 0 2rem;
       width: 100%;
@@ -417,7 +498,7 @@
       overflow-x: hidden;
     }
     .footer-container {
-      max-width: 1000px;
+      max-width: 1200px;
       margin: 0 auto;
       display: flex;
       align-items: center;
@@ -552,17 +633,15 @@
     .search-no-results { padding: 12px; text-align: center; color: var(--muted); font-size: 0.75rem; }
 
     @media (max-width: 900px) { 
-      .cards-grid { grid-template-columns: repeat(2, 1fr); } 
+      .carousel-arrow { width: 36px; height: 36px; }
     }
     @media (max-width: 640px) { 
-      .cards-grid { grid-template-columns: 1fr; }
       .container { padding-left: 1rem; padding-right: 1rem; }
       .disclaimer-wrapper { padding: 0 1rem; }
       .footer-container { flex-direction: column; text-align: center; }
       .footer-left, .footer-center, .footer-right { text-align: center; justify-content: center; }
       .search-results { width: calc(100vw - 32px); left: 16px; right: 16px; max-width: calc(100% - 32px); }
     }
-    /* Additional overflow safety */
     img, iframe, video, svg { max-width: 100%; height: auto; }
     input, button, textarea { max-width: 100%; }
   </style>
@@ -610,32 +689,45 @@
     </div>
   </div>
 
-  <div class="cards-grid" id="cardsGrid">
-    <div class="doc-card" data-doc="Data2SPSS.html" data-title="Data2SPSS Documentation" data-name="Data2SPSS" data-keywords="spss conversion data convert statistics">
-      <div class="card-icon"><i class="fas fa-exchange-alt"></i></div>
-      <h3>Data2SPSS</h3>
-      <p>Convert data to SPSS with automatic value label preservation, variable cleaning, and encoding resolution.</p>
-      <div class="card-meta"><span>Read Documentation</span><i class="fas fa-arrow-right"></i></div>
+  <!-- Horizontal carousel cards section -->
+  <div class="carousel-wrapper">
+    <button class="carousel-arrow arrow-left" id="scrollLeftBtn" aria-label="Scroll left"><i class="fas fa-chevron-left"></i></button>
+    <div class="cards-scroll-container" id="cardsScrollContainer">
+      <div class="cards-grid-horizontal" id="cardsGridHorizontal">
+        <div class="doc-card" data-doc="Data2SPSS.html" data-title="Data2SPSS Documentation" data-name="Data2SPSS" data-keywords="spss conversion data convert statistics">
+          <div class="card-icon"><i class="fas fa-exchange-alt"></i></div>
+          <h3>Data2SPSS</h3>
+          <p>Convert data to SPSS with automatic value label preservation, variable cleaning, and encoding resolution.</p>
+          <div class="card-meta"><span>Read Documentation</span><i class="fas fa-arrow-right"></i></div>
+        </div>
+        <div class="doc-card" data-doc="MedModr.html" data-title="MedModr Documentation" data-name="MedModr" data-keywords="mediation moderation serial conditional process lavaan path diagram">
+          <div class="card-icon"><i class="fas fa-chart-line"></i></div>
+          <h3>MedModr</h3>
+          <p>Mediation, moderation, serial mediation, and conditional process analysis with path diagrams.</p>
+          <div class="card-meta"><span>Read Documentation</span><i class="fas fa-arrow-right"></i></div>
+        </div>
+        <div class="doc-card" data-doc="CATrend Analyzer.html" data-title="CATrend Analyzer Documentation" data-name="CATrend Analyzer" data-keywords="cochran armitage trend test dose response crosstabulation">
+          <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
+          <h3>CATrend Analyzer</h3>
+          <p>Cochran-Armitage trend test for dose-response relationships with raw data and crosstabulation modes.</p>
+          <div class="card-meta"><span>Read Documentation</span><i class="fas fa-arrow-right"></i></div>
+        </div>
+        <div class="doc-card" data-doc="CalcuStats.html" data-title="CalcuStats Documentation" data-name="CalcuStats" data-keywords="calculator descriptive statistics summary stats variance sd mean median">
+          <div class="card-icon"><i class="fas fa-calculator"></i></div>
+          <h3>CalcuStats</h3>
+          <p>Interactive statistical calculator: descriptive stats, probability distributions, and quick summary metrics.</p>
+          <div class="card-meta"><span>Read Documentation</span><i class="fas fa-arrow-right"></i></div>
+        </div>
+      </div>
     </div>
-    <div class="doc-card" data-doc="MedModr.html" data-title="MedModr Documentation" data-name="MedModr" data-keywords="mediation moderation serial conditional process lavaan path diagram">
-      <div class="card-icon"><i class="fas fa-chart-line"></i></div>
-      <h3>MedModr</h3>
-      <p>Mediation, moderation, serial mediation, and conditional process analysis with path diagrams.</p>
-      <div class="card-meta"><span>Read Documentation</span><i class="fas fa-arrow-right"></i></div>
-    </div>
-    <div class="doc-card" data-doc="CATrend Analyzer.html" data-title="CATrend Analyzer Documentation" data-name="CATrend Analyzer" data-keywords="cochran armitage trend test dose response crosstabulation">
-      <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
-      <h3>CATrend Analyzer</h3>
-      <p>Cochran-Armitage trend test for dose-response relationships with raw data and crosstabulation modes.</p>
-      <div class="card-meta"><span>Read Documentation</span><i class="fas fa-arrow-right"></i></div>
-    </div>
+    <button class="carousel-arrow arrow-right" id="scrollRightBtn" aria-label="Scroll right"><i class="fas fa-chevron-right"></i></button>
   </div>
 
   <div class="info-section">
     <div class="info-icon"><i class="fas fa-info-circle"></i></div>
     <div class="info-content">
       <h4>About These Tools</h4>
-      <p>All applications are built with R-Shiny and are completely free to use. Each tool includes detailed documentation, installation guides, video tutorials, and example datasets. Click any card above to view the full documentation.</p>
+      <p>All applications are built with R-Shiny and are completely free to use. Each tool includes detailed documentation, installation guides, video tutorials, and example datasets. Click any card above to view the full documentation. Use arrows to browse horizontally.</p>
     </div>
   </div>
 </div>
@@ -678,7 +770,24 @@
     const contentFrame = document.getElementById('contentFrame');
     const backButton = document.getElementById('floatingBackBtn');
     const themeToggle = document.getElementById('darkModeToggle');
+    const scrollContainer = document.getElementById('cardsScrollContainer');
+    const leftBtn = document.getElementById('scrollLeftBtn');
+    const rightBtn = document.getElementById('scrollRightBtn');
     const cards = document.querySelectorAll('.doc-card');
+    
+    // Carousel scroll logic
+    function scrollLeft() {
+      if (scrollContainer) {
+        scrollContainer.scrollBy({ left: -320, behavior: 'smooth' });
+      }
+    }
+    function scrollRight() {
+      if (scrollContainer) {
+        scrollContainer.scrollBy({ left: 320, behavior: 'smooth' });
+      }
+    }
+    if (leftBtn) leftBtn.addEventListener('click', scrollLeft);
+    if (rightBtn) rightBtn.addEventListener('click', scrollRight);
     
     const docsData = Array.from(cards).map(card => ({
       element: card,
@@ -696,7 +805,7 @@
         const desc = card.querySelector('p').innerText.toLowerCase();
         const keywords = card.getAttribute('data-keywords').toLowerCase();
         const match = name.includes(lowerQuery) || desc.includes(lowerQuery) || keywords.includes(lowerQuery);
-        card.style.display = match ? 'block' : 'none';
+        card.style.display = match ? 'flex' : 'none';
         if (match) matches.push(card);
       });
       return docsData.filter(doc => {
@@ -723,7 +832,7 @@
             if (isMobile) document.getElementById('mobileMenu').classList.remove('open');
             if (desktopSearchInput) desktopSearchInput.value = '';
             if (mobileSearchInput) mobileSearchInput.value = '';
-            cards.forEach(c => c.style.display = 'block');
+            cards.forEach(c => c.style.display = 'flex');
             if (desktopSearchResults) desktopSearchResults.style.display = 'none';
             if (mobileSearchResults) mobileSearchResults.style.display = 'none';
           });
@@ -814,12 +923,12 @@
     const desktopClear = document.querySelector('.desktop-clear');
     function performDesktopSearch() {
       const query = desktopSearchInput.value;
-      if (!query.trim()) { desktopSearchResults.style.display = 'none'; cards.forEach(c => c.style.display = 'block'); return; }
+      if (!query.trim()) { desktopSearchResults.style.display = 'none'; cards.forEach(c => c.style.display = 'flex'); return; }
       const matches = filterCardsAndGetMatches(query);
       renderSearchResults(desktopSearchResults, matches, false);
     }
     desktopSearchInput.addEventListener('input', performDesktopSearch);
-    if (desktopClear) desktopClear.addEventListener('click', () => { desktopSearchInput.value = ''; cards.forEach(c => c.style.display = 'block'); desktopSearchResults.style.display = 'none'; desktopSearchInput.focus(); });
+    if (desktopClear) desktopClear.addEventListener('click', () => { desktopSearchInput.value = ''; cards.forEach(c => c.style.display = 'flex'); desktopSearchResults.style.display = 'none'; desktopSearchInput.focus(); });
     document.addEventListener('click', (e) => { if (!e.target.closest('.search-wrapper') && desktopSearchResults) desktopSearchResults.style.display = 'none'; });
 
     const mobileSearchInput = document.getElementById('mobileSearchInput');
@@ -827,12 +936,12 @@
     const mobileClear = document.querySelector('.mobile-clear');
     function performMobileSearch() {
       const query = mobileSearchInput.value;
-      if (!query.trim()) { mobileSearchResults.style.display = 'none'; cards.forEach(c => c.style.display = 'block'); return; }
+      if (!query.trim()) { mobileSearchResults.style.display = 'none'; cards.forEach(c => c.style.display = 'flex'); return; }
       const matches = filterCardsAndGetMatches(query);
       renderSearchResults(mobileSearchResults, matches, true);
     }
     mobileSearchInput.addEventListener('input', performMobileSearch);
-    if (mobileClear) mobileClear.addEventListener('click', () => { mobileSearchInput.value = ''; cards.forEach(c => c.style.display = 'block'); mobileSearchResults.style.display = 'none'; mobileSearchInput.focus(); });
+    if (mobileClear) mobileClear.addEventListener('click', () => { mobileSearchInput.value = ''; cards.forEach(c => c.style.display = 'flex'); mobileSearchResults.style.display = 'none'; mobileSearchInput.focus(); });
     document.addEventListener('click', (e) => { if (!e.target.closest('.mobile-search') && mobileSearchResults) mobileSearchResults.style.display = 'none'; });
 
     const hamburgerBtn = document.getElementById('hamburgerBtn');
