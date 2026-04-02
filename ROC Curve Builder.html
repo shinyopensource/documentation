@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ROC Curve Builder: Binary Classification Performance Analysis Tool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=Source+Code+Pro:wght@400;500&family=Lato:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    :root {
+      --white: #ffffff;
+      --bg: #f8f8f8;
+      --border: #e0e0e0;
+      --border-light: #eeeeee;
+      --text: #212121;
+      --muted: #555555;
+      --light: #888888;
+      --accent: #3498db;
+      --accent-dark: #2980b9;
+      --accent-bg: #eaf4fb;
+      --warn-bg: #fef9e7;
+      --warn-border: #f39c12;
+      --success-bg: #eafaf1;
+      --success-border: #27ae60;
+      --code-bg: #f5f5f5;
+      --sidebar-w: 240px;
+      --header-h: 52px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Source Serif 4', Georgia, serif;
+      background: var(--white);
+      color: var(--text);
+      font-size: 15.5px;
+      line-height: 1.85;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--header-h);
+      background: #3498db;
+      display: flex; align-items: center;
+      padding: 0 20px; gap: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .logo {
+      font-family: 'Lato', sans-serif;
+      font-weight: 700; font-size: 1.1rem;
+      color: #fff; text-decoration: none; white-space: nowrap;
+    }
+    .header-nav { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+    .header-nav a {
+      font-family: 'Lato', sans-serif;
+      font-size: 0.85rem; font-weight: 700;
+      color: rgba(255,255,255,0.85); text-decoration: none;
+      padding: 5px 12px; border-radius: 4px;
+      transition: background .15s, color .15s;
+    }
+    .header-nav a:hover { background: rgba(255,255,255,0.18); color: #fff; }
+    .header-nav .btn-app {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.35); color: #fff;
+    }
+    .header-nav .btn-app:hover { background: rgba(255,255,255,0.32); }
+    .shell { display: flex; padding-top: var(--header-h); min-height: 100vh; }
+    aside {
+      width: var(--sidebar-w); flex-shrink: 0;
+      position: sticky; top: var(--header-h);
+      height: calc(100vh - var(--header-h));
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      background: var(--bg); padding: 20px 0 40px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    aside::-webkit-scrollbar { width: 3px; }
+    aside::-webkit-scrollbar-thumb { background: var(--border); }
+    .toc-title {
+      font-family: 'Lato', sans-serif;
+      font-size: 0.72rem; font-weight: 700;
+      color: var(--light); text-transform: uppercase; letter-spacing: 1.2px;
+      padding: 0 18px 10px;
+      border-bottom: 1px solid var(--border-light); margin-bottom: 10px;
+    }
+    .toc-group { margin-bottom: 6px; }
+    .toc-group-label {
+      font-family: 'Lato', sans-serif;
+      font-size: 0.7rem; font-weight: 700;
+      color: var(--light); text-transform: uppercase; letter-spacing: 1px;
+      padding: 10px 18px 4px;
+    }
+    aside a {
+      display: block; font-family: 'Lato', sans-serif;
+      font-size: 0.84rem; color: var(--muted); text-decoration: none;
+      padding: 4px 18px 4px 22px;
+      border-left: 3px solid transparent;
+      transition: all .12s; line-height: 1.5;
+    }
+    aside a:hover { color: var(--accent); background: rgba(52,152,219,0.06); }
+    aside a.active { color: var(--accent); border-left-color: var(--accent); background: rgba(52,152,219,0.07); font-weight: 700; }
+    main { flex: 1; min-width: 0; padding: 40px 60px 80px 52px; max-width: 860px; }
+    section { margin-bottom: 52px; }
+    .page-title { border-bottom: 2px solid var(--border); padding-bottom: 18px; margin-bottom: 32px; }
+    .page-title h1 {
+      font-family: 'Lato', sans-serif; font-size: 2.2rem; font-weight: 700;
+      color: var(--text); letter-spacing: -0.3px; margin-bottom: 8px;
+    }
+    .page-title p { color: var(--muted); font-size: 1rem; font-style: italic; margin: 0; }
+    .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .badge {
+      font-family: 'Lato', sans-serif; font-size: 0.72rem; font-weight: 700;
+      padding: 3px 10px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .badge-blue { background: var(--accent); color: #fff; }
+    .badge-gray { background: #666; color: #fff; }
+    .badge-green { background: #27ae60; color: #fff; }
+    .badge-dark { background: #2c3e50; color: #fff; }
+    .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+    .btn {
+      font-family: 'Lato', sans-serif; font-size: 0.85rem; font-weight: 700;
+      padding: 8px 18px; border-radius: 4px; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: all .15s; border: 1px solid transparent;
+    }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary:hover { background: var(--accent-dark); }
+    .btn-outline { background: #fff; color: var(--accent); border-color: var(--accent); }
+    .btn-outline:hover { background: var(--accent-bg); }
+    h2 {
+      font-family: 'Lato', sans-serif; font-size: 1.5rem; font-weight: 700;
+      color: var(--text); border-bottom: 1px solid var(--border);
+      padding-bottom: 10px; margin-bottom: 16px;
+    }
+    h3 { font-family: 'Lato', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); margin: 24px 0 10px; }
+    p { color: var(--muted); margin-bottom: 14px; }
+    a { color: var(--accent); }
+    .callout {
+      border: 1px solid #bee3f8; border-left: 4px solid var(--accent);
+      background: var(--accent-bg); border-radius: 4px;
+      padding: 12px 16px; font-size: 0.9rem; color: var(--text); margin: 16px 0;
+    }
+    .callout.warn { background: var(--warn-bg); border-color: #f9d78e; border-left-color: var(--warn-border); }
+    .callout.success { background: var(--success-bg); border-color: #a9dfbf; border-left-color: var(--success-border); }
+    .callout p { margin: 0; color: inherit; }
+    .callout-title {
+      font-family: 'Lato', sans-serif; font-weight: 700; font-size: 0.82rem;
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; color: var(--accent);
+    }
+    .callout.warn .callout-title { color: #b7770d; }
+    .callout.success .callout-title { color: #1e8449; }
+    .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+    .feature-card {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+      padding: 14px 16px; font-size: 0.88rem; color: var(--muted); display: flex; gap: 10px;
+    }
+    .feature-card .icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .feature-card strong { font-family: 'Lato', sans-serif; display: block; color: var(--text); margin-bottom: 2px; }
+    .format-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .format-box { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 16px; }
+    .format-box h4 {
+      font-family: 'Lato', sans-serif; font-size: 0.8rem; font-weight: 700;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px;
+    }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag {
+      font-family: 'Source Code Pro', monospace; font-size: 0.78rem;
+      background: #fff; border: 1px solid var(--border); color: var(--text);
+      padding: 2px 8px; border-radius: 3px;
+    }
+    .steps { counter-reset: step; margin-top: 16px; }
+    .step { display: flex; gap: 14px; margin-bottom: 18px; }
+    .step-num {
+      font-family: 'Lato', sans-serif; font-weight: 700; font-size: 0.78rem;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 3px;
+    }
+    .step-body strong { font-family: 'Lato', sans-serif; font-weight: 700; font-size: 0.92rem; color: var(--text); display: block; margin-bottom: 4px; }
+    .step-body p { margin: 0; font-size: 0.9rem; }
+    .code-container { position: relative; margin: 14px 0; }
+    pre {
+      background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px;
+      padding: 16px 18px; overflow-x: auto; font-size: 0.84rem;
+    }
+    code { font-family: 'Source Code Pro', monospace; font-size: 0.85em; color: #c0392b; }
+    pre code { color: var(--text); font-size: 0.84rem; line-height: 1.7; }
+    .ck { color: #3498db; }
+    .cs { color: #27ae60; }
+    .cc { color: #999; font-style: italic; }
+    .cf { color: #8e44ad; }
+    p code, li code {
+      font-family: 'Source Code Pro', monospace; font-size: 0.82em;
+      background: var(--code-bg); border: 1px solid var(--border);
+      padding: 1px 5px; border-radius: 3px; color: #c0392b;
+    }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.88rem; border: 1px solid var(--border); }
+    thead { background: var(--bg); }
+    th {
+      font-family: 'Lato', sans-serif; font-size: 0.82rem; font-weight: 700;
+      color: var(--text); text-align: left; padding: 10px 14px;
+      border-bottom: 2px solid var(--border); border-right: 1px solid var(--border-light);
+    }
+    td {
+      padding: 9px 14px; border-bottom: 1px solid var(--border-light);
+      border-right: 1px solid var(--border-light); color: var(--muted); vertical-align: top;
+    }
+    td:first-child { font-family: 'Source Code Pro', monospace; font-size: 0.83rem; color: var(--text); }
+    tbody tr:nth-child(even) td { background: #fafafa; }
+    tbody tr:hover td { background: var(--accent-bg); }
+    .limit-list { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .limit-item {
+      display: flex; gap: 12px; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 4px; padding: 12px 16px; font-size: 0.88rem;
+    }
+    .limit-item .licon { font-size: 1rem; flex-shrink: 0; margin-top: 2px; }
+    .limit-item strong { font-family: 'Lato', sans-serif; color: var(--text); display: block; margin-bottom: 2px; font-size: 0.86rem; }
+    .limit-item p { margin: 0; }
+    .citation-block {
+      background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px;
+      padding: 16px 18px; font-family: 'Source Code Pro', monospace;
+      font-size: 0.82rem; color: var(--muted); line-height: 1.85;
+      white-space: pre-wrap; position: relative;
+    }
+    .copy-btn {
+      position: absolute; top: 10px; right: 10px;
+      font-family: 'Lato', sans-serif; font-size: 0.72rem; font-weight: 700;
+      background: #fff; border: 1px solid var(--border); color: var(--muted);
+      padding: 4px 10px; border-radius: 3px; cursor: pointer; transition: all .15s;
+      z-index: 5;
+    }
+    .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+    .author-card {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 4px;
+      padding: 22px; display: flex; gap: 20px; align-items: flex-start; margin-top: 16px;
+    }
+    .author-avatar {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: #3498db;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Lato', sans-serif; font-weight: 700; font-size: 1.1rem; color: #fff; flex-shrink: 0;
+    }
+    .author-info h4 { font-family: 'Lato', sans-serif; font-weight: 700; color: var(--text); margin-bottom: 2px; font-size: 1rem; }
+    .author-info p { margin: 0 0 12px; font-size: 0.88rem; }
+    .author-links { display: flex; gap: 8px; flex-wrap: wrap; }
+    .author-links a {
+      font-family: 'Lato', sans-serif; font-size: 0.8rem; font-weight: 700;
+      color: var(--accent); text-decoration: none;
+      border: 1px solid var(--accent); padding: 4px 12px; border-radius: 3px; transition: all .15s;
+    }
+    .author-links a:hover { background: var(--accent); color: #fff; }
+    .pkg-grid { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+    .pkg {
+      font-family: 'Source Code Pro', monospace; font-size: 0.8rem;
+      background: var(--code-bg); border: 1px solid var(--border);
+      color: #8e44ad; padding: 3px 10px; border-radius: 3px;
+    }
+    .section-hr { border: none; border-top: 1px solid var(--border); margin: 0 0 52px; }
+    .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+    .metric-card {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 16px 18px;
+    }
+    .metric-card h4 {
+      font-family: 'Lato', sans-serif; font-size: 0.85rem; font-weight: 700;
+      color: var(--accent); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .metric-card .formula {
+      font-family: 'Source Code Pro', monospace; font-size: 0.84rem;
+      color: var(--text); background: #fff; border: 1px solid var(--border-light);
+      padding: 6px 10px; border-radius: 3px; margin-bottom: 6px;
+    }
+    .metric-card p { font-size: 0.84rem; margin: 0; }
+    .theme-toggle-btn {
+      background: var(--accent);
+      border: none;
+      color: white;
+      font-size: 0.75rem;
+      font-family: 'Lato', sans-serif;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 30px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      line-height: 1;
+    }
+    .theme-toggle-btn i { font-size: 0.8rem; display: inline-block; }
+    .theme-toggle-btn span { display: inline-block; }
+    .theme-toggle-btn:hover { opacity: 0.9; transform: scale(0.97); background: var(--accent-dark); }
+
+    /* Dark theme */
+    body.dark {
+      --white: #121826;
+      --bg: #1a1f2c;
+      --border: #2d3748;
+      --border-light: #2a2f3c;
+      --text: #eef2ff;
+      --muted: #b9c7d9;
+      --light: #8d9bb0;
+      --accent: #5ab8e0;
+      --accent-dark: #3f9fc4;
+      --accent-bg: #20273a;
+      --warn-bg: #2e2a1f;
+      --warn-border: #e6b450;
+      --success-bg: #1e3a2a;
+      --code-bg: #252b36;
+    }
+    body.dark .feature-card,
+    body.dark .format-box,
+    body.dark .limit-item,
+    body.dark .author-card,
+    body.dark .metric-card { background: var(--bg); border-color: var(--border); }
+    body.dark .tag,
+    body.dark .metric-card .formula { background: #2d3748; border-color: #3a4558; color: #eef2ff; }
+    body.dark tbody tr:nth-child(even) td { background: #1e2432; }
+    body.dark tbody tr:hover td { background: var(--accent-bg); }
+    body.dark .btn-outline { background: transparent; color: var(--accent); }
+    body.dark .copy-btn { background: var(--bg); color: var(--muted); border-color: var(--border); }
+    body.dark .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+    body.dark ::-webkit-scrollbar-thumb { background: #4a5568; }
+
+    @media (max-width: 768px) {
+      aside { display: none; }
+      main { padding: 24px 20px 60px; }
+      .format-grid, .feature-grid, .metric-grid { grid-template-columns: 1fr; }
+      footer { padding: 18px 20px; }
+    }
+
+    footer {
+      background: var(--bg); border-top: 1px solid var(--border);
+      padding: 22px 52px; display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px;
+      font-family: 'Lato', sans-serif; font-size: 0.8rem; color: var(--light);
+      transition: background 0.2s, border-color 0.2s;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    ul { color: var(--muted); padding-left: 1.4em; margin-bottom: 14px; }
+    li { margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="#">ROC Curve Builder</a>
+  <nav class="header-nav">
+    <a href="#overview">Docs</a>
+    <a href="https://github.com/mudassiribrahim12/Calcustats/tree/main" target="_blank">GitHub</a>
+    <a href="https://mudassiribrahim30.shinyapps.io/ROC_CURVE/" target="_blank" class="btn-app">▶ Launch App</a>
+  </nav>
+</header>
+
+<div class="shell">
+  <aside id="sidebar">
+    <div class="toc-title">Table of Contents</div>
+    <div class="toc-group">
+      <div class="toc-group-label">Getting Started</div>
+      <a href="#overview" class="active">Overview</a>
+      <a href="#features">Features &amp; Capabilities</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-group-label">Installation</div>
+      <a href="#prerequisites">Prerequisites</a>
+      <a href="#local-setup">Local Setup</a>
+      <a href="#deployment">Deployment</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-group-label">Usage</div>
+      <a href="#workflow">Analysis Workflow</a>
+      <a href="#data-input">Data Input &amp; Formats</a>
+      <a href="#recoding">Variable Recoding</a>
+      <a href="#customization">Plot Customization</a>
+      <a href="#metrics">Performance Metrics</a>
+      <a href="#exports">Exporting Results</a>
+    </div>
+    <div class="toc-group">
+      <div class="toc-group-label">Reference</div>
+      <a href="#assumptions">Assumptions</a>
+      <a href="#limitations">Limitations</a>
+      <a href="#citation">Citation</a>
+      <a href="#contact">Contact &amp; Author</a>
+      <a href="#acknowledgments">Acknowledgments</a>
+    </div>
+  </aside>
+
+  <main>
+
+    <div class="page-title" id="overview">
+      <h1>ROC Curve Builder</h1>
+      <p>Professional Binary Classification Performance Analysis Tool</p>
+      <div class="badges">
+        <span class="badge badge-blue">R-Shiny</span>
+        <span class="badge badge-green">MIT License</span>
+        <span class="badge badge-gray">Free to Use</span>
+      </div>
+      <div class="hero-actions">
+        <a href="https://mudassiribrahim30.shinyapps.io/ROC_CURVE/" target="_blank" class="btn btn-primary">▶ Launch Live App</a>
+        <a href="https://github.com/mudassiribrahim12/ROC-Curve-Builder/tree/main" target="_blank" class="btn btn-outline">View on GitHub</a>
+        <a href="https://archive.org/download/roc-curve-builder-example-dataset/ROC%20Curve%20Builder%20Example%20dataset.csv" class="btn btn-outline">⬇ Example Dataset</a>
+      </div>
+    </div>
+
+    <section>
+      <h2>Overview</h2>
+      <p>ROC Curve Builder is a free, web-based R-Shiny application designed for researchers, data scientists, and clinicians who need to evaluate binary classification models. It provides interactive ROC (Receiver Operating Characteristic) curve visualization, comprehensive performance metrics, confusion matrix output, and professional export capabilities — all without requiring any programming knowledge.</p>
+
+      <h3>Problems ROC Curve Builder Solves</h3>
+      <div class="feature-grid">
+        <div class="feature-card"><div class="icon">📈</div><div><strong>ROC Curve Visualization</strong>Generates publication-ready ROC curves from uploaded datasets with AUC annotation and shaded area-under-curve.</div></div>
+        <div class="feature-card"><div class="icon">🧮</div><div><strong>Performance Metrics</strong>Calculates AUC, accuracy, sensitivity, and specificity with confusion matrix output in a single click.</div></div>
+        <div class="feature-card"><div class="icon">🔄</div><div><strong>Variable Recoding</strong>Recodes non-binary outcome variables to 0/1 directly within the app — no pre-processing required.</div></div>
+        <div class="feature-card"><div class="icon">📄</div><div><strong>Professional Reporting</strong>Downloads high-resolution PNG plots and comprehensive Word (.docx) reports with metrics and analysis details.</div></div>
+      </div>
+    </section>
+
+    <hr class="section-hr" />
+
+    <section id="features">
+      <h2>Features &amp; Capabilities</h2>
+      <p>ROC Curve Builder provides a complete binary classification evaluation workflow within a single application.</p>
+      <div class="format-grid">
+        <div class="format-box">
+          <h4>📂 Input Data Formats</h4>
+          <div class="tag-list">
+            <span class="tag">.csv</span>
+            <span class="tag">.xlsx</span>
+            <span class="tag">.xls</span>
+            <span class="tag">.sav (SPSS)</span>
+            <span class="tag">.dta (Stata)</span>
+          </div>
+        </div>
+        <div class="format-box">
+          <h4>⚙️ Core Capabilities</h4>
+          <div class="tag-list">
+            <span class="tag">ROC Curve Generation</span>
+            <span class="tag">Multi-Predictor Support</span>
+            <span class="tag">Variable Recoding</span>
+            <span class="tag">Color Palette Selection</span>
+            <span class="tag">Line &amp; Transparency Controls</span>
+            <span class="tag">AUC Annotation</span>
+            <span class="tag">Diagonal Reference Line</span>
+            <span class="tag">Confusion Matrix</span>
+            <span class="tag">PNG Download (300 dpi)</span>
+            <span class="tag">Word Report (.docx)</span>
+            <span class="tag">Real-time Validation</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-hr" />
+
+    <section id="prerequisites">
+      <h2>Prerequisites</h2>
+      <p>To run ROC Curve Builder locally, the following software must be installed:</p>
+      <table>
+        <thead><tr><th>Requirement</th><th>Version</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>R</td><td>≥ 4.2</td><td>Core runtime for the Shiny application</td></tr>
+          <tr><td>RStudio</td><td>Any recent</td><td>Recommended IDE — optional but convenient</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="local-setup">
+      <h2>Local Installation</h2>
+      <h3>Step 1 — Download app.R</h3>
+      <p>Download the source file from the GitHub repository: <a href="https://github.com/mudassiribrahim12" target="_blank">github.com/mudassiribrahim12</a></p>
+      <h3>Step 2 — Install required packages</h3>
+      <p>Run the following in your R console:</p>
+      <div class="code-container">
+        <button class="copy-btn" onclick="copyCode(this, 'code-step2')">Copy</button>
+<pre id="code-step2"><code><span class="cf">install.packages</span>(<span class="cf">c</span>(
+  <span class="cs">"shiny"</span>, <span class="cs">"ggplot2"</span>, <span class="cs">"pROC"</span>,
+  <span class="cs">"MLmetrics"</span>, <span class="cs">"DT"</span>, <span class="cs">"caret"</span>,
+  <span class="cs">"dplyr"</span>, <span class="cs">"readxl"</span>, <span class="cs">"haven"</span>,
+  <span class="cs">"shinythemes"</span>, <span class="cs">"officer"</span>,
+  <span class="cs">"shinycssloaders"</span>, <span class="cs">"shinyjs"</span>
+))</code></pre>
+      </div>
+      <h3>Step 3 — Load the libraries</h3>
+      <div class="code-container">
+        <button class="copy-btn" onclick="copyCode(this, 'code-step3')">Copy</button>
+<pre id="code-step3"><code><span class="ck">library</span>(shiny)
+<span class="ck">library</span>(ggplot2)
+<span class="ck">library</span>(pROC)
+<span class="ck">library</span>(MLmetrics)
+<span class="ck">library</span>(DT)
+<span class="ck">library</span>(caret)
+<span class="ck">library</span>(dplyr)
+<span class="ck">library</span>(readxl)
+<span class="ck">library</span>(haven)
+<span class="ck">library</span>(shinythemes)
+<span class="ck">library</span>(officer)
+<span class="ck">library</span>(shinycssloaders)
+<span class="ck">library</span>(shinyjs)</code></pre>
+      </div>
+      <h3>Step 4 — Set working directory and run</h3>
+      <p>Replace the path below with the location of your saved <code>app.R</code> file:</p>
+      <div class="code-container">
+        <button class="copy-btn" onclick="copyCode(this, 'code-step4')">Copy</button>
+<pre id="code-step4"><code><span class="cc"># Windows</span>
+<span class="cf">setwd</span>(<span class="cs">"C:/Users/YourName/Desktop/"</span>)
+
+<span class="cc"># Linux / macOS</span>
+<span class="cf">setwd</span>(<span class="cs">"/home/yourname/Desktop/"</span>)
+
+<span class="cc"># Launch the app</span>
+<span class="ck">library</span>(shiny)
+<span class="cf">runApp</span>(<span class="cs">"app.R"</span>)</code></pre>
+      </div>
+      <h3>Step 5 — Open in browser</h3>
+      <p>The app opens in the RStudio viewer pane. Click <strong>Open in Browser</strong> for the best experience, especially for plot rendering.</p>
+    </section>
+
+    <section id="deployment">
+      <h2>Deployment</h2>
+      <p>Deploy your own instance to shinyapps.io using the <code>rsconnect</code> package.</p>
+      <div class="code-container">
+        <button class="copy-btn" onclick="copyCode(this, 'code-deploy')">Copy</button>
+<pre id="code-deploy"><code><span class="cc"># Install rsconnect</span>
+<span class="cf">install.packages</span>(<span class="cs">"rsconnect"</span>)
+
+<span class="cc"># Deploy — replace with actual path to your app folder</span>
+rsconnect::<span class="cf">deployApp</span>(<span class="cs">"path/to/ROC-Curve-Builder"</span>)</code></pre>
+      </div>
+      <div class="callout warn">
+        <div class="callout-title">⚠️ Note</div>
+        <p>Replace <code>"path/to/ROC-Curve-Builder"</code> with the actual folder path containing your <code>app.R</code> file.</p>
+      </div>
+    </section>
+
+    <hr class="section-hr" />
+
+    <section id="workflow">
+      <h2>Analysis Workflow</h2>
+      <p>Follow these steps inside the ROC Curve Builder to perform a complete binary classification performance analysis.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Navigate to "Build ROC Curve"</strong><p>Click the <strong>Build ROC Curve</strong> tab in the top navigation bar, or click the <strong>Start Analysis</strong> button on the Home page.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Upload Your Dataset</strong><p>Click <strong>Browse Files…</strong> and select your file. Supported formats: CSV, Excel (.xlsx/.xls), Stata (.dta), SPSS (.sav). The app displays a confirmation message showing the number of rows and columns loaded.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Select Variables</strong><p>Choose your <strong>Outcome Variable</strong> (binary, must be coded 0/1) and one or more <strong>Predictor Variables</strong>. A warning appears if the outcome has more than two levels.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Recode Outcome if Needed</strong><p>If your outcome is not already 0/1 (e.g., "Yes"/"No" or "Disease"/"No Disease"), use the recode controls to map original values to 0 and 1 without leaving the app.</p></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><strong>Customize the Plot</strong><p>Set the graph title, axis labels, color palette, line thickness, and transparency. Toggle AUC annotation and the diagonal reference line on or off.</p></div></div>
+        <div class="step"><div class="step-num">6</div><div class="step-body"><strong>Generate ROC Curve</strong><p>Click <strong>Generate ROC Curve</strong>. The app fits a logistic regression model, calculates predicted probabilities, computes the ROC curve, and displays performance metrics and the confusion matrix.</p></div></div>
+        <div class="step"><div class="step-num">7</div><div class="step-body"><strong>Download Results</strong><p>Click <strong>Download Plot (PNG)</strong> for a 300 dpi high-resolution image, or <strong>Download Report (DOCX)</strong> for a Word document containing the plot, metrics, and analysis details.</p></div></div>
+      </div>
+    </section>
+
+    <section id="data-input">
+      <h2>Data Input &amp; Formats</h2>
+      <p>ROC Curve Builder reads data files directly from your computer. No data is stored or transmitted externally — all processing occurs locally within your R session.</p>
+      <table>
+        <thead><tr><th>Format</th><th>Extension</th><th>R Function Used</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>CSV</td><td>.csv</td><td><code>read.csv()</code></td><td>UTF-8 encoding first; falls back to Latin-1 on error</td></tr>
+          <tr><td>Excel</td><td>.xlsx / .xls</td><td><code>read_excel()</code></td><td>Reads first sheet by default</td></tr>
+          <tr><td>SPSS</td><td>.sav</td><td><code>read_sav()</code></td><td>Variable labels preserved</td></tr>
+          <tr><td>Stata</td><td>.dta</td><td><code>read_dta()</code></td><td>Variable labels preserved</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <div class="callout-title">📋 Data Requirements</div>
+        <p>Your dataset must contain at least one binary outcome column and one numeric predictor column. Rows with missing values in the selected variables are automatically removed via <code>na.omit()</code> before analysis.</p>
+      </div>
+      <div class="callout warn">
+        <div class="callout-title">⚠️ Outcome Variable</div>
+        <p>The outcome variable <strong>must be coded 0 and 1</strong> before running the analysis. Use the built-in recoding controls if your outcome uses other labels. The app warns you if more than two unique values are detected.</p>
+      </div>
+    </section>
+
+    <section id="recoding">
+      <h2>Variable Recoding</h2>
+      <p>The recoding panel appears automatically once an outcome variable is selected. It allows you to map two original values to 0 and 1 without modifying your source file.</p>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Select Outcome Variable</strong><p>Choose the outcome column from the dropdown. The recode panel populates with the unique values found in that column.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Map Original Value 1 → 0</strong><p>In <strong>Original Value 1</strong>, select the value that should represent the negative class (e.g., "No", "Control", "Negative"). In <strong>Recode to</strong>, enter <code>0</code>.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Map Original Value 2 → 1</strong><p>In <strong>Original Value 2</strong>, select the value that should represent the positive class (e.g., "Yes", "Case", "Positive"). In <strong>Recode to</strong>, enter <code>1</code>.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Run Analysis</strong><p>Recoding is applied internally before model fitting. Your original file is not modified.</p></div></div>
+      </div>
+    </section>
+
+    <section id="customization">
+      <h2>Plot Customization</h2>
+      <p>The Advanced Customization panel lets you control every visual aspect of the ROC curve before downloading.</p>
+      <table>
+        <thead><tr><th>Option</th><th>Description</th><th>Default</th></tr></thead>
+        <tbody>
+          <tr><td>Graph Title</td><td>Main title displayed above the plot</td><td>ROC Curve</td></tr>
+          <tr><td>X-axis Label</td><td>Label for the horizontal axis</td><td>False Positive Rate</td></tr>
+          <tr><td>Y-axis Label</td><td>Label for the vertical axis</td><td>True Positive Rate</td></tr>
+          <tr><td>Color Palette</td><td>Blue Gradient, Red, Green, Purple, or Custom hex color</td><td>Blue Gradient</td></tr>
+          <tr><td>Line Size</td><td>Thickness of the ROC curve line (0.5 – 3)</td><td>1.5</td></tr>
+          <tr><td>Transparency</td><td>Alpha level for the filled AUC area (0.1 – 1.0)</td><td>0.7</td></tr>
+          <tr><td>Show AUC on Plot</td><td>Displays AUC value as text annotation at (0.7, 0.2)</td><td>On</td></tr>
+          <tr><td>Show Diagonal Reference</td><td>Dashed gray line representing random classifier performance</td><td>On</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <div class="callout-title">🎨 Custom Color</div>
+        <p>When <strong>Custom</strong> palette is selected, enter any valid CSS hex color (e.g., <code>#e74c3c</code>, <code>#9b59b6</code>). The app automatically generates a matching gradient for the AUC fill area.</p>
+      </div>
+    </section>
+
+    <section id="metrics">
+      <h2>Performance Metrics</h2>
+      <p>After clicking <strong>Generate ROC Curve</strong>, the following metrics are computed from a logistic regression model and displayed in the metrics table.</p>
+      <div class="metric-grid">
+        <div class="metric-card">
+          <h4>AUC</h4>
+          <div class="formula">Area under the ROC curve</div>
+          <p>Ranges from 0 to 1. Values &gt; 0.7 indicate acceptable discrimination; &gt; 0.8 is excellent. A value of 0.5 indicates no discrimination (random classifier).</p>
+        </div>
+        <div class="metric-card">
+          <h4>Accuracy</h4>
+          <div class="formula">(TP + TN) / (TP + TN + FP + FN)</div>
+          <p>Proportion of all predictions that are correct. Can be misleading for imbalanced datasets.</p>
+        </div>
+        <div class="metric-card">
+          <h4>Sensitivity (Recall)</h4>
+          <div class="formula">TP / (TP + FN)</div>
+          <p>Proportion of actual positives correctly identified. Also called the True Positive Rate (TPR) — the Y-axis of the ROC curve.</p>
+        </div>
+        <div class="metric-card">
+          <h4>Specificity</h4>
+          <div class="formula">TN / (TN + FP)</div>
+          <p>Proportion of actual negatives correctly identified. 1 − Specificity = False Positive Rate (FPR) — the X-axis of the ROC curve.</p>
+        </div>
+      </div>
+      <h3>Confusion Matrix</h3>
+      <p>The confusion matrix displays the counts of true negatives (TN), false positives (FP), false negatives (FN), and true positives (TP) at the default classification threshold of 0.5.</p>
+      <table>
+        <thead><tr><th></th><th>Actual 0 (Negative)</th><th>Actual 1 (Positive)</th></tr></thead>
+        <tbody>
+          <tr><td>Predicted 0</td><td>TN — True Negative</td><td>FN — False Negative (Type II Error)</td></tr>
+          <tr><td>Predicted 1</td><td>FP — False Positive (Type I Error)</td><td>TP — True Positive</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <div class="callout-title">📐 Model Used</div>
+        <p>ROC Curve Builder fits a <strong>binary logistic regression</strong> model (<code>glm(..., family = "binomial")</code>) using the selected predictor(s). Predicted probabilities are used to construct the ROC curve via the <code>pROC</code> package. The classification threshold for the confusion matrix is fixed at 0.5.</p>
+      </div>
+    </section>
+
+    <section id="exports">
+      <h2>Exporting Results</h2>
+      <p>ROC Curve Builder provides two export options accessible from the sidebar of the Build ROC Curve tab.</p>
+      <table>
+        <thead><tr><th>Export Type</th><th>Format</th><th>Contents</th><th>Resolution</th></tr></thead>
+        <tbody>
+          <tr><td>Download Plot</td><td>.png</td><td>ROC curve with AUC annotation (if enabled), axis labels, title, and shaded AUC area</td><td>300 dpi, 10 × 8 inches</td></tr>
+          <tr><td>Download Report</td><td>.docx</td><td>ROC curve image, performance metrics (AUC, Accuracy, Sensitivity, Specificity), outcome variable, predictor list, and observation count</td><td>Embedded at 7 × 4.5 inches</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn">
+        <div class="callout-title">⚠️ Before Downloading</div>
+        <p>You must click <strong>Generate ROC Curve</strong> at least once before downloading. Attempting to download before running the analysis will result in an error.</p>
+      </div>
+    </section>
+
+    <hr class="section-hr" />
+
+    <section id="assumptions">
+      <h2>Assumptions</h2>
+      <div class="limit-list">
+        <div class="limit-item"><div class="licon">⚖️</div><div><strong>Binary Outcome</strong><p>The outcome variable must have exactly two classes (0 = negative, 1 = positive). Multi-class outcomes are not supported.</p></div></div>
+        <div class="limit-item"><div class="licon">📊</div><div><strong>Numeric Predictors</strong><p>Predictor variables should be numeric. Categorical predictors require manual dummy coding before upload.</p></div></div>
+        <div class="limit-item"><div class="licon">🔗</div><div><strong>Independent Observations</strong><p>Logistic regression assumes observations are independent. Clustered or longitudinal data requires more advanced methods.</p></div></div>
+        <div class="limit-item"><div class="licon">📈</div><div><strong>Both Classes Present</strong><p>The dataset must contain observations from both class 0 and class 1 after removing missing values.</p></div></div>
+        <div class="limit-item"><div class="licon">🔢</div><div><strong>Adequate Sample Size</strong><p>Logistic regression and ROC analysis require sufficient events in both classes for reliable estimation.</p></div></div>
+      </div>
+    </section>
+
+    <section id="limitations">
+      <h2>Limitations</h2>
+      <div class="limit-list">
+        <div class="limit-item"><div class="licon">🔄</div><div><strong>Fixed Classification Threshold</strong><p>The confusion matrix uses a fixed threshold of 0.5. Optimal threshold selection (e.g., Youden's J) is not currently implemented.</p></div></div>
+        <div class="limit-item"><div class="licon">📉</div><div><strong>Logistic Regression Only</strong><p>The app uses logistic regression to generate predicted probabilities. Other classifiers (Random Forest, SVM, XGBoost) are not supported natively.</p></div></div>
+        <div class="limit-item"><div class="licon">⚠️</div><div><strong>No Cross-Validation</strong><p>ROC metrics are computed on the training data, not a held-out test set. This may lead to optimistic performance estimates. External validation is recommended.</p></div></div>
+        <div class="limit-item"><div class="licon">🧮</div><div><strong>No Confidence Intervals</strong><p>AUC confidence intervals and DeLong's test for comparing ROC curves are not displayed in the current version.</p></div></div>
+        <div class="limit-item"><div class="licon">🌐</div><div><strong>Session-Based Only</strong><p>Results are not saved between sessions. Download your report before closing the browser.</p></div></div>
+      </div>
+    </section>
+
+    <hr class="section-hr" />
+
+    <section id="citation">
+      <h2>Citation</h2>
+      <p>If you use ROC Curve Builder in your research or publications, please cite it as follows:</p>
+      <div class="citation-block" id="cite-block">@software{Ibrahim_ROCCurveBuilder_2025,
+  author  = {Ibrahim, Mudasir Mohammed},
+  title   = {ROC Curve Builder: A Shiny Application for Binary
+             Classification Performance Analysis},
+  year    = {2025},
+  version = {2.0},
+  note    = {For research and educational use},
+  contact = {mudassiribrahim30@gmail.com}
+}<button class="copy-btn" onclick="copyCite()">Copy</button></div>
+
+    </section>
+
+    <section id="acknowledgments">
+      <h2>Acknowledgments</h2>
+      <p>ROC Curve Builder was built using the following R packages. Special thanks to the developers and maintainers of these packages.</p>
+      <div class="pkg-grid">
+        <span class="pkg">shiny</span>
+        <span class="pkg">ggplot2</span>
+        <span class="pkg">pROC</span>
+        <span class="pkg">MLmetrics</span>
+        <span class="pkg">DT</span>
+        <span class="pkg">caret</span>
+        <span class="pkg">dplyr</span>
+        <span class="pkg">readxl</span>
+        <span class="pkg">haven</span>
+        <span class="pkg">shinythemes</span>
+        <span class="pkg">officer</span>
+        <span class="pkg">shinycssloaders</span>
+        <span class="pkg">shinyjs</span>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2>Developer Information</h2>
+      <div class="author-card">
+        <div class="author-avatar">MI</div>
+        <div class="author-info">
+          <h4>Mudasir Mohammed Ibrahim</h4>
+          <p>
+            Department of Internal Medicine (M3), Tamale Teaching Hospital, Tamale, Ghana<br />
+            <a href="mailto:mudassiribrahim30@gmail.com">mudassiribrahim30@gmail.com</a>
+          </p>
+          <div class="author-links" style="margin-top: 12px;">
+            <a href="https://www.researchgate.net/profile/Mudasir-Ibrahim" target="_blank">ResearchGate</a>
+            <a href="https://scholar.google.com/citations?user=xEFzAvgAAAAJ&hl=en" target="_blank">Google Scholar</a>
+            <a href="https://orcid.org/0000-0002-9049-8222" target="_blank">ORCID</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div>© 2025–Present Mudasir Mohammed Ibrahim · MIT License</div>
+  <div style="display: flex; align-items: center; gap: 16px;">
+    <a href="https://github.com/mudassiribrahim30" target="_blank">GitHub</a> ·
+    <a href="mailto:mudassiribrahim30@gmail.com">Contact</a>
+    <button id="darkModeToggle" class="theme-toggle-btn" aria-label="Toggle dark mode">
+      <i class="fas fa-moon"></i>
+      <span>Dark</span>
+    </button>
+  </div>
+</footer>
+
+<script>
+  function copyCode(btn, elementId) {
+    const element = document.getElementById(elementId);
+    let textToCopy = element.innerText || element.textContent;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      const originalText = btn.textContent;
+      btn.textContent = '✓ Copied';
+      btn.style.color = 'var(--success-border)';
+      btn.style.borderColor = 'var(--success-border)';
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.style.color = '';
+        btn.style.borderColor = '';
+      }, 2000);
+    });
+  }
+
+  function copyCite() {
+    const block = document.getElementById('cite-block');
+    let text = block.innerText || block.textContent;
+    text = text.replace('Copy', '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = block.querySelector('.copy-btn');
+      if (btn) {
+        btn.textContent = '✓ Copied';
+        btn.style.color = 'var(--success-border)';
+        btn.style.borderColor = 'var(--success-border)';
+        setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 2000);
+      }
+    });
+  }
+
+  const themeToggle = document.getElementById('darkModeToggle');
+  function setTheme(theme) {
+    if (theme === 'dark') {
+      document.body.classList.add('dark');
+      localStorage.setItem('roc-docs-theme', 'dark');
+      if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-sun" style="font-size:0.85rem;"></i> <span style="margin-left:4px;">Light</span>';
+    } else {
+      document.body.classList.remove('dark');
+      localStorage.setItem('roc-docs-theme', 'light');
+      if (themeToggle) themeToggle.innerHTML = '<i class="fas fa-moon" style="font-size:0.85rem;"></i> <span style="margin-left:4px;">Dark</span>';
+    }
+  }
+  const savedTheme = localStorage.getItem('roc-docs-theme');
+  setTheme(savedTheme === 'dark' ? 'dark' : 'light');
+  if (themeToggle) themeToggle.addEventListener('click', () => {
+    setTheme(document.body.classList.contains('dark') ? 'light' : 'dark');
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        document.querySelectorAll('aside a').forEach(a => a.classList.remove('active'));
+        const link = document.querySelector(`aside a[href="#${entry.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-15% 0px -75% 0px' });
+  document.querySelectorAll('section[id], .page-title[id]').forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
