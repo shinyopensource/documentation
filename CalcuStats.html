@@ -15,9 +15,9 @@
       --text: #212121;
       --muted: #555555;
       --light: #888888;
-      --accent: #0092D0;
-      --accent-dark: #00689D;
-      --accent-bg: #e8f4fb;
+      --accent: #2980b9;
+      --accent-dark: #1a5f8a;
+      --accent-bg: #eaf4fb;
       --warn-bg: #fef9e7;
       --warn-border: #f39c12;
       --success-bg: #eafaf1;
@@ -39,10 +39,11 @@
     header {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       height: var(--header-h);
-      background: linear-gradient(135deg, #00689D 0%, #0092D0 100%);
+      background: var(--accent);
       display: flex; align-items: center;
       padding: 0 20px; gap: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      transition: background-color 0.2s ease;
     }
     .logo {
       font-family: 'Lato', sans-serif;
@@ -96,8 +97,8 @@
       border-left: 3px solid transparent;
       transition: all .12s; line-height: 1.5;
     }
-    aside a:hover { color: var(--accent); background: rgba(0,146,208,0.06); }
-    aside a.active { color: var(--accent); border-left-color: var(--accent); background: rgba(0,146,208,0.07); font-weight: 700; }
+    aside a:hover { color: var(--accent); background: rgba(41,128,185,0.06); }
+    aside a.active { color: var(--accent); border-left-color: var(--accent); background: rgba(41,128,185,0.07); font-weight: 700; }
     main { flex: 1; min-width: 0; padding: 40px 60px 80px 52px; max-width: 860px; }
     section { margin-bottom: 52px; }
     .page-title { border-bottom: 2px solid var(--border); padding-bottom: 18px; margin-bottom: 32px; }
@@ -185,7 +186,7 @@
     }
     code { font-family: 'Source Code Pro', monospace; font-size: 0.85em; color: #c0392b; }
     pre code { color: var(--text); font-size: 0.84rem; line-height: 1.7; }
-    .ck { color: #0092D0; }
+    .ck { color: #2980b9; }
     .cs { color: #27ae60; }
     .cc { color: #999; font-style: italic; }
     .cf { color: #8e44ad; }
@@ -243,7 +244,7 @@
     }
     .author-avatar {
       width: 52px; height: 52px; border-radius: 50%;
-      background: linear-gradient(135deg, #0092D0, #00689D);
+      background: var(--accent);
       display: flex; align-items: center; justify-content: center;
       font-family: 'Lato', sans-serif; font-weight: 700; font-size: 1.1rem; color: #fff; flex-shrink: 0;
     }
@@ -316,8 +317,8 @@
       --text: #eef2ff;
       --muted: #b9c7d9;
       --light: #8d9bb0;
-      --accent: #5ab8e0;
-      --accent-dark: #3f9fc4;
+      --accent: #5a9fd4;
+      --accent-dark: #3f7fb0;
       --accent-bg: #20273a;
       --warn-bg: #2e2a1f;
       --warn-border: #e6b450;
@@ -358,6 +359,8 @@
     footer a:hover { text-decoration: underline; }
     ul { color: var(--muted); padding-left: 1.4em; margin-bottom: 14px; }
     li { margin-bottom: 4px; }
+    .video-embed { margin: 24px 0 12px; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .video-embed iframe { width: 100%; aspect-ratio: 16 / 9; border: none; display: block; }
   </style>
 </head>
 <body>
@@ -405,7 +408,6 @@
   </aside>
 
   <main>
-    <!-- HERO -->
     <div class="page-title" id="overview">
       <h1>CalcuStats</h1>
       <p>A Comprehensive Sample Size Calculation, Power Analysis &amp; Descriptive Statistics Suite</p>
@@ -420,7 +422,6 @@
       </div>
     </div>
 
-    <!-- OVERVIEW -->
     <section>
       <h2>Overview</h2>
       <p>CalcuStats is a free, web-based R-Shiny application that provides researchers, healthcare professionals, and students with reliable, validated methods for sample size determination, power analysis, and descriptive statistics. The tool supports multiple sample size formulas, stratified proportional allocation with flowchart generation, downloadable Word reports.</p>
@@ -436,7 +437,6 @@
 
     <hr class="section-hr" />
 
-    <!-- FEATURES -->
     <section id="features">
       <h2>Modules &amp; Features</h2>
       <p>CalcuStats is organized into six functional modules, each with independent parameter inputs, stratification support, and export options.</p>
@@ -479,7 +479,6 @@
 
     <hr class="section-hr" />
 
-    <!-- LIVE APP -->
     <section id="live-app">
       <h2>Live Applications</h2>
       <p>CalcuStats is available in two hosted versions — a full-featured R-Shiny application and a lightweight HTML/JavaScript version.</p>
@@ -504,7 +503,6 @@
 
     <hr class="section-hr" />
 
-    <!-- PREREQUISITES -->
     <section id="prerequisites">
       <h2>Prerequisites</h2>
       <p>To run CalcuStats locally, the following software must be installed:</p>
@@ -517,7 +515,6 @@
       </table>
     </section>
 
-    <!-- LOCAL SETUP -->
     <section id="local-setup">
       <h2>Local Installation</h2>
 
@@ -575,7 +572,6 @@
       <p>The app opens in the RStudio viewer pane. Click <strong>Open in Browser</strong> for the best experience.</p>
     </section>
 
-    <!-- DEPLOYMENT -->
     <section id="deployment">
       <h2>Deployment</h2>
       <p>Deploy your own instance to shinyapps.io using the <code>rsconnect</code> package.</p>
@@ -595,7 +591,6 @@ rsconnect::<span class="cf">deployApp</span>(<span class="cs">"path/to/CalcuStat
 
     <hr class="section-hr" />
 
-    <!-- WORKFLOW -->
     <section id="workflow">
       <h2>Analysis Workflow</h2>
       <p>Follow these steps inside the CalcuStats application to perform a complete sample size calculation with stratified allocation.</p>
@@ -610,7 +605,6 @@ rsconnect::<span class="cf">deployApp</span>(<span class="cs">"path/to/CalcuStat
       </div>
     </section>
 
-    <!-- FORMULAS -->
     <section id="formulas">
       <h2>Statistical Formulas</h2>
       <p>CalcuStats implements the following validated sample size formulas. All formulas include step-by-step derivation output in the application.</p>
@@ -623,17 +617,20 @@ rsconnect::<span class="cf">deployApp</span>(<span class="cs">"path/to/CalcuStat
         <li><strong>N</strong> = total population size</li>
         <li><strong>n</strong> = total (adjusted) sample size</li>
       </ul>
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/-VRapYdeBdA?si=U0gdG0YAPhGFcKdY" title="Proportional Allocation" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
 
       <h3>Taro Yamane Formula</h3>
       <div class="formula-block">n = N / (1 + N × e²)</div>
       <p>Assumes 95% confidence level. Suitable for finite populations. Non-response adjustment applied after: <code>n_adj = ⌈n / (1 − r)⌉</code>.</p>
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/j7XdPdZwt8A?si=C4K83G3dXPtq7nQh" title="Taro Yamane" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
 
       <h3>Cochran's Formula</h3>
       <div class="formula-block">n₀ = (Z² × p × (1−p)) / e²<br>
 Finite correction: n = n₀ / (1 + (n₀ − 1) / N)</div>
       <p>Use when working with proportions. Z = 1.96 for 95% CI. Optional finite population correction when N is known.</p>
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/DjUk5f00XfY?si=XVzt0kHBdonNtkmR" title="Cochran Formula" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
 
-      <h3>Other Study Design Formulas</h3>
+      <h3>Other Formulas</h3>
       <div class="formula-tabs">
         <div class="formula-tab">
           <h4>Single Population Proportion (EPI INFO)</h4>
@@ -666,9 +663,9 @@ Finite correction: n = n₀ / (1 + (n₀ − 1) / N)</div>
           <p>For estimating disease prevalence with specified margin of error.</p>
         </div>
       </div>
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/eNmBbJH1LXo?si=OFBQ-V6wu9IKF0nv" title="Other Formulas" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
     </section>
 
-    <!-- POWER ANALYSIS -->
     <section id="power-analysis">
       <h2>Power Analysis</h2>
       <p>The Power Analysis module calculates the required sample size to achieve a specified power for various inferential tests using the <code>pwr</code> R package.</p>
@@ -688,19 +685,15 @@ Finite correction: n = n₀ / (1 + (n₀ − 1) / N)</div>
           <tr><td>Proportion</td><td>Cohen's h</td><td>0.2 / 0.5 / 0.8</td></tr>
         </tbody>
       </table>
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/AzskNk9naCI?si=PeV4eCvNCUYFZSz_" title="Power Analysis" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
 
       <div class="callout">
-        <div class="callout-title">📐 Sample Size Formula (Regression)</div>
-        <p>For linear regression, total sample size is calculated as: <strong>n = v + u + 1</strong>, where v is the denominator degrees of freedom from <code>pwr.f2.test()</code>, u is the number of predictors, and +1 accounts for the intercept.</p>
-      </div>
-
       <div class="callout success">
         <div class="callout-title">📊 Recommended Power</div>
         <p>A power of <strong>0.80 (80%)</strong> is generally considered acceptable in most research contexts. This means an 80% probability of correctly detecting a true effect at the specified significance level.</p>
       </div>
     </section>
 
-    <!-- DESCRIPTIVE STATISTICS -->
     <section id="descriptive">
       <h2>Descriptive Statistics</h2>
       <p>The Descriptive Statistics module accepts pasted data (with or without a header row) and automatically detects the data type, or you can specify it manually.</p>
@@ -714,6 +707,7 @@ Finite correction: n = n₀ / (1 + (n₀ − 1) / N)</div>
           <tr><td>Mixed</td><td>Counts of numerical vs. categorical values</td><td>None (prompts separation)</td></tr>
         </tbody>
       </table>
+      <div class="video-embed"><iframe src="https://www.youtube.com/embed/T3jp2q0B68s?si=qz4_COidWIAq4p_k" title="Descriptive Statistics" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
 
       <div class="callout">
         <div class="callout-title">📋 Data Input Format</div>
@@ -721,7 +715,6 @@ Finite correction: n = n₀ / (1 + (n₀ − 1) / N)</div>
       </div>
     </section>
 
-    <!-- FLOWCHART GENERATION -->
     <section id="flowcharts">
       <h2>Flowchart Generation</h2>
       <p>All sample size modules (Proportional Allocation, Taro Yamane, Cochran, Other Formulas) support optional stratification flowchart diagrams generated using <code>DiagrammeR</code>.</p>
@@ -736,7 +729,6 @@ Finite correction: n = n₀ / (1 + (n₀ − 1) / N)</div>
 
     <hr class="section-hr" />
 
-    <!-- INPUT FORMATS -->
     <section id="input-formats">
       <h2>Input Formats &amp; Flexible Proportion Entry</h2>
       <p>CalcuStats accepts proportion inputs in three equivalent formats across all relevant formula inputs:</p>
@@ -756,7 +748,6 @@ Finite correction: n = n₀ / (1 + (n₀ − 1) / N)</div>
       </div>
     </section>
 
-    <!-- LIMITATIONS -->
     <section id="limitations">
       <h2>Limitations</h2>
       <div class="limit-list">
@@ -770,7 +761,6 @@ Finite correction: n = n₀ / (1 + (n₀ − 1) / N)</div>
 
     <hr class="section-hr" />
 
-    <!-- CITATION -->
     <section id="citation">
       <h2>Citation</h2>
       <p>If you use CalcuStats in your research, please cite it as follows:</p>
@@ -783,7 +773,6 @@ Finite correction: n = n₀ / (1 + (n₀ − 1) / N)</div>
 }<button class="copy-btn" onclick="copyCite()">Copy</button></div>
     </section>
 
-    <!-- ACKNOWLEDGMENTS -->
     <section id="acknowledgments">
       <h2>Acknowledgments</h2>
       <p>CalcuStats was built using the following R packages. Special thanks to the developers and maintainers of these packages for making advanced statistical computation accessible.</p>
@@ -805,12 +794,12 @@ Finite correction: n = n₀ / (1 + (n₀ − 1) / N)</div>
       </div>
     </section>
 
-    <!-- CONTACT -->
     <section id="contact">
       <h2>Developer Information</h2>
       <div class="author-card">
         <div class="author-avatar">MI</div>
         <div class="author-info">
+          <h4>Mudasir Mohammed Ibrahim</h4>
           <p>
             Department of Internal Medicine (M3), Tamale Teaching Hospital, Tamale, Ghana<br />
             <a href="mailto:mudassiribrahim30@gmail.com">mudassiribrahim30@gmail.com</a>
